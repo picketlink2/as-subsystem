@@ -1,0 +1,29 @@
+<module xmlns="urn:jboss:module:1.0" name="org.picketlink">
+	<resources>
+		<resource-root path="jboss-as-security-picketlink-1.0-SNAPSHOT.jar" />
+	</resources>
+	<dependencies>
+		<module name="org.jboss.staxmapper" />
+		<module name="org.jboss.as.controller" />
+		<module name="org.jboss.as.server" />
+		<module name="org.jboss.modules" />
+		<module name="org.jboss.msc" />
+		<module name="org.jboss.logging" />
+		<module name="org.jboss.vfs" />
+		<module name="javax.api" />
+		<module name="javax.security.auth.message.api" />
+		<module name="javax.security.jacc.api" />
+		<module name="javax.transaction.api" />
+		<module name="javax.xml.bind.api" />
+		<module name="javax.xml.stream.api" />
+		<module name="javax.servlet.api" />
+		<module name="org.jboss.common-core" />
+		<module name="org.jboss.logging" />
+		<module name="org.jboss.as.web" />
+		<module name="org.jboss.security.xacml" />
+		<module name="org.picketbox" />
+		<module name="javax.xml.ws.api" />
+		<module name="org.apache.log4j" />
+		<module name="org.apache.santuario.xmlsec" />
+	</dependencies>
+</module>
