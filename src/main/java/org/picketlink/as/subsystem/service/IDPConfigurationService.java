@@ -24,8 +24,6 @@ package org.picketlink.as.subsystem.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.Service;
@@ -34,6 +32,10 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
+import org.picketlink.identity.federation.core.config.parser.ContextConfigWriter;
+import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
+import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
+import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 
 /**
  * @author pedroigor
@@ -42,14 +44,12 @@ import org.jboss.vfs.VirtualFile;
 public class IDPConfigurationService implements Service<IDPConfigurationService> {
 
     private String alias;
-    private String url;
-
-    private List<String> trustDomains = new ArrayList<String>();
-    private boolean signOutgoingMessages;
-    private boolean ignoreIncomingSignatures;
+    
+    private IDPTypeSubsystem idpConfiguration = new IDPTypeSubsystem(); 
 
     public IDPConfigurationService(String alias, String url) {
-
+        this.alias = alias;
+        this.idpConfiguration.setIdentityURL(url);
     }
 
     @Override
@@ -76,42 +76,14 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
                 boolean handlersCreated = handlers.getPhysicalFile().createNewFile();
                 boolean configCreated = config.getPhysicalFile().createNewFile();
 
-                // TODO: change this logic to use stax writers to generate the xml configuration files ! This is only for testing.
                 if (contextCreated) {
-                    FileOutputStream fis = new FileOutputStream(context.getPhysicalFile());
-                    fis.write(("<Context><Valve className=\"org.picketlink.identity.federation.bindings.tomcat.idp.IDPSAMLDebugValve\" /><Valve className=\"org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve\" signOutgoingMessages=\""
-                            + this.signOutgoingMessages + "\"  ignoreIncomingSignatures=\"" + this.ignoreIncomingSignatures + "\"/></Context>")
-                            .getBytes());
-                    fis.flush();
-                    fis.close();
+                    new ContextConfigWriter(this.idpConfiguration).write(new FileOutputStream(context.getPhysicalFile()));
                 }
                 if (handlersCreated) {
-                    FileOutputStream fis = new FileOutputStream(handlers.getPhysicalFile());
-                    fis.write("<Handlers xmlns=\"urn:picketlink:identity-federation:handler:config:1.0\"><Handler class=\"org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler\"/><Handler class=\"org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler\"/><Handler class=\"org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler\"/><Handler class=\"org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler\"/></Handlers>"
-                            .getBytes());
-                    fis.flush();
-                    fis.close();
+                    new HandlersConfigWriter(this.idpConfiguration).write(new FileOutputStream(handlers.getPhysicalFile()));
                 }
                 if (configCreated) {
-                    FileOutputStream fis = new FileOutputStream(config.getPhysicalFile());
-                    StringBuffer configBuffer = new StringBuffer();
-
-                    StringBuffer trustDomains = new StringBuffer();
-
-                    for (String domain : this.trustDomains) {
-                        if (trustDomains.length() > 0) {
-                            trustDomains.append(",");
-                        }
-                        trustDomains.append(domain);
-                    }
-
-                    configBuffer.append(
-                            "<PicketLinkIDP xmlns=\"urn:picketlink:identity-federation:config:1.0\"><IdentityURL>" + this.url
-                                    + "</IdentityURL><Trust><Domains>" + trustDomains.toString() + "</Domains>").append("</Trust></PicketLinkIDP>");
-
-                    fis.write(configBuffer.toString().getBytes());
-                    fis.flush();
-                    fis.close();
+                    new IDPTypeConfigWriter(this.idpConfiguration).write(new FileOutputStream(config.getPhysicalFile()));                    
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -119,32 +91,14 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
         }
     }
 
-    public void addTrustDomain(String domain) {
-        this.trustDomains.add(domain);
-    }
-
-    public static ServiceName createServiceName(String suffix) {
-        return ServiceName.JBOSS.append("IDPConfigurationService", suffix);
+    public static ServiceName createServiceName(String alias) {
+        return ServiceName.JBOSS.append("IDPConfigurationService", alias);
     }
 
     /**
-     * @param url
+     * @return the idpConfiguration
      */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * @param signOutgoingMessages
-     */
-    public void setSignOutgoingMessages(boolean signOutgoingMessages) {
-        this.signOutgoingMessages = signOutgoingMessages;
-    }
-
-    /**
-     * @param ignoreIncomingSignatures
-     */
-    public void setIgnoreIncomingSignatures(boolean ignoreIncomingSignatures) {
-        this.ignoreIncomingSignatures = ignoreIncomingSignatures;
+    public IDPTypeSubsystem getIdpConfiguration() {
+        return this.idpConfiguration;
     }
 }

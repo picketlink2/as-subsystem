@@ -33,18 +33,18 @@ import org.jboss.as.controller.registry.AttributeAccess.Storage;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.picketlink.as.subsystem.describer.SubsystemProviders;
 import org.picketlink.as.subsystem.model.ModelDefinition;
-import org.picketlink.subsystem.DomainAddHandler;
-import org.picketlink.subsystem.DomainNameHandler;
-import org.picketlink.subsystem.DomainRemoveHandler;
-import org.picketlink.subsystem.FederationAddHandler;
-import org.picketlink.subsystem.FederationAliasHandler;
-import org.picketlink.subsystem.FederationRemoveHandler;
-import org.picketlink.subsystem.IdentityProviderAddHandler;
-import org.picketlink.subsystem.IdentityProviderAliasHandler;
-import org.picketlink.subsystem.IdentityProviderIgnoreInSignMsgHandler;
-import org.picketlink.subsystem.IdentityProviderRemoveHandler;
-import org.picketlink.subsystem.IdentityProviderSignOutgoingMessagesHandler;
-import org.picketlink.subsystem.IdentityProviderURLHandler;
+import org.picketlink.as.subsystem.model.handler.federation.FederationAddHandler;
+import org.picketlink.as.subsystem.model.handler.federation.FederationAliasHandler;
+import org.picketlink.as.subsystem.model.handler.federation.FederationRemoveHandler;
+import org.picketlink.as.subsystem.model.handler.idp.DomainAddHandler;
+import org.picketlink.as.subsystem.model.handler.idp.DomainNameHandler;
+import org.picketlink.as.subsystem.model.handler.idp.DomainRemoveHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderAddHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderAliasHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderIgnoreInSignMsgHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderRemoveHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderSignOutgoingMessagesHandler;
+import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderURLHandler;
 
 /**
  * <p>An extension to the JBoss Application Server to enable PicketLink configurations.</p>
