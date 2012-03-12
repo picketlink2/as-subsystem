@@ -26,14 +26,14 @@
 	<packaging>jar</packaging>
 
 	<url>
-        https://svn.jboss.org/repos/picketlink/console/
+        https://github.com/picketlink/as-subsystem
     </url>
 
 	<scm>
-        <connection>scm:git:${jboss.as.scm.connection}</connection>
-        <developerConnection>scm:git:${jboss.as.scm.connection}</developerConnection>
-        <url>${jboss.as.scm.url}</url>
-    </scm>
+		<connection>scm:git:${jboss.as.scm.connection}</connection>
+		<developerConnection>scm:git:${jboss.as.scm.connection}</developerConnection>
+		<url>${jboss.as.scm.url}</url>
+	</scm>
 
 	<organization>
 		<name>JBoss, a division of Red Hat</name>
@@ -41,24 +41,25 @@
 	</organization>
 
 	<licenses>
-        <license>
-            <name>lgpl</name>
-            <url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+		<license>
+			<name>lgpl</name>
+			<url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<properties>
 		<jboss.as.scm.url>https://github.com/picketlink/as-subsystem</jboss.as.scm.url>
-        <jboss.as.scm.connection>git@github.com:picketlink/as-subsystem.git</jboss.as.scm.connection>
+		<jboss.as.scm.connection>git@github.com:picketlink/as-subsystem.git</jboss.as.scm.connection>
 
-        <!-- Build configuration -->
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        
+		<!-- Build configuration -->
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+
 		<version.jboss.as>7.1.0.Final</version.jboss.as>
 		<version.junit>4.8.2</version.junit>
-		
+		<version.picketlink>2.0.2.Final</version.picketlink>
+
 		<module.name>org.picketlink</module.name>
 	</properties>
 
@@ -86,6 +87,24 @@
 				<scope>test</scope>
 				<version>${version.junit}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.picketlink</groupId>
+				<artifactId>picketlink-fed-core</artifactId>
+				<version>${version.picketlink}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.picketlink</groupId>
+				<artifactId>picketlink-bindings-jboss</artifactId>
+				<version>${version.picketlink}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.picketlink</groupId>
+				<artifactId>picketlink-bindings</artifactId>
+				<version>${version.picketlink}</version>
+				<scope>provided</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -111,20 +130,14 @@
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-fed-core</artifactId>
-			<version>2.0.2.Final</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-bindings-jboss</artifactId>
-			<version>2.0.2.Final</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-bindings</artifactId>
-			<version>2.0.2.Final</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
