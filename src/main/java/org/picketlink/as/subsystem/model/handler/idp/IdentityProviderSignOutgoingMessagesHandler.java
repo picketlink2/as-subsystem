@@ -49,7 +49,7 @@ public class IdentityProviderSignOutgoingMessagesHandler implements OperationSte
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelDefinition.IDENTITY_PROVIDER_URL.getKey()).set(signOutgoingMessages);
+        node.get(ModelDefinition.COMMON_URL.getKey()).set(signOutgoingMessages);
         
         final String alias = operation.get(ModelDescriptionConstants.OP_ADDR).asPropertyList().get(2).getValue().asString();
         

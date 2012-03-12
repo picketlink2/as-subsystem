@@ -23,10 +23,10 @@
 package org.picketlink.as.subsystem.model.handler.federation;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REQUIRED;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OPERATION_NAME;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REQUEST_PROPERTIES;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REQUIRED;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 import java.util.List;
@@ -38,7 +38,6 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.ModelDefinition;
 import org.picketlink.as.subsystem.model.ModelKeys;
@@ -54,6 +53,9 @@ public class FederationAddHandler extends AbstractAddStepHandler implements Desc
     private FederationAddHandler() {
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.descriptions.DescriptionProvider#getModelDescription(java.util.Locale)
+     */
     @Override
     public ModelNode getModelDescription(Locale locale) {
         ModelNode node = new ModelNode();
@@ -61,9 +63,9 @@ public class FederationAddHandler extends AbstractAddStepHandler implements Desc
         node.get(OPERATION_NAME).set(ADD);
         node.get(DESCRIPTION).set("Adds a federation configuration.");
         
-        node.get(REQUEST_PROPERTIES, ModelKeys.FEDERATION_ALIAS, DESCRIPTION).set("Federation's alias");
-        node.get(REQUEST_PROPERTIES, ModelKeys.FEDERATION_ALIAS, TYPE).set(ModelDefinition.FEDERATION_ALIAS.getDefinition().getType());
-        node.get(REQUEST_PROPERTIES, ModelKeys.FEDERATION_ALIAS, REQUIRED).set(!ModelDefinition.FEDERATION_ALIAS.getDefinition().isAllowNull());
+        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, DESCRIPTION).set("Federation's alias");
+        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, TYPE).set(ModelDefinition.FEDERATION_ALIAS.getDefinition().getType());
+        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, REQUIRED).set(!ModelDefinition.FEDERATION_ALIAS.getDefinition().isAllowNull());
         
         return node;
     }

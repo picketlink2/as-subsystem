@@ -10,6 +10,7 @@ import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.SPConfigurationService;
 
 /**
  * <p>A custom deployment unit processor to handle application deployments, usually WAR files, and configuring them
@@ -37,13 +38,20 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
     @Override
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         String name = phaseContext.getDeploymentUnit().getName();
-        IDPConfigurationService service = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
+        IDPConfigurationService idpService = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
 
-        if (service != null) {
+        if (idpService != null) {
             ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
-            service.configure(root);
+            idpService.configure(root);
         }
-    }
+
+        SPConfigurationService spService = getServiceProviderService(phaseContext.getServiceRegistry(), name);
+
+        if (spService != null) {
+            ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
+            spService.configure(root);
+        }
+}
 
     /* (non-Javadoc)
      * @see org.jboss.as.server.deployment.DeploymentUnitProcessor#undeploy(org.jboss.as.server.deployment.DeploymentUnit)
@@ -65,6 +73,23 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
         
         if (container != null) {
             return (IDPConfigurationService) container.getValue();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Returns a instance of the service responsible to configure applications as an IDP.
+     * 
+     * @param registry
+     * @param name
+     * @return
+     */
+    private SPConfigurationService getServiceProviderService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(SPConfigurationService.createServiceName(name));
+        
+        if (container != null) {
+            return (SPConfigurationService) container.getValue();
         }
         
         return null;

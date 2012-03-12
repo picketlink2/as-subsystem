@@ -35,36 +35,28 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
  * @author pedroigor
  * @sice Mar 12, 2012
  */
-public class IDPTypeConfigWriter implements ConfigWriter {
+public class SPTypeConfigWriter implements ConfigWriter {
 
-    private static final String NAMESPACE = "urn:picketlink:identity-federation:config:1.0";
-    private IDPTypeSubsystem idpConfiguration;
+    private SPTypeSubsystem configuration;
 
-    public IDPTypeConfigWriter(IDPTypeSubsystem idpTypeSubsystem) {
-        this.idpConfiguration = idpTypeSubsystem;
+    public SPTypeConfigWriter(SPTypeSubsystem SPTypeSubsystem) {
+        this.configuration = SPTypeSubsystem;
     }
     
-    /* (non-Javadoc)
-     * @see org.picketlink.identity.federation.core.config.parser.ConfigWriter#write(java.io.OutputStream)
-     */
     public void write(OutputStream stream) {
         XMLStreamWriter writer = null;
         
         try {
             writer = StaxUtil.getXMLStreamWriter(stream);
             
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDP, NAMESPACE);
+            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SP, "urn:picketlink:identity-federation:config:1.0");
             
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-            StaxUtil.writeCharacters(writer, this.idpConfiguration.getIdentityURL());
+            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SERVICE_URL, "");
+            StaxUtil.writeCharacters(writer, this.configuration.getServiceURL());
             StaxUtil.writeEndElement(writer);
-            
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.TRUST, "");
 
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.DOMAINS, "");
-            StaxUtil.writeCharacters(writer, this.idpConfiguration.getTrust().getDomains());
-            StaxUtil.writeEndElement(writer);
-            
+            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
+            StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL());
             StaxUtil.writeEndElement(writer);
 
             StaxUtil.writeEndElement(writer);

@@ -20,24 +20,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model;
+package org.picketlink.as.subsystem.parser;
+
+import javax.xml.stream.XMLStreamException;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.staxmapper.XMLExtendedStreamReader;
 
 /**
  * @author pedroigor
- * @sice Mar 8, 2012
+ * @sice Mar 9, 2012
  */
-public interface ModelKeys {
+public interface ModelReader {
 
-    static final String COMMON_ALIAS = "alias";
-    static final String COMMON_URL = "url";
+    ModelNode read(XMLExtendedStreamReader reader) throws XMLStreamException;
     
-    static final String FEDERATION = "federation";
-    static final String IDENTITY_PROVIDER = "identity-provider";
-    static final String TRUST_DOMAIN = "trust-domain";
-    static final String TRUST_DOMAIN_NAME = "name";
-    static final String IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES = "signOutgoingMessages";
-    static final String IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES = "ignoreIncomingSignatures";
-    
-    static final String SERVICE_PROVIDER = "service-provider";
-
 }

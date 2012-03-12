@@ -20,24 +20,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model;
+package org.picketlink.identity.federation.core.config.parser;
+
+import org.picketlink.identity.federation.core.config.SPType;
 
 /**
  * @author pedroigor
- * @sice Mar 8, 2012
+ * @sice Mar 12, 2012
  */
-public interface ModelKeys {
-
-    static final String COMMON_ALIAS = "alias";
-    static final String COMMON_URL = "url";
-    
-    static final String FEDERATION = "federation";
-    static final String IDENTITY_PROVIDER = "identity-provider";
-    static final String TRUST_DOMAIN = "trust-domain";
-    static final String TRUST_DOMAIN_NAME = "name";
-    static final String IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES = "signOutgoingMessages";
-    static final String IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES = "ignoreIncomingSignatures";
-    
-    static final String SERVICE_PROVIDER = "service-provider";
+public class SPTypeSubsystem extends SPType {
 
 }

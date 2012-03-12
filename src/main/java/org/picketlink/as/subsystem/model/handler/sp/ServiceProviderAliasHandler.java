@@ -19,25 +19,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.picketlink.as.subsystem.model.handler.sp;
 
-package org.picketlink.as.subsystem.model;
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.OperationStepHandler;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelDefinition;
 
 /**
  * @author pedroigor
- * @sice Mar 8, 2012
+ *
  */
-public interface ModelKeys {
 
-    static final String COMMON_ALIAS = "alias";
-    static final String COMMON_URL = "url";
-    
-    static final String FEDERATION = "federation";
-    static final String IDENTITY_PROVIDER = "identity-provider";
-    static final String TRUST_DOMAIN = "trust-domain";
-    static final String TRUST_DOMAIN_NAME = "name";
-    static final String IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES = "signOutgoingMessages";
-    static final String IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES = "ignoreIncomingSignatures";
-    
-    static final String SERVICE_PROVIDER = "service-provider";
-
+public class ServiceProviderAliasHandler implements OperationStepHandler {
+ 
+    public static final ServiceProviderAliasHandler INSTANCE = new ServiceProviderAliasHandler();
+ 
+    private ServiceProviderAliasHandler() {
+    }
+ 
+    @Override
+    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
+        final String name = operation.require("value").asString();
+        ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
+        
+        node.get(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey()).set(name);
+ 
+        context.completeStep();
+    }
 }

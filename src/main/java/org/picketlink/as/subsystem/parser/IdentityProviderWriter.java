@@ -31,6 +31,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
 import org.picketlink.as.subsystem.model.ModelDefinition;
+import org.picketlink.as.subsystem.model.XMLElements;
 
 /**
  * @author pedroigor
@@ -58,8 +59,8 @@ public class IdentityProviderWriter extends AbstractModelWriter {
                     ModelDefinition.IDENTITY_PROVIDER_ALIAS.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
                 }
                 
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_URL.getKey())) {
-                    ModelDefinition.IDENTITY_PROVIDER_URL.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
+                if (propertyIdentity.getValue().hasDefined(ModelDefinition.COMMON_URL.getKey())) {
+                    ModelDefinition.COMMON_URL.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
                 }
 
                 if (propertyIdentity.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey())) {
@@ -71,7 +72,7 @@ public class IdentityProviderWriter extends AbstractModelWriter {
                 }
 
                 if (propertyIdentity.getValue().hasDefined(ModelDefinition.TRUST_DOMAIN.getKey())) {
-                    writer.writeStartElement(ModelDefinition.TRUST.getKey());
+                    writer.writeStartElement(XMLElements.TRUST);
                     
                     List<ModelNode> trustDomains = propertyIdentity.getValue().get(ModelDefinition.TRUST_DOMAIN.getKey()).asList();
                     

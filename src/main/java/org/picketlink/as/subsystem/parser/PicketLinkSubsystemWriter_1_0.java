@@ -48,6 +48,7 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
         
         writers.put(ModelDefinition.FEDERATION.getKey(), new FederationWriter(writers));
         writers.put(ModelDefinition.IDENTITY_PROVIDER.getKey(), new IdentityProviderWriter(writers));
+        writers.put(ModelDefinition.SERVICE_PROVIDER.getKey(), new ServiceProviderWriter(writers));
         writers.put(ModelDefinition.TRUST_DOMAIN.getKey(), new TrustWriter(writers));
     }
     

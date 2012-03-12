@@ -48,7 +48,7 @@ public class IdentityProviderURLHandler implements OperationStepHandler {
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelDefinition.IDENTITY_PROVIDER_URL.getKey()).set(url);
+        node.get(ModelDefinition.COMMON_URL.getKey()).set(url);
         
         final String alias = operation.get(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey()).asString();
         

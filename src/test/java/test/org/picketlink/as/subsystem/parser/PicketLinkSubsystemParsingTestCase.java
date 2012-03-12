@@ -37,6 +37,10 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
         subsystemXml.append("<trust-domain name=\"mycompany.com\" />");
         subsystemXml.append("</trust>");
         subsystemXml.append("</identity-provider>");
+        subsystemXml.append("<service-providers>");
+        subsystemXml.append("<service-provider alias=\"sales.war\" url=\"http://localhost:8080/sales\"/>");
+        subsystemXml.append("<service-provider alias=\"employee.war\" url=\"http://localhost:8080/employee\"/>");
+        subsystemXml.append("</service-providers>");
         subsystemXml.append("</federation>");
         subsystemXml.append("</subsystem>");
 
@@ -58,6 +62,10 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
         subsystemXml.append("<trust-domain name=\"mycompany.com\" />");
         subsystemXml.append("</trust>");
         subsystemXml.append("</identity-provider>");
+        subsystemXml.append("<service-providers>");
+        subsystemXml.append("<service-provider alias=\"sales.war\" url=\"http://localhost:8080/sales\"/>");
+        subsystemXml.append("<service-provider alias=\"employee.war\" url=\"http://localhost:8080/employee\"/>");
+        subsystemXml.append("</service-providers>");
         subsystemXml.append("</federation>");
         subsystemXml.append("</subsystem>");
 

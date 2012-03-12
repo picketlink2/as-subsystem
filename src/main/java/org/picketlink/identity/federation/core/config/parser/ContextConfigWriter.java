@@ -23,10 +23,13 @@
 package org.picketlink.identity.federation.core.config.parser;
 
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
@@ -43,10 +46,10 @@ public class ContextConfigWriter implements ConfigWriter {
     private static final String IGNORE_INCOMING_SIGNATURES_ATTRIBUTE = "ignoreIncomingSignatures";
     private static final String SIGN_OUTGOING_MESSAGES_ATTRIBUTE = "signOutgoingMessages";
 
-    private IDPTypeSubsystem idpConfiguration;
+    private ProviderType configuration;
 
-    public ContextConfigWriter(IDPTypeSubsystem idpTypeSubsystem) {
-        this.idpConfiguration = idpTypeSubsystem;
+    public ContextConfigWriter(ProviderType idpTypeSubsystem) {
+        this.configuration = idpTypeSubsystem;
     }
     
     public void write(OutputStream stream) {
@@ -57,15 +60,22 @@ public class ContextConfigWriter implements ConfigWriter {
             
             StaxUtil.writeStartElement(writer, "", CONTEXT_ELEMENT, "");
             
-            StaxUtil.writeStartElement(writer, "", VALVE_ELEMENT, "");
-            StaxUtil.writeAttribute(writer, CLASS_NAME_ATTRIBUTE, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPSAMLDebugValve");
-            StaxUtil.writeEndElement(writer);
-            
-            StaxUtil.writeStartElement(writer, "", VALVE_ELEMENT, "");
-            StaxUtil.writeAttribute(writer, CLASS_NAME_ATTRIBUTE, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve");
-            StaxUtil.writeAttribute(writer, SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(this.idpConfiguration.isSignOutgoingMessages()));
-            StaxUtil.writeAttribute(writer, IGNORE_INCOMING_SIGNATURES_ATTRIBUTE, String.valueOf(this.idpConfiguration.isIgnoreIncomingSignatures()));
-            StaxUtil.writeEndElement(writer);
+            if (this.configuration instanceof IDPTypeSubsystem) {
+                IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
+
+                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", null);
+                
+                Map<String,String> attributes = new HashMap<String, String>();
+                
+                attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
+                attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE, String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
+                
+                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
+            } else if (this.configuration instanceof SPTypeSubsystem) {
+                SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
+                
+                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);
+            }
             
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
@@ -80,6 +90,19 @@ public class ContextConfigWriter implements ConfigWriter {
                 }
             }
         }        
+    }
+    
+    public void writeValve(XMLStreamWriter writer, String className, Map<String,String> attributes) throws ProcessingException {
+        StaxUtil.writeStartElement(writer, "", VALVE_ELEMENT, "");
+        StaxUtil.writeAttribute(writer, CLASS_NAME_ATTRIBUTE, className);
+        
+        if (attributes != null) {
+            for (String key : attributes.keySet()) {
+                StaxUtil.writeAttribute(writer, key, attributes.get(key));
+            }
+        }
+        
+        StaxUtil.writeEndElement(writer);
     }
     
 }

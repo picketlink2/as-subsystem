@@ -31,8 +31,8 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.parsing.ExtensionParsingContext;
 import org.jboss.as.controller.registry.AttributeAccess.Storage;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
-import org.picketlink.as.subsystem.describer.SubsystemProviders;
 import org.picketlink.as.subsystem.model.ModelDefinition;
+import org.picketlink.as.subsystem.model.describer.DescriptionProviderFactory;
 import org.picketlink.as.subsystem.model.handler.federation.FederationAddHandler;
 import org.picketlink.as.subsystem.model.handler.federation.FederationAliasHandler;
 import org.picketlink.as.subsystem.model.handler.federation.FederationRemoveHandler;
@@ -45,6 +45,10 @@ import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderIgnoreInSig
 import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderRemoveHandler;
 import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderSignOutgoingMessagesHandler;
 import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderURLHandler;
+import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderAddHandler;
+import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderAliasHandler;
+import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderRemoveHandler;
+import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderURLHandler;
 
 /**
  * <p>An extension to the JBoss Application Server to enable PicketLink configurations.</p>
@@ -89,9 +93,8 @@ public class PicketLinkExtension implements Extension {
         ManagementResourceRegistration picketlink = registerPicketLinkSubsystem(subsystem);
         ManagementResourceRegistration federationChild = registerFederationModel(picketlink);
         ManagementResourceRegistration identityProviderChild = registerIDPModel(federationChild);
+        registerSPModel(federationChild);
         registerTrusDomainModel(identityProviderChild);
-        
-        //TODO: Support more configurations
     }
     
     /**
@@ -101,9 +104,9 @@ public class PicketLinkExtension implements Extension {
      * @return
      */
     private ManagementResourceRegistration registerPicketLinkSubsystem(SubsystemRegistration subsystem) {
-        ManagementResourceRegistration picketlink = subsystem.registerSubsystemModel(SubsystemProviders.SUBSYSTEM);
+        ManagementResourceRegistration picketlink = subsystem.registerSubsystemModel(DescriptionProviderFactory.SUBSYSTEM);
 
-        picketlink.registerOperationHandler(ADD, PicketLinkSubsystemAdd.INSTANCE, SubsystemProviders.SUBSYSTEM_ADD, false);
+        picketlink.registerOperationHandler(ADD, PicketLinkSubsystemAdd.INSTANCE, DescriptionProviderFactory.SUBSYSTEM_ADD, false);
 
         return picketlink;
     }
@@ -116,7 +119,7 @@ public class PicketLinkExtension implements Extension {
      */
     private ManagementResourceRegistration registerFederationModel(ManagementResourceRegistration picketlink) {
         ManagementResourceRegistration federationChild = picketlink.registerSubModel(
-                PathElement.pathElement(ModelDefinition.FEDERATION.getKey()), SubsystemProviders.FEDERATION);
+                PathElement.pathElement(ModelDefinition.FEDERATION.getKey()), DescriptionProviderFactory.FEDERATION);
         federationChild.registerOperationHandler(ModelDescriptionConstants.ADD, FederationAddHandler.INSTANCE,
                 FederationAddHandler.INSTANCE);
         federationChild.registerOperationHandler(ModelDescriptionConstants.REMOVE, FederationRemoveHandler.INSTANCE,
@@ -134,7 +137,7 @@ public class PicketLinkExtension implements Extension {
      */
     private ManagementResourceRegistration registerIDPModel(ManagementResourceRegistration federationChild) {
         ManagementResourceRegistration identityProviderChild = federationChild.registerSubModel(
-                PathElement.pathElement(ModelDefinition.IDENTITY_PROVIDER.getKey()), SubsystemProviders.IDENTITY_PROVIDER);
+                PathElement.pathElement(ModelDefinition.IDENTITY_PROVIDER.getKey()), DescriptionProviderFactory.IDENTITY_PROVIDER);
         
         identityProviderChild.registerOperationHandler(ModelDescriptionConstants.ADD, IdentityProviderAddHandler.INSTANCE,
                 IdentityProviderAddHandler.INSTANCE);
@@ -143,7 +146,7 @@ public class PicketLinkExtension implements Extension {
         
         identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey(), null,
                 IdentityProviderAliasHandler.INSTANCE, Storage.CONFIGURATION);
-        identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_URL.getKey(), null,
+        identityProviderChild.registerReadWriteAttribute(ModelDefinition.COMMON_URL.getKey(), null,
                 IdentityProviderURLHandler.INSTANCE, Storage.CONFIGURATION);
         identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey(), null,
                 IdentityProviderSignOutgoingMessagesHandler.INSTANCE, Storage.CONFIGURATION);
@@ -154,13 +157,36 @@ public class PicketLinkExtension implements Extension {
     }
     
     /**
+     * Register operations and configurations for the SP model.
+     * 
+     * @param federationChild
+     * @return
+     */
+    private ManagementResourceRegistration registerSPModel(ManagementResourceRegistration federationChild) {
+        ManagementResourceRegistration serviceProviderChild = federationChild.registerSubModel(
+                PathElement.pathElement(ModelDefinition.SERVICE_PROVIDER.getKey()), DescriptionProviderFactory.SERVICE_PROVIDER);
+        
+        serviceProviderChild.registerOperationHandler(ModelDescriptionConstants.ADD, ServiceProviderAddHandler.INSTANCE,
+                ServiceProviderAddHandler.INSTANCE);
+        serviceProviderChild.registerOperationHandler(ModelDescriptionConstants.REMOVE,
+                ServiceProviderRemoveHandler.INSTANCE, ServiceProviderRemoveHandler.INSTANCE);
+        
+        serviceProviderChild.registerReadWriteAttribute(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey(), null,
+                ServiceProviderAliasHandler.INSTANCE, Storage.CONFIGURATION);
+        serviceProviderChild.registerReadWriteAttribute(ModelDefinition.COMMON_URL.getKey(), null,
+                ServiceProviderURLHandler.INSTANCE, Storage.CONFIGURATION);
+        
+        return serviceProviderChild;
+    }
+    
+    /**
      * Register operations and configurations for the IDP's trust domains model.
      * 
      * @param identityProviderChild
      */
     private void registerTrusDomainModel(ManagementResourceRegistration identityProviderChild) {
         ManagementResourceRegistration domainChild = identityProviderChild.registerSubModel(
-                PathElement.pathElement(ModelDefinition.TRUST_DOMAIN.getKey()), SubsystemProviders.TRUST_DOMAIN);
+                PathElement.pathElement(ModelDefinition.TRUST_DOMAIN.getKey()), DescriptionProviderFactory.TRUST_DOMAIN);
         domainChild.registerOperationHandler(ModelDescriptionConstants.ADD, DomainAddHandler.INSTANCE,
                 DomainAddHandler.INSTANCE);
         domainChild.registerOperationHandler(ModelDescriptionConstants.REMOVE, DomainRemoveHandler.INSTANCE,

@@ -72,12 +72,12 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler implement
         node.get(REQUEST_PROPERTIES, ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey(), REQUIRED).set(
                 !ModelDefinition.FEDERATION_ALIAS.getDefinition().isAllowNull());
 
-        node.get(REQUEST_PROPERTIES, ModelDefinition.IDENTITY_PROVIDER_URL.getKey(), DESCRIPTION)
+        node.get(REQUEST_PROPERTIES, ModelDefinition.COMMON_URL.getKey(), DESCRIPTION)
                 .set("Identity Provider's URL");
-        node.get(REQUEST_PROPERTIES, ModelDefinition.IDENTITY_PROVIDER_URL.getKey(), TYPE).set(
-                ModelDefinition.IDENTITY_PROVIDER_URL.getDefinition().getType());
-        node.get(REQUEST_PROPERTIES, ModelDefinition.IDENTITY_PROVIDER_URL.getKey(), REQUIRED).set(
-                !ModelDefinition.IDENTITY_PROVIDER_URL.getDefinition().isAllowNull());
+        node.get(REQUEST_PROPERTIES, ModelDefinition.COMMON_URL.getKey(), TYPE).set(
+                ModelDefinition.COMMON_URL.getDefinition().getType());
+        node.get(REQUEST_PROPERTIES, ModelDefinition.COMMON_URL.getKey(), REQUIRED).set(
+                !ModelDefinition.COMMON_URL.getDefinition().isAllowNull());
 
         node.get(REQUEST_PROPERTIES, ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey(), DESCRIPTION)
                 .set("Identity Provider's URL");
@@ -112,8 +112,8 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler implement
             name = operation.get(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey()).asString();
         }
 
-        if (operation.hasDefined(ModelDefinition.IDENTITY_PROVIDER_URL.getKey())) {
-            url = operation.get(ModelDefinition.IDENTITY_PROVIDER_URL.getKey()).asString();
+        if (operation.hasDefined(ModelDefinition.COMMON_URL.getKey())) {
+            url = operation.get(ModelDefinition.COMMON_URL.getKey()).asString();
         }
 
         if (operation.hasDefined(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey())) {
@@ -125,7 +125,7 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler implement
         }
 
         model.get(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey()).set(name);
-        model.get(ModelDefinition.IDENTITY_PROVIDER_URL.getKey()).set(url);
+        model.get(ModelDefinition.COMMON_URL.getKey()).set(url);
         model.get(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey()).set(signOutgoingMessages);
         model.get(ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getKey()).set(ignoreIncomingSignatures);
     }
@@ -135,7 +135,7 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler implement
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        String url = operation.get(ModelDefinition.IDENTITY_PROVIDER_URL.getKey()).asString();
+        String url = operation.get(ModelDefinition.COMMON_URL.getKey()).asString();
         boolean signOutgoingMessages = operation.get(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey()).asBoolean();
         boolean ignoreIncomingSignatures = operation.get(ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getKey()).asBoolean();
 

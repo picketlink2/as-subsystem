@@ -35,12 +35,12 @@ import org.picketlink.as.subsystem.model.XMLElements;
  * @author pedroigor
  * @sice Mar 9, 2012
  */
-public class FederationWriter extends AbstractModelWriter {
+public class ServiceProviderWriter extends AbstractModelWriter {
 
     /**
      * @param register
      */
-    public FederationWriter(Map<String, ModelWriter> register) {
+    public ServiceProviderWriter(Map<String, ModelWriter> register) {
         super(register);
     }
 
@@ -49,17 +49,25 @@ public class FederationWriter extends AbstractModelWriter {
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        writer.writeStartElement(ModelDefinition.FEDERATION.getKey());
+        if (property.getValue().hasDefined(ModelDefinition.SERVICE_PROVIDER.getKey())) {
+            writer.writeStartElement(XMLElements.SERVICE_PROVIDERS);
 
-        if (property.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey())) {
-            ModelDefinition.FEDERATION_ALIAS.getDefinition().marshallAsAttribute(property.getValue(), writer);
-        }
-        
-        get(ModelDefinition.IDENTITY_PROVIDER.getKey()).write(writer, property);
-        
-        get(ModelDefinition.SERVICE_PROVIDER.getKey()).write(writer, property);
-        
-        writer.writeEndElement();
+            for (Property propertyIdentity: property.getValue().get(ModelDefinition.SERVICE_PROVIDER.getKey()).asPropertyList()) {
+                writer.writeStartElement(ModelDefinition.SERVICE_PROVIDER.getKey());
+                
+                if (propertyIdentity.getValue().hasDefined(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey())) {
+                    ModelDefinition.SERVICE_PROVIDER_ALIAS.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
+                }
+                
+                if (propertyIdentity.getValue().hasDefined(ModelDefinition.COMMON_URL.getKey())) {
+                    ModelDefinition.COMMON_URL.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
+                }
+                
+                writer.writeEndElement();
+            }
+            
+            writer.writeEndElement();
+        }        
     }
 
 }

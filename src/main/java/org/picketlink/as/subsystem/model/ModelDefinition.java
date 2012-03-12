@@ -33,37 +33,35 @@ import org.jboss.dmr.ModelType;
  */
 public enum ModelDefinition {
 
+    COMMON_URL(ModelKeys.COMMON_URL, new SimpleAttributeDefinitionBuilder(
+            ModelKeys.COMMON_URL, ModelType.STRING, false).setAllowExpression(false).build()),
+
     FEDERATION(ModelKeys.FEDERATION, new SimpleAttributeDefinitionBuilder(ModelKeys.FEDERATION, ModelType.OBJECT, false)
             .build()),
-
-    FEDERATION_ALIAS(ModelKeys.FEDERATION_ALIAS, new SimpleAttributeDefinitionBuilder(ModelKeys.FEDERATION_ALIAS,
+    FEDERATION_ALIAS(ModelKeys.COMMON_ALIAS, new SimpleAttributeDefinitionBuilder(ModelKeys.COMMON_ALIAS,
             ModelType.STRING, false).setDefaultValue(new ModelNode().set("localhost")).setAllowExpression(false).build()),
 
     IDENTITY_PROVIDER(ModelKeys.IDENTITY_PROVIDER, new SimpleAttributeDefinitionBuilder(ModelKeys.IDENTITY_PROVIDER,
             ModelType.OBJECT, false).build()),
-
-    IDENTITY_PROVIDER_ALIAS(ModelKeys.IDENTITY_PROVIDER_ALIAS, new SimpleAttributeDefinitionBuilder(
-            ModelKeys.IDENTITY_PROVIDER_ALIAS, ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
+    IDENTITY_PROVIDER_ALIAS(ModelKeys.COMMON_ALIAS, new SimpleAttributeDefinitionBuilder(
+            ModelKeys.COMMON_ALIAS, ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build()),
-
-    IDENTITY_PROVIDER_URL(ModelKeys.IDENTITY_PROVIDER_URL, new SimpleAttributeDefinitionBuilder(
-            ModelKeys.IDENTITY_PROVIDER_URL, ModelType.STRING, false).setAllowExpression(false).build()),
-
-    TRUST(ModelKeys.TRUST, new SimpleAttributeDefinitionBuilder(ModelKeys.TRUST, ModelType.OBJECT, false).build()),
-
-    TRUST_DOMAIN(ModelKeys.TRUST_DOMAIN, new SimpleAttributeDefinitionBuilder(ModelKeys.TRUST_DOMAIN, ModelType.OBJECT, false)
-            .build()),
-
-    TRUST_DOMAIN_NAME(ModelKeys.TRUST_DOMAIN_NAME, new SimpleAttributeDefinitionBuilder(ModelKeys.TRUST_DOMAIN_NAME,
-            ModelType.STRING, false).setAllowExpression(false).build()),
-
     IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES(ModelKeys.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES,
             new SimpleAttributeDefinitionBuilder(ModelKeys.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES, ModelType.STRING, false)
                     .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build()),
-
     IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES(ModelKeys.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES,
             new SimpleAttributeDefinitionBuilder(ModelKeys.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES, ModelType.STRING,
-                    false).setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build());
+                    false).setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build()),
+
+    SERVICE_PROVIDER (ModelKeys.SERVICE_PROVIDER, new SimpleAttributeDefinitionBuilder(ModelKeys.SERVICE_PROVIDER, ModelType.OBJECT, false).build()),
+    SERVICE_PROVIDER_ALIAS(ModelKeys.COMMON_ALIAS, new SimpleAttributeDefinitionBuilder(
+            ModelKeys.COMMON_ALIAS, ModelType.STRING, false).setDefaultValue(new ModelNode().set("sp"))
+            .setAllowExpression(false).build()),
+    
+    TRUST_DOMAIN(ModelKeys.TRUST_DOMAIN, new SimpleAttributeDefinitionBuilder(ModelKeys.TRUST_DOMAIN, ModelType.OBJECT, false)
+            .build()),
+    TRUST_DOMAIN_NAME(ModelKeys.TRUST_DOMAIN_NAME, new SimpleAttributeDefinitionBuilder(ModelKeys.TRUST_DOMAIN_NAME,
+            ModelType.STRING, false).setAllowExpression(false).build());
 
     private final String key;
     private final SimpleAttributeDefinition definition;

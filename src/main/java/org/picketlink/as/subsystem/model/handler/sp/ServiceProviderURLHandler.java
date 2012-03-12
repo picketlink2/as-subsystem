@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.handler.idp;
+package org.picketlink.as.subsystem.model.handler.sp;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationContext.Stage;
@@ -29,34 +29,35 @@ import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelDefinition;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.SPConfigurationService;
 
 /**
  * @author pedroigor
  *
  */
 
-public class IdentityProviderIgnoreInSignMsgHandler implements OperationStepHandler {
+public class ServiceProviderURLHandler implements OperationStepHandler {
  
-    public static final IdentityProviderIgnoreInSignMsgHandler INSTANCE = new IdentityProviderIgnoreInSignMsgHandler();
+    public static final ServiceProviderURLHandler INSTANCE = new ServiceProviderURLHandler();
  
     /* (non-Javadoc)
      * @see org.jboss.as.controller.OperationStepHandler#execute(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode)
      */
     @Override
     public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-        final boolean ignoreIncomingSignatures = operation.require("value").asBoolean();
+        final String url = operation.require("value").asString();
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelDefinition.COMMON_URL.getKey()).set(ignoreIncomingSignatures);
+        node.get(ModelDefinition.COMMON_URL.getKey()).set(url);
         
-        final String alias = operation.get(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey()).asString();
+        final String alias = operation.get(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey()).asString();
         
         context.addStep(new OperationStepHandler() {
             @Override
             public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-                IDPConfigurationService service = (IDPConfigurationService) context.getServiceRegistry(true).getRequiredService(IDPConfigurationService.createServiceName(alias)).getValue();
-                service.getIdpConfiguration().setIgnoreIncomingSignatures(ignoreIncomingSignatures);
+                SPConfigurationService service = (SPConfigurationService) context.getServiceRegistry(true).getRequiredService(SPConfigurationService.createServiceName(alias)).getValue();
+                service.getSPConfiguration().setServiceURL(url);
                 context.completeStep();
             }
         }, Stage.RUNTIME);
