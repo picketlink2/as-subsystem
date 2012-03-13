@@ -10,7 +10,7 @@ Be welcome to join this thread and contribute with it.
 
 # How to install the subsystem  #
 
-Have sure you have your environment configure with Apache Maven 3.
+Make sure you have your environment configure with Apache Maven 3.
 
 Use 'mvn clean package' to build the project.
 
@@ -21,9 +21,9 @@ Copy the contents of target/module/org/picketlink/main to ${jboss.home.dir}/modu
 # How to use it  #
  
 The current version supports only a small set of the PicketLink configurations.
-The actual version of the schema supports only the configurations used in the idp.war and sales.war examples web applications.
+The actual version of the schema supports only the configurations used in the idp.war and sales.war web applications.
  
-First, download the examples applications from https://repository.jboss.org/nexus/content/groups/public/org/picketlink/picketlink-fed-webapps-as7-assembly/2.0.2.Final/picketlink-fed-webapps-as7-assembly-2.0.2.Final.zip.
+First, download the web applications from https://repository.jboss.org/nexus/content/groups/public/org/picketlink/picketlink-fed-webapps-as7-assembly/2.0.2.Final/picketlink-fed-webapps-as7-assembly-2.0.2.Final.zip.
 
 Extract the file and copy the idp.war and sales.war to ${jboss.home.dir}/standalone/deployments.
 
@@ -37,19 +37,19 @@ This files must be removed since they will be genrated at runtime by the subsyst
 
 Open the standalone.xml and add the following configuration for the PicketLink subsystem:
 
-<subsystem xmlns="urn:jboss:picketlink:1.0">
-    <federation alias="my-fed">
-        <identity-provider alias="idp.war" url="http://localhost:8080/idp" signOutgoingMessages="false" ignoreIncomingSignatures="true">
-            <trust>
-                <trust-domain name="localhost"/>
-            </trust>
-        </identity-provider>
-        <service-providers>
-            <service-providers>
-                <service-provider alias="sales.war" url="http://localhost:8080/sales"/>
-            </service-providers>
-        </service-providers>
-    </federation>
-</subsystem>
+&lt;subsystem xmlns=&quot;urn:jboss:picketlink:1.0&quot;&gt;
+    &lt;federation alias=&quot;my-fed&quot;&gt;
+        &lt;identity-provider alias=&quot;idp.war&quot; url=&quot;http://localhost:8080/idp&quot; signOutgoingMessages=&quot;false&quot; ignoreIncomingSignatures=&quot;true&quot;&gt;
+            &lt;trust&gt;
+                &lt;trust-domain name=&quot;localhost&quot;/&gt;
+            &lt;/trust&gt;
+        &lt;/identity-provider&gt;
+        &lt;service-providers&gt;
+            &lt;service-providers&gt;
+                &lt;service-provider alias=&quot;sales.war&quot; url=&quot;http://localhost:8080/sales&quot;/&gt;
+            &lt;/service-providers&gt;
+        &lt;/service-providers&gt;
+    &lt;/federation&gt;
+&lt;/subsystem&gt;
 
 Now, start the AS and try to use the applications.
