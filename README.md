@@ -37,19 +37,19 @@ This files must be removed since they will be genrated at runtime by the subsyst
 
 Open the standalone.xml and add the following configuration for the PicketLink subsystem:
 
-&lt;subsystem xmlns=&quot;urn:jboss:picketlink:1.0&quot;&gt;
-    &lt;federation alias=&quot;my-fed&quot;&gt;
-        &lt;identity-provider alias=&quot;idp.war&quot; url=&quot;http://localhost:8080/idp&quot; signOutgoingMessages=&quot;false&quot; ignoreIncomingSignatures=&quot;true&quot;&gt;
-            &lt;trust&gt;
-                &lt;trust-domain name=&quot;localhost&quot;/&gt;
-            &lt;/trust&gt;
-        &lt;/identity-provider&gt;
-        &lt;service-providers&gt;
-            &lt;service-providers&gt;
-                &lt;service-provider alias=&quot;sales.war&quot; url=&quot;http://localhost:8080/sales&quot;/&gt;
-            &lt;/service-providers&gt;
-        &lt;/service-providers&gt;
-    &lt;/federation&gt;
-&lt;/subsystem&gt;
+&lt;subsystem xmlns=&quot;urn:jboss:picketlink:1.0&quot;&gt;<br/>
+    &lt;federation alias=&quot;my-fed&quot;&gt;<br/>
+        &lt;identity-provider alias=&quot;idp.war&quot; url=&quot;http://localhost:8080/idp&quot; signOutgoingMessages=&quot;false&quot; ignoreIncomingSignatures=&quot;true&quot;&gt;<br/>
+            &lt;trust&gt;<br/>
+                &lt;trust-domain name=&quot;localhost&quot;/&gt;<br/>
+            &lt;/trust&gt;<br/>
+        &lt;/identity-provider&gt;<br/>
+        &lt;service-providers&gt;<br/>
+            &lt;service-providers&gt;<br/>
+                &lt;service-provider alias=&quot;sales.war&quot; url=&quot;http://localhost:8080/sales&quot;/&gt;<br/>
+            &lt;/service-providers&gt;<br/>
+        &lt;/service-providers&gt;<br/>
+    &lt;/federation&gt;<br/>
+&lt;/subsystem&gt;<br/>
 
 Now, start the AS and try to use the applications.
