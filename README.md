@@ -33,7 +33,7 @@ Open both files (idp.war and sales.war) and remove the following configuration f
 	- WEB-INF/picketlink-handlers.xml
 	- WEB-INF/picketlink-idfed.xml
 
-This files must be removed since they will be genrated at runtime by the subsystem.
+This files must be removed since they will be generated at runtime by the subsystem.
 
 Open the standalone.xml and add the following configuration for the PicketLink subsystem:
 
