@@ -34,7 +34,11 @@ import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
 /**
- * @author pedroigor
+ * <p>
+ * Class responsible for the creation of the context.xml configuration file.
+ * </p>
+ * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
 public class ContextConfigWriter implements ConfigWriter {

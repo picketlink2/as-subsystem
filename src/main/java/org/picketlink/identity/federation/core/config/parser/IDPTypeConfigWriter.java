@@ -32,7 +32,11 @@ import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
 /**
- * @author pedroigor
+ * <p>
+ * Class responsible for the creation of the picketlink-idfed.xml configuration file for Identity Providers.
+ * </p>
+ * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
 public class IDPTypeConfigWriter implements ConfigWriter {

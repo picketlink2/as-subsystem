@@ -25,7 +25,7 @@ package org.picketlink.identity.federation.core.config.parser;
 import java.io.OutputStream;
 
 /**
- * @author pedroigor
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
 public interface ConfigWriter {

@@ -38,8 +38,11 @@ import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter
 import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 
 /**
- * @author pedroigor
+ * <p>
+ * Service implementation to enable a deployed applications as a Identity Provider.
+ * </p>
  * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 public class IDPConfigurationService implements Service<IDPConfigurationService> {
 

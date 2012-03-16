@@ -25,7 +25,12 @@ package org.picketlink.identity.federation.core.config.parser;
 import org.picketlink.identity.federation.core.config.SPType;
 
 /**
- * @author pedroigor
+ * <p>
+ * This class is responsible to store all informations about a given Service Provider deployment. The state is
+ * populated with values from the subsystem configuration. 
+ * </p>
+ * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
 public class SPTypeSubsystem extends SPType {

@@ -38,9 +38,13 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
 
 /**
- * @author pedroigor
+ * <p>
+ * Service implementation to enable a deployed applications as a Service Provider.
+ * </p>
  * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
+
 public class SPConfigurationService implements Service<SPConfigurationService> {
 
     private String alias;

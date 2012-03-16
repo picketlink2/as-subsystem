@@ -26,7 +26,12 @@ import org.picketlink.identity.federation.core.config.IDPType;
 import org.picketlink.identity.federation.core.config.TrustType;
 
 /**
- * @author pedroigor
+ * <p>
+ * This class is responsible to store all informations about a given Identity Provider deployment. The state is
+ * populated with values from the subsystem configuration. 
+ * </p>
+ * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
 public class IDPTypeSubsystem extends IDPType {
