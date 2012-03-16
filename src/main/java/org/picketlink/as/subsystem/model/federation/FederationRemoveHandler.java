@@ -20,19 +20,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model;
+package org.picketlink.as.subsystem.model.federation;
+
+import org.jboss.as.controller.AbstractRemoveStepHandler;
 
 /**
- * <p>
- * Constants for the XML elements used in the schema. This elements are not related woth the subsystem's model.
- * </p>
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 12, 2012
  */
-public interface XMLElements {
+public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
 
-    static final String TRUST = "trust";
-    static final String SERVICE_PROVIDERS = "service-providers";
-    
+    public static final FederationRemoveHandler INSTANCE = new FederationRemoveHandler();
+
+    private FederationRemoveHandler() {
+    }
 }

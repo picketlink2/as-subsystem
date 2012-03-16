@@ -26,7 +26,7 @@ import org.picketlink.identity.federation.core.config.SPType;
 
 /**
  * @author pedroigor
- * @sice Mar 12, 2012
+ * @since Mar 12, 2012
  */
 public class SPTypeSubsystem extends SPType {
 

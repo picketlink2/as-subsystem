@@ -28,12 +28,13 @@ import javax.xml.stream.XMLStreamException;
 
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelDefinition;
+import org.picketlink.as.subsystem.model.ModelKeys;
 import org.picketlink.as.subsystem.model.XMLElements;
+import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
 
 /**
- * @author pedroigor
- * @sice Mar 9, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 9, 2012
  */
 public class ServiceProviderWriter extends AbstractModelWriter {
 
@@ -49,20 +50,14 @@ public class ServiceProviderWriter extends AbstractModelWriter {
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        if (property.getValue().hasDefined(ModelDefinition.SERVICE_PROVIDER.getKey())) {
+        if (property.getValue().hasDefined(ModelKeys.SERVICE_PROVIDER)) {
             writer.writeStartElement(XMLElements.SERVICE_PROVIDERS);
 
-            for (Property propertyIdentity: property.getValue().get(ModelDefinition.SERVICE_PROVIDER.getKey()).asPropertyList()) {
-                writer.writeStartElement(ModelDefinition.SERVICE_PROVIDER.getKey());
+            for (Property propertyIdentity: property.getValue().get(ModelKeys.SERVICE_PROVIDER).asPropertyList()) {
+                writer.writeStartElement(ModelKeys.SERVICE_PROVIDER);
                 
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey())) {
-                    ModelDefinition.SERVICE_PROVIDER_ALIAS.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-                
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.COMMON_URL.getKey())) {
-                    ModelDefinition.COMMON_URL.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-                
+                writeAttributes(writer, propertyIdentity, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
+
                 writer.writeEndElement();
             }
             

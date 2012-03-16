@@ -19,45 +19,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.picketlink.as.subsystem.model.idp;
 
-package org.picketlink.as.subsystem.parser;
-
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.jboss.dmr.Property;
-import org.jboss.staxmapper.XMLExtendedStreamWriter;
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.OperationStepHandler;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelKeys;
-import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 9, 2012
  */
-public class FederationWriter extends AbstractModelWriter {
-
-    /**
-     * @param register
-     */
-    public FederationWriter(Map<String, ModelWriter> register) {
-        super(register);
+public class IdentityProviderAliasHandler implements OperationStepHandler {
+ 
+    public static final IdentityProviderAliasHandler INSTANCE = new IdentityProviderAliasHandler();
+ 
+    private IdentityProviderAliasHandler() {
     }
-
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.parser.ModelWriter#write(org.jboss.staxmapper.XMLExtendedStreamWriter, org.jboss.dmr.Property)
-     */
+ 
     @Override
-    public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        writer.writeStartElement(ModelKeys.FEDERATION);
-
-        writeAttributes(writer, property, FederationResourceDefinition.ALIAS);
+    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
+        final String name = operation.require("value").asString();
+        ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        get(ModelKeys.IDENTITY_PROVIDER).write(writer, property);
-        
-        get(ModelKeys.SERVICE_PROVIDER).write(writer, property);
-        
-        writer.writeEndElement();
+        node.get(ModelKeys.COMMON_ALIAS).set(name);
+ 
+        context.completeStep();
     }
-
 }

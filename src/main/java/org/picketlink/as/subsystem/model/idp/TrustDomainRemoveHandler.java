@@ -19,45 +19,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.picketlink.as.subsystem.model.idp;
 
-package org.picketlink.as.subsystem.parser;
 
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamException;
-
-import org.jboss.dmr.Property;
-import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelKeys;
-import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
+import org.jboss.as.controller.AbstractAddStepHandler;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.dmr.ModelNode;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 9, 2012
  */
-public class FederationWriter extends AbstractModelWriter {
+public class TrustDomainRemoveHandler extends AbstractAddStepHandler {
 
-    /**
-     * @param register
-     */
-    public FederationWriter(Map<String, ModelWriter> register) {
-        super(register);
+    public static final TrustDomainRemoveHandler INSTANCE = new TrustDomainRemoveHandler();
+
+    private TrustDomainRemoveHandler() {
     }
 
     /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.parser.ModelWriter#write(org.jboss.staxmapper.XMLExtendedStreamWriter, org.jboss.dmr.Property)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
      */
     @Override
-    public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        writer.writeStartElement(ModelKeys.FEDERATION);
-
-        writeAttributes(writer, property, FederationResourceDefinition.ALIAS);
-        
-        get(ModelKeys.IDENTITY_PROVIDER).write(writer, property);
-        
-        get(ModelKeys.SERVICE_PROVIDER).write(writer, property);
-        
-        writer.writeEndElement();
+    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
     }
 
 }

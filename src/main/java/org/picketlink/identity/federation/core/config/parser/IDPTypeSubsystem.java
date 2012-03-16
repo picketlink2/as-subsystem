@@ -27,7 +27,7 @@ import org.picketlink.identity.federation.core.config.TrustType;
 
 /**
  * @author pedroigor
- * @sice Mar 12, 2012
+ * @since Mar 12, 2012
  */
 public class IDPTypeSubsystem extends IDPType {
 

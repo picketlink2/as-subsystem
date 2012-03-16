@@ -24,7 +24,7 @@ package org.picketlink.as.subsystem.model;
 
 /**
  * @author pedroigor
- * @sice Mar 8, 2012
+ * @since Mar 8, 2012
  */
 public interface ModelKeys {
 
@@ -32,6 +32,7 @@ public interface ModelKeys {
     static final String COMMON_URL = "url";
     
     static final String FEDERATION = "federation";
+    
     static final String IDENTITY_PROVIDER = "identity-provider";
     static final String TRUST_DOMAIN = "trust-domain";
     static final String TRUST_DOMAIN_NAME = "name";

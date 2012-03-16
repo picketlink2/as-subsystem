@@ -26,7 +26,7 @@ import java.io.OutputStream;
 
 /**
  * @author pedroigor
- * @sice Mar 12, 2012
+ * @since Mar 12, 2012
  */
 public interface ConfigWriter {
 

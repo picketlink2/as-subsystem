@@ -21,41 +21,25 @@
  */
 package org.picketlink.as.subsystem;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIBE;
 
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SubsystemRegistration;
-import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.as.controller.descriptions.ResourceDescriptionResolver;
+import org.jboss.as.controller.descriptions.StandardResourceDescriptionResolver;
+import org.jboss.as.controller.operations.common.GenericSubsystemDescribeHandler;
 import org.jboss.as.controller.parsing.ExtensionParsingContext;
-import org.jboss.as.controller.registry.AttributeAccess.Storage;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
-import org.picketlink.as.subsystem.model.ModelDefinition;
-import org.picketlink.as.subsystem.model.describer.DescriptionProviderFactory;
-import org.picketlink.as.subsystem.model.handler.federation.FederationAddHandler;
-import org.picketlink.as.subsystem.model.handler.federation.FederationAliasHandler;
-import org.picketlink.as.subsystem.model.handler.federation.FederationRemoveHandler;
-import org.picketlink.as.subsystem.model.handler.idp.DomainAddHandler;
-import org.picketlink.as.subsystem.model.handler.idp.DomainNameHandler;
-import org.picketlink.as.subsystem.model.handler.idp.DomainRemoveHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderAddHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderAliasHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderIgnoreInSignMsgHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderRemoveHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderSignOutgoingMessagesHandler;
-import org.picketlink.as.subsystem.model.handler.idp.IdentityProviderURLHandler;
-import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderAddHandler;
-import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderAliasHandler;
-import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderRemoveHandler;
-import org.picketlink.as.subsystem.model.handler.sp.ServiceProviderURLHandler;
+import org.jboss.as.controller.registry.OperationEntry;
+import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 
 /**
  * <p>An extension to the JBoss Application Server to enable PicketLink configurations.</p>
- * <p>This class is the entry point for the initialization of subsystem's configurations.</p>
+ * <p>This class is the entry point for the initialization of the subsystem's configurations.</p>
  * 
- * @author pedroigor
- * @sice Mar 7, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 16, 2012
  */
 public class PicketLinkExtension implements Extension {
 
@@ -63,6 +47,21 @@ public class PicketLinkExtension implements Extension {
      * PicketLink Subsystem name
      */
     public static final String SUBSYSTEM_NAME = "picketlink";
+    
+    /**
+     * Resource bundle name/location used to load the model's description.
+     */
+    private static final String RESOURCE_NAME = PicketLinkExtension.class.getPackage().getName() + ".LocalDescriptions";
+
+    /**
+     * Returns a instance of <code>ResourceDescriptionResolver</code> to be used to load the model's description.
+     * 
+     * @param keyPrefix
+     * @return
+     */
+    public static ResourceDescriptionResolver getResourceDescriptionResolver(final String keyPrefix) {
+        return new StandardResourceDescriptionResolver(keyPrefix, RESOURCE_NAME, PicketLinkExtension.class.getClassLoader(), true, true);
+    }
 
     /* (non-Javadoc)
      * @see org.jboss.as.controller.Extension#initializeParsers(org.jboss.as.controller.parsing.ExtensionParsingContext)
@@ -79,120 +78,13 @@ public class PicketLinkExtension implements Extension {
     public void initialize(ExtensionContext context) {
         SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, Namespace.CURRENT.getMajor(), Namespace.CURRENT.getMinor());
 
-        registerSubsystemModels(subsystem);
+        ManagementResourceRegistration picketlink = subsystem.registerSubsystemModel(PicketLinkSubsystemRootResourceDefinition.INSTANCE);
+        
+        picketlink.registerOperationHandler(DESCRIBE, GenericSubsystemDescribeHandler.INSTANCE, GenericSubsystemDescribeHandler.INSTANCE, false, OperationEntry.EntryType.PRIVATE);
+
+        picketlink.registerSubModel(FederationResourceDefinition.INSTANCE);
         
         subsystem.registerXMLElementWriter(Namespace.CURRENT.getXMLWriter());
-    }
-
-    /**
-     * Register all PicketLink subsystem models and configurations
-     * 
-     * @param subsystem
-     */
-    private void registerSubsystemModels(SubsystemRegistration subsystem) {
-        ManagementResourceRegistration picketlink = registerPicketLinkSubsystem(subsystem);
-        ManagementResourceRegistration federationChild = registerFederationModel(picketlink);
-        ManagementResourceRegistration identityProviderChild = registerIDPModel(federationChild);
-        registerSPModel(federationChild);
-        registerTrusDomainModel(identityProviderChild);
-    }
-    
-    /**
-     * Register operations and configurations for the PicketLink subsystem model.
-     * 
-     * @param subsystem
-     * @return
-     */
-    private ManagementResourceRegistration registerPicketLinkSubsystem(SubsystemRegistration subsystem) {
-        ManagementResourceRegistration picketlink = subsystem.registerSubsystemModel(DescriptionProviderFactory.SUBSYSTEM);
-
-        picketlink.registerOperationHandler(ADD, PicketLinkSubsystemAdd.INSTANCE, DescriptionProviderFactory.SUBSYSTEM_ADD, false);
-
-        return picketlink;
-    }
-    
-    /**
-     * Register operations and configurations for the federation model.
-     * 
-     * @param picketlink
-     * @return
-     */
-    private ManagementResourceRegistration registerFederationModel(ManagementResourceRegistration picketlink) {
-        ManagementResourceRegistration federationChild = picketlink.registerSubModel(
-                PathElement.pathElement(ModelDefinition.FEDERATION.getKey()), DescriptionProviderFactory.FEDERATION);
-        federationChild.registerOperationHandler(ModelDescriptionConstants.ADD, FederationAddHandler.INSTANCE,
-                FederationAddHandler.INSTANCE);
-        federationChild.registerOperationHandler(ModelDescriptionConstants.REMOVE, FederationRemoveHandler.INSTANCE,
-                FederationRemoveHandler.INSTANCE);
-        federationChild.registerReadWriteAttribute(ModelDefinition.FEDERATION_ALIAS.getKey(), null,
-                FederationAliasHandler.INSTANCE, Storage.CONFIGURATION);
-        return federationChild;
-    }
-    
-    /**
-     * Register operations and configurations for the IDP model.
-     * 
-     * @param federationChild
-     * @return
-     */
-    private ManagementResourceRegistration registerIDPModel(ManagementResourceRegistration federationChild) {
-        ManagementResourceRegistration identityProviderChild = federationChild.registerSubModel(
-                PathElement.pathElement(ModelDefinition.IDENTITY_PROVIDER.getKey()), DescriptionProviderFactory.IDENTITY_PROVIDER);
-        
-        identityProviderChild.registerOperationHandler(ModelDescriptionConstants.ADD, IdentityProviderAddHandler.INSTANCE,
-                IdentityProviderAddHandler.INSTANCE);
-        identityProviderChild.registerOperationHandler(ModelDescriptionConstants.REMOVE,
-                IdentityProviderRemoveHandler.INSTANCE, IdentityProviderRemoveHandler.INSTANCE);
-        
-        identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey(), null,
-                IdentityProviderAliasHandler.INSTANCE, Storage.CONFIGURATION);
-        identityProviderChild.registerReadWriteAttribute(ModelDefinition.COMMON_URL.getKey(), null,
-                IdentityProviderURLHandler.INSTANCE, Storage.CONFIGURATION);
-        identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey(), null,
-                IdentityProviderSignOutgoingMessagesHandler.INSTANCE, Storage.CONFIGURATION);
-        identityProviderChild.registerReadWriteAttribute(ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getKey(), null,
-                IdentityProviderIgnoreInSignMsgHandler.INSTANCE, Storage.CONFIGURATION);
-        
-        return identityProviderChild;
-    }
-    
-    /**
-     * Register operations and configurations for the SP model.
-     * 
-     * @param federationChild
-     * @return
-     */
-    private ManagementResourceRegistration registerSPModel(ManagementResourceRegistration federationChild) {
-        ManagementResourceRegistration serviceProviderChild = federationChild.registerSubModel(
-                PathElement.pathElement(ModelDefinition.SERVICE_PROVIDER.getKey()), DescriptionProviderFactory.SERVICE_PROVIDER);
-        
-        serviceProviderChild.registerOperationHandler(ModelDescriptionConstants.ADD, ServiceProviderAddHandler.INSTANCE,
-                ServiceProviderAddHandler.INSTANCE);
-        serviceProviderChild.registerOperationHandler(ModelDescriptionConstants.REMOVE,
-                ServiceProviderRemoveHandler.INSTANCE, ServiceProviderRemoveHandler.INSTANCE);
-        
-        serviceProviderChild.registerReadWriteAttribute(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey(), null,
-                ServiceProviderAliasHandler.INSTANCE, Storage.CONFIGURATION);
-        serviceProviderChild.registerReadWriteAttribute(ModelDefinition.COMMON_URL.getKey(), null,
-                ServiceProviderURLHandler.INSTANCE, Storage.CONFIGURATION);
-        
-        return serviceProviderChild;
-    }
-    
-    /**
-     * Register operations and configurations for the IDP's trust domains model.
-     * 
-     * @param identityProviderChild
-     */
-    private void registerTrusDomainModel(ManagementResourceRegistration identityProviderChild) {
-        ManagementResourceRegistration domainChild = identityProviderChild.registerSubModel(
-                PathElement.pathElement(ModelDefinition.TRUST_DOMAIN.getKey()), DescriptionProviderFactory.TRUST_DOMAIN);
-        domainChild.registerOperationHandler(ModelDescriptionConstants.ADD, DomainAddHandler.INSTANCE,
-                DomainAddHandler.INSTANCE);
-        domainChild.registerOperationHandler(ModelDescriptionConstants.REMOVE, DomainRemoveHandler.INSTANCE,
-                DomainRemoveHandler.INSTANCE);
-        domainChild.registerReadWriteAttribute(ModelDefinition.TRUST_DOMAIN_NAME.getKey(), null, DomainNameHandler.INSTANCE,
-                Storage.CONFIGURATION);
     }
 
 }

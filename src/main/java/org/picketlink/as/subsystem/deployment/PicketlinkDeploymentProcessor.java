@@ -16,8 +16,8 @@ import org.picketlink.as.subsystem.service.SPConfigurationService;
  * <p>A custom deployment unit processor to handle application deployments, usually WAR files, and configuring them
  * based in the configuration defined for the PicketLink subsystem.</p>
  * 
- * @author pedroigor
- * @sice Mar 9, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 9, 2012
  */
 public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
 

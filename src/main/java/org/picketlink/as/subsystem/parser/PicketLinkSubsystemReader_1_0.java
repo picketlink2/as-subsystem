@@ -23,16 +23,13 @@
 package org.picketlink.as.subsystem.parser;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.PathElement;
+import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.operations.common.Util;
 import org.jboss.as.controller.parsing.ParseUtils;
@@ -40,208 +37,113 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLExtendedStreamReader;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelDefinition;
-import org.picketlink.as.subsystem.model.ModelUtil;
+import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
+import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
+import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
+import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
 
 /**
- * @author pedroigor
+ * <p>
+ * XML Reader for the subsystem schema, version 1.0.
+ * </p>
  * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLElementReader<List<ModelNode>> {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.jboss.staxmapper.XMLElementReader#readElement(org.jboss.staxmapper.XMLExtendedStreamReader, java.lang.Object)
      */
     @Override
     public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
         ParseUtils.requireNoAttributes(reader);
 
-        ModelNode lastNode = ModelUtil.createAddOperation();
+        ModelNode lastNode = createSubsystemRoot();
 
         list.add(lastNode);
 
         ModelNode federationNode = null;
-        ModelNode identityNode = null;
+        ModelNode identityProviderNode = null;
 
         while (reader.hasNext() && reader.nextTag() != END_DOCUMENT) {
             if (reader.isStartElement()) {
-                lastNode = readFederationType(reader, list, lastNode);
+                lastNode = readElement(reader, ModelKeys.FEDERATION, FederationResourceDefinition.ALIAS.getName(), list,
+                        lastNode, FederationResourceDefinition.ALIAS);
 
                 if (lastNode != null) {
                     federationNode = lastNode;
                 }
 
-                lastNode = readIdentityProviderType(reader, list, federationNode);
+                lastNode = readElement(reader, ModelKeys.IDENTITY_PROVIDER,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS.getName(), list, federationNode,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
+                        IdentityProviderResourceDefinition.COMMON_URL,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES);
 
                 if (lastNode != null) {
-                    identityNode = lastNode;
+                    identityProviderNode = lastNode;
                 }
 
-                readServiceProviderType(reader, list, federationNode);
+                readElement(reader, ModelKeys.SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list,
+                        federationNode, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
 
-                readTrustType(reader, list, identityNode);
-
+                readElement(reader, ModelKeys.TRUST_DOMAIN, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.getName(), list,
+                        identityProviderNode, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
             }
         }
     }
 
-    private ModelNode readFederationType(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode lastNode)
-            throws XMLStreamException {
-        if (!reader.getLocalName().equals(ModelDefinition.FEDERATION.getKey())) {
+    /**
+     * Creates the root subsystem's root address.
+     * 
+     * @return
+     */
+    private ModelNode createSubsystemRoot() {
+        ModelNode subsystemAddress = new ModelNode();
+
+        subsystemAddress.add(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME);
+
+        subsystemAddress.protect();
+
+        return Util.getEmptyOperation(ModelDescriptionConstants.ADD, subsystemAddress);
+    }
+
+    /**
+     * Reads a element from the stream considering the parameters.
+     * 
+     * @param reader XMLExtendedStreamReader instance from which the elements are read.
+     * @param xmlElement Name of the XML Element to be read.
+     * @param key Name of the attribute to be used to as the key for the model.
+     * @param list List of operations.
+     * @param lastNode Parent ModelNode instance.
+     * @param attributes AttributeDefinition instances to be used to extract the attributes and populate the resulting model. 
+     * 
+     * @return A ModelNode instance populated.
+     * 
+     * @throws XMLStreamException
+     */
+    private ModelNode readElement(XMLExtendedStreamReader reader, String xmlElement, String key, List<ModelNode> list,
+            ModelNode lastNode, SimpleAttributeDefinition... attributes) throws XMLStreamException {
+        if (!reader.getLocalName().equals(xmlElement)) {
             return null;
         }
 
-        ModelNode federation = Util.getEmptyOperation(ModelDescriptionConstants.ADD, null);
+        ModelNode modelNode = Util.getEmptyOperation(ModelDescriptionConstants.ADD, null);
 
-        String name = null;
-
-        for (int i = 0; i < reader.getAttributeCount(); i++) {
-            String attr = reader.getAttributeLocalName(i);
-
-            if (attr.equals(ModelDefinition.FEDERATION_ALIAS.getKey())) {
-                name = reader.getAttributeValue(i);
-                ModelDefinition.FEDERATION_ALIAS.getDefinition().parseAndSetParameter(name, federation, reader);
-            } else {
-                throw ParseUtils.unexpectedAttribute(reader, i);
-            }
+        for (SimpleAttributeDefinition simpleAttributeDefinition : attributes) {
+            simpleAttributeDefinition.parseAndSetParameter(
+                    reader.getAttributeValue("", simpleAttributeDefinition.getXmlName()), modelNode, reader);
         }
 
-        if (name == null) {
-            name = ModelDefinition.FEDERATION_ALIAS.getDefinition().getDefaultValue().asString();
-        }
+        modelNode.get(ModelDescriptionConstants.OP_ADDR).set(lastNode.clone().get(OP_ADDR).add(xmlElement, modelNode.get(key)));
 
-        PathAddress addr = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME),
-                PathElement.pathElement(ModelDefinition.FEDERATION.getKey(), name));
+        list.add(modelNode);
 
-        federation.get(ModelDescriptionConstants.OP_ADDR).set(addr.toModelNode());
-
-        list.add(federation);
-
-        return federation;
-    }
-
-    private ModelNode readIdentityProviderType(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode lastNode)
-            throws XMLStreamException {
-        if (!reader.getLocalName().equals(ModelDefinition.IDENTITY_PROVIDER.getKey())) {
-            return null;
-        }
-
-        ModelNode identityProvider = Util.getEmptyOperation(ModelDescriptionConstants.ADD, null);
-
-        String alias = null;
-        String url = null;
-
-        for (int i = 0; i < reader.getAttributeCount(); i++) {
-            String attr = reader.getAttributeLocalName(i);
-
-            if (attr.equals(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey())) {
-                alias = reader.getAttributeValue(i);
-                ModelDefinition.IDENTITY_PROVIDER_ALIAS.getDefinition().parseAndSetParameter(alias, identityProvider, reader);
-            } else if (attr.equals(ModelDefinition.COMMON_URL.getKey())) {
-                url = reader.getAttributeValue(i);
-                ModelDefinition.COMMON_URL.getDefinition().parseAndSetParameter(url, identityProvider, reader);
-            } else if (attr.equals(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey())) {
-                url = reader.getAttributeValue(i);
-                ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getDefinition().parseAndSetParameter(url,
-                        identityProvider, reader);
-            } else if (attr.equals(ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getKey())) {
-                url = reader.getAttributeValue(i);
-                ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getDefinition().parseAndSetParameter(url,
-                        identityProvider, reader);
-            } else {
-                throw ParseUtils.unexpectedAttribute(reader, i);
-            }
-        }
-
-        if (url == null) {
-            throw ParseUtils.missingRequiredElement(reader, Collections.singleton("url"));
-        }
-
-        if (alias == null) {
-            alias = ModelDefinition.IDENTITY_PROVIDER_ALIAS.getDefinition().getDefaultValue().asString();
-        }
-
-        identityProvider.get(ModelDescriptionConstants.OP_ADDR).set(
-                lastNode.clone().get(OP_ADDR).add(ModelDefinition.IDENTITY_PROVIDER.getKey(), alias));
-
-        list.add(identityProvider);
-
-        return identityProvider;
-    }
-
-    private void readServiceProviderType(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode lastNode)
-            throws XMLStreamException {
-        if (!reader.getLocalName().equals(ModelDefinition.SERVICE_PROVIDER.getKey())) {
-            return;
-        }
-
-        ModelNode serviceProvider = Util.getEmptyOperation(ModelDescriptionConstants.ADD, null);
-
-        String alias = null;
-        String url = null;
-
-        for (int i = 0; i < reader.getAttributeCount(); i++) {
-            String attr = reader.getAttributeLocalName(i);
-
-            if (attr.equals(ModelDefinition.SERVICE_PROVIDER_ALIAS.getKey())) {
-                alias = reader.getAttributeValue(i);
-                ModelDefinition.SERVICE_PROVIDER_ALIAS.getDefinition().parseAndSetParameter(alias, serviceProvider, reader);
-            } else if (attr.equals(ModelDefinition.COMMON_URL.getKey())) {
-                url = reader.getAttributeValue(i);
-                ModelDefinition.COMMON_URL.getDefinition().parseAndSetParameter(url, serviceProvider, reader);
-            } else {
-                throw ParseUtils.unexpectedAttribute(reader, i);
-            }
-        }
-
-        if (url == null) {
-            throw ParseUtils.missingRequiredElement(reader, Collections.singleton("url"));
-        }
-
-        if (alias == null) {
-            alias = ModelDefinition.SERVICE_PROVIDER_ALIAS.getDefinition().getDefaultValue().asString();
-        }
-
-        serviceProvider.get(ModelDescriptionConstants.OP_ADDR).set(
-                lastNode.clone().get(OP_ADDR).add(ModelDefinition.SERVICE_PROVIDER.getKey(), alias));
-
-        list.add(serviceProvider);
-    }
-
-    private void readTrustType(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode lastNode)
-            throws XMLStreamException {
-        if (!reader.getLocalName().equals(ModelDefinition.TRUST_DOMAIN.getKey())) {
-            return;
-        }
-
-        readDomainType(reader, list, lastNode);
-    }
-
-    private void readDomainType(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode lastNode)
-            throws XMLStreamException {
-        if (!reader.getLocalName().equals(ModelDefinition.TRUST_DOMAIN.getKey())) {
-            return;
-        }
-
-        ModelNode domain = Util.getEmptyOperation(ModelDescriptionConstants.ADD, null);
-
-        String name = null;
-
-        for (int i = 0; i < reader.getAttributeCount(); i++) {
-            String attr = reader.getAttributeLocalName(i);
-
-            if (attr.equals(ModelDefinition.TRUST_DOMAIN_NAME.getKey())) {
-                name = reader.getAttributeValue(i);
-                ModelDefinition.TRUST_DOMAIN_NAME.getDefinition().parseAndSetParameter(name, domain, reader);
-            } else {
-                throw ParseUtils.unexpectedAttribute(reader, i);
-            }
-        }
-
-        domain.get(ModelDescriptionConstants.OP_ADDR).set(
-                lastNode.clone().get(OP_ADDR).add(ModelDefinition.TRUST_DOMAIN.getKey(), name));
-
-        list.add(domain);
+        return modelNode;
     }
 
 }

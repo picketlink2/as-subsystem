@@ -28,8 +28,8 @@ import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 /**
- * @author pedroigor
- * @sice Mar 9, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 9, 2012
  */
 public interface ModelWriter {
 

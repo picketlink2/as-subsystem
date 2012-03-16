@@ -35,7 +35,7 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
 
 /**
  * @author pedroigor
- * @sice Mar 12, 2012
+ * @since Mar 12, 2012
  */
 public class ContextConfigWriter implements ConfigWriter {
 

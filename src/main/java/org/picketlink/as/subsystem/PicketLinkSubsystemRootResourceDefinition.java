@@ -20,19 +20,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model;
+package org.picketlink.as.subsystem;
+
+import org.jboss.as.controller.PathElement;
+import org.jboss.as.controller.ReloadRequiredRemoveStepHandler;
+import org.jboss.as.controller.SimpleResourceDefinition;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 
 /**
- * <p>
- * Constants for the XML elements used in the schema. This elements are not related woth the subsystem's model.
- * </p>
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 12, 2012
+ * @since Mar 16, 2012
  */
-public interface XMLElements {
+public class PicketLinkSubsystemRootResourceDefinition extends SimpleResourceDefinition {
 
-    static final String TRUST = "trust";
-    static final String SERVICE_PROVIDERS = "service-providers";
+    public static final PicketLinkSubsystemRootResourceDefinition INSTANCE = new PicketLinkSubsystemRootResourceDefinition();
     
+    private PicketLinkSubsystemRootResourceDefinition() {
+        super(PathElement.pathElement(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME),
+                PicketLinkExtension.getResourceDescriptionResolver(PicketLinkExtension.SUBSYSTEM_NAME), PicketLinkSubsystemAdd.INSTANCE, ReloadRequiredRemoveStepHandler.INSTANCE);
+    }
 }

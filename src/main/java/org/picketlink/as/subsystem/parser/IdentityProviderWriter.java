@@ -27,15 +27,20 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelDefinition;
+import org.picketlink.as.subsystem.model.ModelKeys;
 import org.picketlink.as.subsystem.model.XMLElements;
+import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
+import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
 
 /**
- * @author pedroigor
- * @sice Mar 9, 2012
+ * <p>
+ * XML Writer for the Identity Provider model.
+ * </p>
+ * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 9, 2012
  */
 public class IdentityProviderWriter extends AbstractModelWriter {
 
@@ -46,50 +51,52 @@ public class IdentityProviderWriter extends AbstractModelWriter {
         super(register);
     }
 
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.parser.ModelWriter#write(org.jboss.staxmapper.XMLExtendedStreamWriter, org.jboss.dmr.Property)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.picketlink.as.subsystem.parser.ModelWriter#write(org.jboss.staxmapper.XMLExtendedStreamWriter,
+     * org.jboss.dmr.Property)
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        if (property.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER.getKey())) {
-            writer.writeStartElement(ModelDefinition.IDENTITY_PROVIDER.getKey());
+        if (property.getValue().hasDefined(ModelKeys.IDENTITY_PROVIDER)) {
+            writer.writeStartElement(ModelKeys.IDENTITY_PROVIDER);
 
-            for (Property propertyIdentity: property.getValue().get(ModelDefinition.IDENTITY_PROVIDER.getKey()).asPropertyList()) {
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_ALIAS.getKey())) {
-                    ModelDefinition.IDENTITY_PROVIDER_ALIAS.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-                
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.COMMON_URL.getKey())) {
-                    ModelDefinition.COMMON_URL.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getKey())) {
-                    ModelDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getKey())) {
-                    ModelDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getDefinition().marshallAsAttribute(propertyIdentity.getValue(), writer);
-                }
-
-                if (propertyIdentity.getValue().hasDefined(ModelDefinition.TRUST_DOMAIN.getKey())) {
-                    writer.writeStartElement(XMLElements.TRUST);
-                    
-                    List<ModelNode> trustDomains = propertyIdentity.getValue().get(ModelDefinition.TRUST_DOMAIN.getKey()).asList();
-                    
-                    for (ModelNode modelNode : trustDomains) {
-                        writer.writeStartElement(ModelDefinition.TRUST_DOMAIN.getKey());
-                        
-                        ModelDefinition.TRUST_DOMAIN_NAME.getDefinition().marshallAsAttribute(modelNode.asProperty().getValue(), writer);
-                        
-                        writer.writeEndElement();
-                    }
-                    
-                    writer.writeEndElement();
-                }
+            for (Property propertyIdentity : property.getValue().get(ModelKeys.IDENTITY_PROVIDER).asPropertyList()) {
+                writeAttributes(writer, propertyIdentity, IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
+                        IdentityProviderResourceDefinition.COMMON_URL,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES,
+                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES);
+                writeTrustDomains(writer, propertyIdentity);
             }
 
             writer.writeEndElement();
-        }        
+        }
+    }
+
+    /**
+     * Writes the TrustDomain model.
+     * 
+     * @param writer
+     * @param property
+     * @throws XMLStreamException
+     */
+    private void writeTrustDomains(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
+        if (property.getValue().hasDefined(ModelKeys.TRUST_DOMAIN)) {
+            writer.writeStartElement(XMLElements.TRUST);
+
+            List<Property> trustDomains = property.getValue().get(ModelKeys.TRUST_DOMAIN).asPropertyList();
+
+            for (Property trustDomain : trustDomains) {
+                writer.writeStartElement(ModelKeys.TRUST_DOMAIN);
+                
+                writeAttributes(writer, trustDomain, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
+
+                writer.writeEndElement();
+            }
+
+            writer.writeEndElement();
+        }
     }
 
 }

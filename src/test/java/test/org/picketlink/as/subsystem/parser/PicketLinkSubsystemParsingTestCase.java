@@ -13,7 +13,7 @@ import org.picketlink.as.subsystem.PicketLinkExtension;
 
 /**
  * @author pedroigor
- * @sice Mar 9, 2012
+ * @since Mar 9, 2012
  */
 public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
 

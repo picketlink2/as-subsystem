@@ -24,9 +24,15 @@ package org.picketlink.as.subsystem.parser;
 
 import java.util.Map;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.dmr.Property;
+
 /**
- * @author pedroigor
- * @sice Mar 9, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 9, 2012
  */
 public abstract class AbstractModelWriter implements ModelWriter {
 
@@ -44,5 +50,13 @@ public abstract class AbstractModelWriter implements ModelWriter {
         }
         
         return writer;
+    }
+
+    public void writeAttributes(XMLStreamWriter writer, Property property, SimpleAttributeDefinition... attributes) throws XMLStreamException {
+        for (SimpleAttributeDefinition simpleAttributeDefinition : attributes) {
+            if (property.getValue().hasDefined(simpleAttributeDefinition.getXmlName())) {
+                simpleAttributeDefinition.marshallAsAttribute(property.getValue(), writer);
+            }
+        }
     }
 }

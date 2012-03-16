@@ -15,8 +15,8 @@ import org.picketlink.as.subsystem.deployment.PicketlinkDeploymentProcessor;
 /**
  * <p>Handler responsible for adding the subsystem resource to the model.</p>
  * 
- * @author pedroigor
- * @sice Mar 9, 2012
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 16, 2012
  */
 public class PicketLinkSubsystemAdd extends AbstractBoottimeAddStepHandler {
 

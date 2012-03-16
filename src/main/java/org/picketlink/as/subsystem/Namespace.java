@@ -39,11 +39,11 @@ import org.picketlink.as.subsystem.parser.PicketLinkSubsystemWriter_1_0;
  * each namespace version.
  * </p>
  * 
- * @author pedroigor
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @author Paul Ferraro
  * @author Tristan Tarrant
  * 
- * @sice Mar 7, 2012
+ * @since Mar 7, 2012
  */
 public enum Namespace {
 

@@ -33,11 +33,15 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.staxmapper.XMLElementWriter;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
 import org.picketlink.as.subsystem.Namespace;
-import org.picketlink.as.subsystem.model.ModelDefinition;
+import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 
 /**
- * @author pedroigor
+ * <p>
+ * XML Writer for the subsystem schema, version 1.0.
+ * </p>
  * 
+ * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLElementWriter<SubsystemMarshallingContext> {
 
@@ -46,10 +50,9 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
     static {
         writers = new HashMap<String, ModelWriter>();
         
-        writers.put(ModelDefinition.FEDERATION.getKey(), new FederationWriter(writers));
-        writers.put(ModelDefinition.IDENTITY_PROVIDER.getKey(), new IdentityProviderWriter(writers));
-        writers.put(ModelDefinition.SERVICE_PROVIDER.getKey(), new ServiceProviderWriter(writers));
-        writers.put(ModelDefinition.TRUST_DOMAIN.getKey(), new TrustWriter(writers));
+        writers.put(ModelKeys.FEDERATION, new FederationWriter(writers));
+        writers.put(ModelKeys.IDENTITY_PROVIDER, new IdentityProviderWriter(writers));
+        writers.put(ModelKeys.SERVICE_PROVIDER, new ServiceProviderWriter(writers));
     }
     
     /** {@inheritDoc} */
@@ -57,9 +60,9 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
     public void writeContent(XMLExtendedStreamWriter writer, SubsystemMarshallingContext context) throws XMLStreamException {
         context.startSubsystemElement(Namespace.CURRENT.getUri(), false);
 
-        ModelNode federation = context.getModelNode().get(ModelDefinition.FEDERATION.getKey());
+        ModelNode federation = context.getModelNode().get(ModelKeys.FEDERATION);
 
-        writers.get(ModelDefinition.FEDERATION.getKey()).write(writer, federation.asProperty());
+        writers.get(ModelKeys.FEDERATION).write(writer, federation.asProperty());
         
         // End subsystem
         writer.writeEndElement();
