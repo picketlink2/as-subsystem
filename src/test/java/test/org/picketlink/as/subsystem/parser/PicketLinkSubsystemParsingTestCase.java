@@ -40,6 +40,8 @@ import org.picketlink.as.subsystem.Namespace;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 
 /**
+ * Tests that the PicketLink Subsystem parsing mechanism is functional.
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 9, 2012
  */
