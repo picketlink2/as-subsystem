@@ -23,16 +23,9 @@
 package org.picketlink.as.subsystem.model.sp;
 
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OPERATION_NAME;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REQUEST_PROPERTIES;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REQUIRED;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.TYPE;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.jboss.as.controller.AbstractAddStepHandler;
@@ -41,7 +34,6 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ServiceVerificationHandler;
-import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.registry.Resource.ResourceEntry;
 import org.jboss.dmr.ModelNode;
@@ -49,42 +41,17 @@ import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.SPConfigurationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class ServiceProviderAddHandler extends AbstractAddStepHandler implements DescriptionProvider {
+public class ServiceProviderAddHandler extends AbstractAddStepHandler {
 
     public static final ServiceProviderAddHandler INSTANCE = new ServiceProviderAddHandler();
 
     private ServiceProviderAddHandler() {
-    }
-
-    @Override
-    public ModelNode getModelDescription(Locale locale) {
-        ModelNode node = new ModelNode();
-
-        node.get(OPERATION_NAME).set(ADD);
-
-        node.get(DESCRIPTION).set("Adds a Service Provider");
-
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, DESCRIPTION).set(
-                "Service Provider's alias");
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, TYPE).set(
-                ServiceProviderResourceDefinition.ALIAS.getType());
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_ALIAS, REQUIRED).set(
-                !ServiceProviderResourceDefinition.ALIAS.isAllowNull());
-
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_URL, DESCRIPTION)
-                .set("Service Provider's URL");
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_URL, TYPE).set(
-                ServiceProviderResourceDefinition.URL.getType());
-        node.get(REQUEST_PROPERTIES, ModelKeys.COMMON_URL, REQUIRED).set(
-                !ServiceProviderResourceDefinition.URL.isAllowNull());
-
-        return node;
     }
 
     /*
@@ -103,20 +70,20 @@ public class ServiceProviderAddHandler extends AbstractAddStepHandler implements
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        String url = operation.get(ModelKeys.COMMON_URL).asString();
+        String url = operation.get(ModelElement.COMMON_URL.getName()).asString();
         String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
         String idpUrl = null;
           
-        PathAddress addr = PathAddress.pathAddress(PathElement.pathElement(ModelKeys.FEDERATION, fedAlias));
+        PathAddress addr = PathAddress.pathAddress(PathElement.pathElement(ModelElement.FEDERATION.getName(), fedAlias));
         
         Set<ResourceEntry> federationChilds = context.getRootResource().getChild(
                 PathElement.pathElement(
                         SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME))
-                        .navigate(addr).getChildren(ModelKeys.IDENTITY_PROVIDER);
+                        .navigate(addr).getChildren(ModelElement.IDENTITY_PROVIDER.getName());
         
         for (ResourceEntry resourceEntry : federationChilds) {
-            if (resourceEntry.getPathElement().getKey().equals(ModelKeys.IDENTITY_PROVIDER)) {
-                idpUrl = resourceEntry.getModel().get(ModelKeys.COMMON_URL).asString();
+            if (resourceEntry.getPathElement().getKey().equals(ModelElement.IDENTITY_PROVIDER.getName())) {
+                idpUrl = resourceEntry.getModel().get(ModelElement.COMMON_URL.getName()).asString();
                 break;
             }
         } 

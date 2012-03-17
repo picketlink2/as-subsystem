@@ -28,8 +28,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelKeys;
-import org.picketlink.as.subsystem.model.XMLElements;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.XMLElement;
 import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
 
 /**
@@ -50,11 +50,11 @@ public class ServiceProviderWriter extends AbstractModelWriter {
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        if (property.getValue().hasDefined(ModelKeys.SERVICE_PROVIDER)) {
-            writer.writeStartElement(XMLElements.SERVICE_PROVIDERS);
+        if (property.getValue().hasDefined(ModelElement.SERVICE_PROVIDER.getName())) {
+            writer.writeStartElement(XMLElement.SERVICE_PROVIDERS.getName());
 
-            for (Property propertyIdentity: property.getValue().get(ModelKeys.SERVICE_PROVIDER).asPropertyList()) {
-                writer.writeStartElement(ModelKeys.SERVICE_PROVIDER);
+            for (Property propertyIdentity: property.getValue().get(ModelElement.SERVICE_PROVIDER.getName()).asPropertyList()) {
+                writer.writeStartElement(ModelElement.SERVICE_PROVIDER.getName());
                 
                 writeAttributes(writer, propertyIdentity, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
 

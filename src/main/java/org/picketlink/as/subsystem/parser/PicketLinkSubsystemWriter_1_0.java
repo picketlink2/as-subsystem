@@ -33,7 +33,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.staxmapper.XMLElementWriter;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
 import org.picketlink.as.subsystem.Namespace;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 
 /**
@@ -50,9 +50,9 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
     static {
         writers = new HashMap<String, ModelWriter>();
         
-        writers.put(ModelKeys.FEDERATION, new FederationWriter(writers));
-        writers.put(ModelKeys.IDENTITY_PROVIDER, new IdentityProviderWriter(writers));
-        writers.put(ModelKeys.SERVICE_PROVIDER, new ServiceProviderWriter(writers));
+        writers.put(ModelElement.FEDERATION.getName(), new FederationWriter(writers));
+        writers.put(ModelElement.IDENTITY_PROVIDER.getName(), new IdentityProviderWriter(writers));
+        writers.put(ModelElement.SERVICE_PROVIDER.getName(), new ServiceProviderWriter(writers));
     }
     
     /** {@inheritDoc} */
@@ -60,9 +60,9 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
     public void writeContent(XMLExtendedStreamWriter writer, SubsystemMarshallingContext context) throws XMLStreamException {
         context.startSubsystemElement(Namespace.CURRENT.getUri(), false);
 
-        ModelNode federation = context.getModelNode().get(ModelKeys.FEDERATION);
+        ModelNode federation = context.getModelNode().get(ModelElement.FEDERATION.getName());
 
-        writers.get(ModelKeys.FEDERATION).write(writer, federation.asProperty());
+        writers.get(ModelElement.FEDERATION.getName()).write(writer, federation.asProperty());
         
         // End subsystem
         writer.writeEndElement();

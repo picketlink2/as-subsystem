@@ -21,12 +21,13 @@
  */
 package org.picketlink.as.subsystem.model.federation;
 
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
+
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class FederationAliasHandler implements OperationStepHandler {
         String alias = operation.require("value").asString();
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelKeys.COMMON_ALIAS).set(alias);
+        node.get(COMMON_ALIAS.getName()).set(alias);
  
         context.completeStep();
     }

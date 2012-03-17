@@ -28,7 +28,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 
 /**
@@ -49,13 +49,13 @@ public class FederationWriter extends AbstractModelWriter {
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        writer.writeStartElement(ModelKeys.FEDERATION);
+        writer.writeStartElement(ModelElement.FEDERATION.getName());
 
         writeAttributes(writer, property, FederationResourceDefinition.ALIAS);
         
-        get(ModelKeys.IDENTITY_PROVIDER).write(writer, property);
+        get(ModelElement.IDENTITY_PROVIDER.getName()).write(writer, property);
         
-        get(ModelKeys.SERVICE_PROVIDER).write(writer, property);
+        get(ModelElement.SERVICE_PROVIDER.getName()).write(writer, property);
         
         writer.writeEndElement();
     }

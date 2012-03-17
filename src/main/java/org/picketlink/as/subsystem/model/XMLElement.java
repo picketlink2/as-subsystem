@@ -19,20 +19,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.picketlink.as.subsystem.model;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
- * Constants for the XML elements used in the schema. This elements are not related woth the subsystem's model.
+ * XML elements used in the schema. This elements are not related with the subsystem's model. Usually they are used to group
+ * model elements.
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 12, 2012
+ * @since Mar 8, 2012
  */
-public interface XMLElements {
+public enum XMLElement {
 
-    static final String TRUST = "trust";
-    static final String SERVICE_PROVIDERS = "service-providers";
-    
+    TRUST("trust"), SERVICE_PROVIDERS("service-providers");
+
+    private static final Map<String, XMLElement> xmlElements = new HashMap<String, XMLElement>();
+
+    static {
+        for (XMLElement element : values()) {
+            xmlElements.put(element.getName(), element);
+        }
+    }
+
+    private String name;
+
+    private XMLElement(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Converts the specified name to a {@link XMLElement}.
+     * 
+     * @param name a model element name
+     * @return the matching model element enum.
+     */
+    public static XMLElement forName(String name) {
+        return xmlElements.get(name);
+    }
 }

@@ -27,7 +27,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -46,9 +46,9 @@ public class IdentityProviderURLHandler implements OperationStepHandler {
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelKeys.COMMON_URL).set(url);
+        node.get(ModelElement.COMMON_URL.getName()).set(url);
         
-        final String alias = operation.get(ModelKeys.COMMON_ALIAS).asString();
+        final String alias = operation.get(ModelElement.COMMON_ALIAS.getName()).asString();
         
         context.addStep(new OperationStepHandler() {
             @Override

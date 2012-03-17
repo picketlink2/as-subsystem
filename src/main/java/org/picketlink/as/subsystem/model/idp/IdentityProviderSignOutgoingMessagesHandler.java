@@ -28,7 +28,7 @@ import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -47,7 +47,7 @@ public class IdentityProviderSignOutgoingMessagesHandler implements OperationSte
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelKeys.COMMON_URL).set(signOutgoingMessages);
+        node.get(ModelElement.COMMON_URL.getName()).set(signOutgoingMessages);
         
         final String alias = operation.get(ModelDescriptionConstants.OP_ADDR).asPropertyList().get(2).getValue().asString();
         

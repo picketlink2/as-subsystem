@@ -22,6 +22,8 @@
 
 package org.picketlink.as.subsystem.model.federation;
 
+import static org.picketlink.as.subsystem.model.ModelElement.*;
+
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
@@ -30,7 +32,6 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
 import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
 
@@ -42,12 +43,12 @@ public class FederationResourceDefinition extends SimpleResourceDefinition {
 
     public static final FederationResourceDefinition INSTANCE = new FederationResourceDefinition();
 
-    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(ModelKeys.COMMON_ALIAS,
+    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(COMMON_ALIAS.getName(),
             ModelType.STRING, false).setDefaultValue(new ModelNode().set("localhost")).setAllowExpression(false).build();
 
     private FederationResourceDefinition() {
-        super(PathElement.pathElement(ModelKeys.FEDERATION), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelKeys.FEDERATION), FederationAddHandler.INSTANCE,
+        super(PathElement.pathElement(FEDERATION.getName()), PicketLinkExtension
+                .getResourceDescriptionResolver(FEDERATION.getName()), FederationAddHandler.INSTANCE,
                 FederationRemoveHandler.INSTANCE);
     }
 

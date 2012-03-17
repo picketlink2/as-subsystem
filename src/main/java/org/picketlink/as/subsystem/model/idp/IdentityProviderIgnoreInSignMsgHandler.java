@@ -21,13 +21,15 @@
  */
 package org.picketlink.as.subsystem.model.idp;
 
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
+
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationContext.Stage;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -46,9 +48,9 @@ public class IdentityProviderIgnoreInSignMsgHandler implements OperationStepHand
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelKeys.COMMON_URL).set(ignoreIncomingSignatures);
+        node.get(COMMON_URL.getName()).set(ignoreIncomingSignatures);
         
-        final String alias = operation.get(ModelKeys.COMMON_ALIAS).asString();
+        final String alias = operation.get(COMMON_ALIAS.getName()).asString();
         
         context.addStep(new OperationStepHandler() {
             @Override

@@ -27,7 +27,9 @@ import java.io.IOException;
 
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.Service;
+import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
+import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
@@ -97,6 +99,23 @@ public class SPConfigurationService implements Service<SPConfigurationService> {
 
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append("SPConfigurationService", alias);
+    }
+
+    /**
+     * Returns a instance of the service associated with the given name.
+     * 
+     * @param registry
+     * @param name
+     * @return
+     */
+    public static SPConfigurationService getService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(SPConfigurationService.createServiceName(name));
+        
+        if (container != null) {
+            return (SPConfigurationService) container.getValue();
+        }
+        
+        return null;
     }
 
     /**

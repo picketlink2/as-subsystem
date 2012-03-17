@@ -31,8 +31,7 @@ import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
-import org.jboss.msc.service.ServiceRegistry;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -50,13 +49,7 @@ public class TrustDomainAddHandler extends AbstractAddStepHandler {
      */
     @Override
     protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        String name = null;
-
-        if (operation.hasDefined(ModelKeys.TRUST_DOMAIN_NAME)) {
-            name = operation.get(ModelKeys.TRUST_DOMAIN_NAME).asString();
-        }
-
-        model.get(ModelKeys.TRUST_DOMAIN_NAME).set(name);
+        TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.validateAndSet(operation, model);
     }
     
     @Override
@@ -64,21 +57,11 @@ public class TrustDomainAddHandler extends AbstractAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelKeys.TRUST_DOMAIN_NAME).asString();
+        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
 
-        IDPConfigurationService service = getTrackerService(context.getServiceRegistry(true), alias);
+        IDPConfigurationService service = IDPConfigurationService.getService(context.getServiceRegistry(true), alias);
         
         service.getIdpConfiguration().addTrustDomain(domain);
     }
     
-    private IDPConfigurationService getTrackerService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(IDPConfigurationService.createServiceName(name));
-        
-        if (container != null) {
-            return (IDPConfigurationService) container.getValue();
-        }
-        
-        return null;
-    }
-
 }

@@ -22,6 +22,10 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
+import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES;
+import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES;
+
 import java.util.List;
 
 import org.jboss.as.controller.AbstractAddStepHandler;
@@ -34,7 +38,6 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
-import org.picketlink.as.subsystem.model.ModelKeys;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -68,9 +71,9 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        String url = operation.get(ModelKeys.COMMON_URL).asString();
-        boolean signOutgoingMessages = operation.get(ModelKeys.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES).asBoolean();
-        boolean ignoreIncomingSignatures = operation.get(ModelKeys.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES).asBoolean();
+        String url = operation.get(COMMON_URL.getName()).asString();
+        boolean signOutgoingMessages = operation.get(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).asBoolean();
+        boolean ignoreIncomingSignatures = operation.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
 
         IDPConfigurationService service = new IDPConfigurationService(alias, url);
         ServiceName name = IDPConfigurationService.createServiceName(alias);

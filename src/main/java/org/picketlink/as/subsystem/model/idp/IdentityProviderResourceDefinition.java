@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
+
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
@@ -30,7 +31,7 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -40,23 +41,23 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
 
     public static final IdentityProviderResourceDefinition INSTANCE = new IdentityProviderResourceDefinition();
 
-    public static final SimpleAttributeDefinition COMMON_URL = new SimpleAttributeDefinitionBuilder(ModelKeys.COMMON_URL,
+    public static final SimpleAttributeDefinition COMMON_URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
             ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition IDENTITY_PROVIDER = new SimpleAttributeDefinitionBuilder(
-            ModelKeys.IDENTITY_PROVIDER, ModelType.OBJECT, false).build();
+            ModelElement.IDENTITY_PROVIDER.getName(), ModelType.OBJECT, false).build();
     public static final SimpleAttributeDefinition IDENTITY_PROVIDER_ALIAS = new SimpleAttributeDefinitionBuilder(
-            ModelKeys.COMMON_ALIAS, ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
+            ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build();
     public static final SimpleAttributeDefinition IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
-            ModelKeys.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES, ModelType.STRING, false)
+            ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.STRING, false)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
-            ModelKeys.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES, ModelType.STRING, false)
+            ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.STRING, false)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
 
     private IdentityProviderResourceDefinition() {
-        super(PathElement.pathElement(ModelKeys.IDENTITY_PROVIDER), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelKeys.IDENTITY_PROVIDER), IdentityProviderAddHandler.INSTANCE,
+        super(PathElement.pathElement(ModelElement.IDENTITY_PROVIDER.getName()), PicketLinkExtension
+                .getResourceDescriptionResolver(ModelElement.IDENTITY_PROVIDER.getName()), IdentityProviderAddHandler.INSTANCE,
                 IdentityProviderRemoveHandler.INSTANCE);
     }
 

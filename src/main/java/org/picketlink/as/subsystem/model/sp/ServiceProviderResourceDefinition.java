@@ -30,7 +30,7 @@ import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -40,14 +40,14 @@ public class ServiceProviderResourceDefinition extends SimpleResourceDefinition 
 
     public static final ServiceProviderResourceDefinition INSTANCE = new ServiceProviderResourceDefinition();
 
-    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(ModelKeys.COMMON_ALIAS,
+    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_ALIAS.getName(),
             ModelType.STRING, false).setDefaultValue(new ModelNode().set("sp")).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelKeys.COMMON_URL, ModelType.STRING,
+    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(), ModelType.STRING,
             false).setAllowExpression(false).build();
 
     private ServiceProviderResourceDefinition() {
-        super(PathElement.pathElement(ModelKeys.SERVICE_PROVIDER), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelKeys.SERVICE_PROVIDER), ServiceProviderAddHandler.INSTANCE,
+        super(PathElement.pathElement(ModelElement.SERVICE_PROVIDER.getName()), PicketLinkExtension
+                .getResourceDescriptionResolver(ModelElement.SERVICE_PROVIDER.getName()), ServiceProviderAddHandler.INSTANCE,
                 ServiceProviderRemoveHandler.INSTANCE);
     }
 

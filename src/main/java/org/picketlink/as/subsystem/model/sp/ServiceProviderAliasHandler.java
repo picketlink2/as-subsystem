@@ -26,7 +26,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -43,7 +43,7 @@ public class ServiceProviderAliasHandler implements OperationStepHandler {
         final String name = operation.require("value").asString();
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelKeys.COMMON_ALIAS).set(name);
+        node.get(ModelElement.COMMON_ALIAS.getName()).set(name);
  
         context.completeStep();
     }

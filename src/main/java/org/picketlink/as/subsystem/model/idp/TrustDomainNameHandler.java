@@ -26,7 +26,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -39,12 +39,15 @@ public class TrustDomainNameHandler implements OperationStepHandler {
     private TrustDomainNameHandler() {
     }
  
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.OperationStepHandler#execute(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode)
+     */
     @Override
     public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
         String name = operation.require("value").asString();
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
-        
-        node.get(ModelKeys.TRUST_DOMAIN_NAME).set(name);
+
+        node.get(ModelElement.TRUST_DOMAIN_NAME.getName()).set(name);
  
         context.completeStep();
     }

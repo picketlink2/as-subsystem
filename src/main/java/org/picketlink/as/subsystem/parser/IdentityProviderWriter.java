@@ -29,8 +29,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
-import org.picketlink.as.subsystem.model.ModelKeys;
-import org.picketlink.as.subsystem.model.XMLElements;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.XMLElement;
 import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
 
@@ -59,10 +59,10 @@ public class IdentityProviderWriter extends AbstractModelWriter {
      */
     @Override
     public void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        if (property.getValue().hasDefined(ModelKeys.IDENTITY_PROVIDER)) {
-            writer.writeStartElement(ModelKeys.IDENTITY_PROVIDER);
+        if (property.getValue().hasDefined(ModelElement.IDENTITY_PROVIDER.getName())) {
+            writer.writeStartElement(ModelElement.IDENTITY_PROVIDER.getName());
 
-            for (Property propertyIdentity : property.getValue().get(ModelKeys.IDENTITY_PROVIDER).asPropertyList()) {
+            for (Property propertyIdentity : property.getValue().get(ModelElement.IDENTITY_PROVIDER.getName()).asPropertyList()) {
                 writeAttributes(writer, propertyIdentity, IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
                         IdentityProviderResourceDefinition.COMMON_URL,
                         IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES,
@@ -82,13 +82,13 @@ public class IdentityProviderWriter extends AbstractModelWriter {
      * @throws XMLStreamException
      */
     private void writeTrustDomains(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException {
-        if (property.getValue().hasDefined(ModelKeys.TRUST_DOMAIN)) {
-            writer.writeStartElement(XMLElements.TRUST);
+        if (property.getValue().hasDefined(ModelElement.TRUST_DOMAIN.getName())) {
+            writer.writeStartElement(XMLElement.TRUST.getName());
 
-            List<Property> trustDomains = property.getValue().get(ModelKeys.TRUST_DOMAIN).asPropertyList();
+            List<Property> trustDomains = property.getValue().get(ModelElement.TRUST_DOMAIN.getName()).asPropertyList();
 
             for (Property trustDomain : trustDomains) {
-                writer.writeStartElement(ModelKeys.TRUST_DOMAIN);
+                writer.writeStartElement(ModelElement.TRUST_DOMAIN.getName());
                 
                 writeAttributes(writer, trustDomain, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
 

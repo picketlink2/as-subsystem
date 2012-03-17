@@ -23,6 +23,12 @@
 package org.picketlink.as.subsystem.parser;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
+import static org.jboss.as.controller.parsing.ParseUtils.requireNoAttributes;
+import static org.jboss.as.controller.parsing.ParseUtils.unexpectedElement;
+import static org.picketlink.as.subsystem.model.ModelElement.FEDERATION;
+import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER;
+import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER;
+import static org.picketlink.as.subsystem.model.ModelElement.TRUST_DOMAIN;
 
 import java.util.List;
 
@@ -32,12 +38,13 @@ import javax.xml.stream.XMLStreamException;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.operations.common.Util;
-import org.jboss.as.controller.parsing.ParseUtils;
 import org.jboss.dmr.ModelNode;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLExtendedStreamReader;
+import org.picketlink.as.subsystem.Namespace;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.XMLElement;
 import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
@@ -59,40 +66,83 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      */
     @Override
     public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
-        ParseUtils.requireNoAttributes(reader);
+        requireNoAttributes(reader);
 
-        ModelNode lastNode = createSubsystemRoot();
+        Namespace nameSpace = Namespace.forUri(reader.getNamespaceURI());
 
-        list.add(lastNode);
+        ModelNode subsystemNode = createSubsystemRoot();
+
+        list.add(subsystemNode);
+
+        switch (nameSpace) {
+            case PICKETLINK_1_0:
+                this.readElement_1_0(reader, list, subsystemNode);
+                break;
+            default:
+                throw unexpectedElement(reader);
+        }
+
+    }
+
+    /**
+     * Parses the PicketLink subsystem configuration according to the XSD version 1.0.
+     * 
+     * @param reader
+     * @param list
+     * @throws XMLStreamException
+     */
+    private void readElement_1_0(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode parentNode)
+            throws XMLStreamException {
+        if (Namespace.PICKETLINK_1_0 != Namespace.forUri(reader.getNamespaceURI())) {
+            throw unexpectedElement(reader);
+        }
 
         ModelNode federationNode = null;
         ModelNode identityProviderNode = null;
 
         while (reader.hasNext() && reader.nextTag() != END_DOCUMENT) {
-            if (reader.isStartElement()) {
-                lastNode = readElement(reader, ModelKeys.FEDERATION, FederationResourceDefinition.ALIAS.getName(), list,
-                        lastNode, FederationResourceDefinition.ALIAS);
+            if (!reader.isStartElement()) {
+                continue;
+            }
 
-                if (lastNode != null) {
-                    federationNode = lastNode;
-                }
+            // if the current element is supported but is not a model element
+            if (XMLElement.forName(reader.getLocalName()) != null) {
+                continue;
+            }
+            
+            ModelElement modelKey = ModelElement.forName(reader.getLocalName());
 
-                lastNode = readElement(reader, ModelKeys.IDENTITY_PROVIDER,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS.getName(), list, federationNode,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
-                        IdentityProviderResourceDefinition.COMMON_URL,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES);
+            switch (modelKey) {
+                case FEDERATION:
+                    parentNode = parseConfig(reader, FEDERATION.getName(), FederationResourceDefinition.ALIAS.getName(), list,
+                            parentNode, FederationResourceDefinition.ALIAS);
 
-                if (lastNode != null) {
-                    identityProviderNode = lastNode;
-                }
+                    // if a federation node was parsed store it in a variable to use it as a parent node for others
+                    // configurations.
+                    federationNode = parentNode;
+                    break;
+                case IDENTITY_PROVIDER:
+                    parentNode = parseConfig(reader, IDENTITY_PROVIDER.getName(),
+                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS.getName(), list, federationNode,
+                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
+                            IdentityProviderResourceDefinition.COMMON_URL,
+                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES,
+                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES);
 
-                readElement(reader, ModelKeys.SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list,
-                        federationNode, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
-
-                readElement(reader, ModelKeys.TRUST_DOMAIN, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.getName(), list,
-                        identityProviderNode, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
+                    // if a identity-provider node was parsed store it in a variable to use it as a parent node for others
+                    // configurations.
+                    identityProviderNode = parentNode;
+                    break;
+                case TRUST_DOMAIN:
+                    parseConfig(reader, TRUST_DOMAIN.getName(), TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.getName(),
+                            list, identityProviderNode, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
+                    break;
+                case SERVICE_PROVIDER:
+                    parseConfig(reader, SERVICE_PROVIDER.getName(), ServiceProviderResourceDefinition.ALIAS.getName(), list,
+                            federationNode, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
+                    break;
+                default:
+                    unexpectedElement(reader);
             }
         }
     }
@@ -116,17 +166,17 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      * Reads a element from the stream considering the parameters.
      * 
      * @param reader XMLExtendedStreamReader instance from which the elements are read.
-     * @param xmlElement Name of the XML Element to be read.
+     * @param xmlElement Name of the Model Element to be parsed.
      * @param key Name of the attribute to be used to as the key for the model.
      * @param list List of operations.
      * @param lastNode Parent ModelNode instance.
-     * @param attributes AttributeDefinition instances to be used to extract the attributes and populate the resulting model. 
+     * @param attributes AttributeDefinition instances to be used to extract the attributes and populate the resulting model.
      * 
      * @return A ModelNode instance populated.
      * 
      * @throws XMLStreamException
      */
-    private ModelNode readElement(XMLExtendedStreamReader reader, String xmlElement, String key, List<ModelNode> list,
+    private ModelNode parseConfig(XMLExtendedStreamReader reader, String xmlElement, String key, List<ModelNode> list,
             ModelNode lastNode, SimpleAttributeDefinition... attributes) throws XMLStreamException {
         if (!reader.getLocalName().equals(xmlElement)) {
             return null;

@@ -29,7 +29,7 @@ import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.PicketLinkExtension;
-import org.picketlink.as.subsystem.model.ModelKeys;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -40,11 +40,11 @@ public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
     public static final TrustDomainResourceDefinition INSTANCE = new TrustDomainResourceDefinition();
 
     public static final SimpleAttributeDefinition TRUST_DOMAIN_NAME = new SimpleAttributeDefinitionBuilder(
-            ModelKeys.TRUST_DOMAIN_NAME, ModelType.STRING, false).setAllowExpression(false).build();
+            ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     private TrustDomainResourceDefinition() {
-        super(PathElement.pathElement(ModelKeys.TRUST_DOMAIN), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelKeys.TRUST_DOMAIN), TrustDomainAddHandler.INSTANCE,
+        super(PathElement.pathElement(ModelElement.TRUST_DOMAIN.getName()), PicketLinkExtension
+                .getResourceDescriptionResolver(ModelElement.TRUST_DOMAIN.getName()), TrustDomainAddHandler.INSTANCE,
                 TrustDomainRemoveHandler.INSTANCE);
     }
 
