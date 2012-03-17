@@ -57,10 +57,10 @@ public class IdentityProviderAddHandler extends AbstractAddStepHandler {
      */
     @Override
     protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.COMMON_URL.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.validateAndSet(operation, model);
+        IdentityProviderResourceDefinition.ALIAS.validateAndSet(operation, model);
+        IdentityProviderResourceDefinition.URL.validateAndSet(operation, model);
+        IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES.validateAndSet(operation, model);
+        IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES.validateAndSet(operation, model);
     }
 
     /* (non-Javadoc)

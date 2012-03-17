@@ -49,7 +49,7 @@ public class TrustDomainAddHandler extends AbstractAddStepHandler {
      */
     @Override
     protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.validateAndSet(operation, model);
+        TrustDomainResourceDefinition.NAME.validateAndSet(operation, model);
     }
     
     @Override

@@ -123,19 +123,19 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                     break;
                 case IDENTITY_PROVIDER:
                     parentNode = parseConfig(reader, IDENTITY_PROVIDER.getName(),
-                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS.getName(), list, federationNode,
-                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
-                            IdentityProviderResourceDefinition.COMMON_URL,
-                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES,
-                            IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES);
+                            IdentityProviderResourceDefinition.ALIAS.getName(), list, federationNode,
+                            IdentityProviderResourceDefinition.ALIAS,
+                            IdentityProviderResourceDefinition.URL,
+                            IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
+                            IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
 
                     // if a identity-provider node was parsed store it in a variable to use it as a parent node for others
                     // configurations.
                     identityProviderNode = parentNode;
                     break;
                 case TRUST_DOMAIN:
-                    parseConfig(reader, TRUST_DOMAIN.getName(), TrustDomainResourceDefinition.TRUST_DOMAIN_NAME.getName(),
-                            list, identityProviderNode, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
+                    parseConfig(reader, TRUST_DOMAIN.getName(), TrustDomainResourceDefinition.NAME.getName(),
+                            list, identityProviderNode, TrustDomainResourceDefinition.NAME);
                     break;
                 case SERVICE_PROVIDER:
                     parseConfig(reader, SERVICE_PROVIDER.getName(), ServiceProviderResourceDefinition.ALIAS.getName(), list,

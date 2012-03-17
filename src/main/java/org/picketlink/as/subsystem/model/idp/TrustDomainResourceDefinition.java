@@ -39,7 +39,7 @@ public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
 
     public static final TrustDomainResourceDefinition INSTANCE = new TrustDomainResourceDefinition();
 
-    public static final SimpleAttributeDefinition TRUST_DOMAIN_NAME = new SimpleAttributeDefinitionBuilder(
+    public static final SimpleAttributeDefinition NAME = new SimpleAttributeDefinitionBuilder(
             ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     private TrustDomainResourceDefinition() {
@@ -56,7 +56,7 @@ public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerReadWriteAttribute(TRUST_DOMAIN_NAME, null,
+        resourceRegistration.registerReadWriteAttribute(NAME, null,
                 TrustDomainNameHandler.INSTANCE);
     }
 

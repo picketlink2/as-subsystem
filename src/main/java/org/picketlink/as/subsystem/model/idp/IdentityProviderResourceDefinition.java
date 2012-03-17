@@ -41,17 +41,15 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
 
     public static final IdentityProviderResourceDefinition INSTANCE = new IdentityProviderResourceDefinition();
 
-    public static final SimpleAttributeDefinition COMMON_URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
+    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
             ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition IDENTITY_PROVIDER = new SimpleAttributeDefinitionBuilder(
-            ModelElement.IDENTITY_PROVIDER.getName(), ModelType.OBJECT, false).build();
-    public static final SimpleAttributeDefinition IDENTITY_PROVIDER_ALIAS = new SimpleAttributeDefinitionBuilder(
+    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
+    public static final SimpleAttributeDefinition SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.STRING, false)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
+    public static final SimpleAttributeDefinition IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.STRING, false)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
 
@@ -69,11 +67,11 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerReadWriteAttribute(IDENTITY_PROVIDER_ALIAS, null, IdentityProviderAliasHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(COMMON_URL, null, IdentityProviderURLHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES, null,
+        resourceRegistration.registerReadWriteAttribute(ALIAS, null, IdentityProviderAliasHandler.INSTANCE);
+        resourceRegistration.registerReadWriteAttribute(URL, null, IdentityProviderURLHandler.INSTANCE);
+        resourceRegistration.registerReadWriteAttribute(SIGN_OUTGOING_MESSAGES, null,
                 IdentityProviderSignOutgoingMessagesHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES, null,
+        resourceRegistration.registerReadWriteAttribute(IGNORE_INCOMING_SIGNATURES, null,
                 IdentityProviderIgnoreInSignMsgHandler.INSTANCE);
     }
 

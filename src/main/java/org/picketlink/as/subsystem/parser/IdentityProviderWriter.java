@@ -63,10 +63,10 @@ public class IdentityProviderWriter extends AbstractModelWriter {
             writer.writeStartElement(ModelElement.IDENTITY_PROVIDER.getName());
 
             for (Property propertyIdentity : property.getValue().get(ModelElement.IDENTITY_PROVIDER.getName()).asPropertyList()) {
-                writeAttributes(writer, propertyIdentity, IdentityProviderResourceDefinition.IDENTITY_PROVIDER_ALIAS,
-                        IdentityProviderResourceDefinition.COMMON_URL,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES,
-                        IdentityProviderResourceDefinition.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES);
+                writeAttributes(writer, propertyIdentity, IdentityProviderResourceDefinition.ALIAS,
+                        IdentityProviderResourceDefinition.URL,
+                        IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES,
+                        IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES);
                 writeTrustDomains(writer, propertyIdentity);
             }
 
@@ -90,7 +90,7 @@ public class IdentityProviderWriter extends AbstractModelWriter {
             for (Property trustDomain : trustDomains) {
                 writer.writeStartElement(ModelElement.TRUST_DOMAIN.getName());
                 
-                writeAttributes(writer, trustDomain, TrustDomainResourceDefinition.TRUST_DOMAIN_NAME);
+                writeAttributes(writer, trustDomain, TrustDomainResourceDefinition.NAME);
 
                 writer.writeEndElement();
             }
