@@ -58,42 +58,53 @@ public class SPConfigurationService implements Service<SPConfigurationService> {
         this.spConfiguration.setServiceURL(url);
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.msc.value.Value#getValue()
+     */
     @Override
     public SPConfigurationService getValue() throws IllegalStateException, IllegalArgumentException {
         return this;
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
+     */
     @Override
     public void start(StartContext context) throws StartException {
+        //TODO: start service provider service
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.msc.service.Service#stop(org.jboss.msc.service.StopContext)
+     */
     @Override
     public void stop(StopContext context) {
+      //TODO: stop service provider service
     }
 
-    public void configure(ResourceRoot root) {
-        VirtualFile context = root.getRoot().getChild("WEB-INF/context.xml");
-        VirtualFile handlers = root.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
-        VirtualFile config = root.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
+    /**
+     * Configures a WAR as a Identity Provider.
+     * 
+     * @param warDeployment
+     */
+    public void configure(ResourceRoot warDeployment) {
+        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/context.xml");
+        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
+        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
 
-        if (!context.exists()) {
-            try {
-                boolean contextCreated = context.getPhysicalFile().createNewFile();
-                boolean handlersCreated = handlers.getPhysicalFile().createNewFile();
-                boolean configCreated = config.getPhysicalFile().createNewFile();
-
-                if (contextCreated) {
-                    new ContextConfigWriter(this.spConfiguration).write(new FileOutputStream(context.getPhysicalFile()));
-                }
-                if (handlersCreated) {
-                    new HandlersConfigWriter(this.spConfiguration).write(new FileOutputStream(handlers.getPhysicalFile()));
-                }
-                if (configCreated) {
-                    new SPTypeConfigWriter(this.spConfiguration).write(new FileOutputStream(config.getPhysicalFile()));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if (context.getPhysicalFile().createNewFile()) {
+                new ContextConfigWriter(this.spConfiguration).write(new FileOutputStream(context.getPhysicalFile()));
             }
+            if (handlers.getPhysicalFile().createNewFile()) {
+                new HandlersConfigWriter(this.spConfiguration).write(new FileOutputStream(handlers.getPhysicalFile()));
+            }
+            if (config.getPhysicalFile().createNewFile()) {
+                new SPTypeConfigWriter(this.spConfiguration).write(new FileOutputStream(config.getPhysicalFile()));
+            }
+        } catch (IOException e) {
+            //TODO: exception handling.
+            e.printStackTrace();
         }
     }
 
