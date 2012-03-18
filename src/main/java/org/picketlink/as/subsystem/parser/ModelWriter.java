@@ -24,6 +24,7 @@ package org.picketlink.as.subsystem.parser;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
@@ -33,6 +34,6 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
  */
 public interface ModelWriter {
 
-    void write(XMLExtendedStreamWriter writer, Property property) throws XMLStreamException;
+    void write(XMLExtendedStreamWriter writer, ModelNode modelNode) throws XMLStreamException;
     
 }

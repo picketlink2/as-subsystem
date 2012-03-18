@@ -22,13 +22,18 @@
 
 package org.picketlink.as.subsystem.parser;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
-import org.jboss.dmr.Property;
+import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.SubsystemDescriber;
+import org.picketlink.as.subsystem.model.XMLElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -37,11 +42,24 @@ import org.jboss.dmr.Property;
 public abstract class AbstractModelWriter implements ModelWriter {
 
     private Map<String, ModelWriter> register;
+    private ModelElement modelElement;
+    private XMLElement parentElement;
     
-    public AbstractModelWriter(Map<String, ModelWriter> register) {
+    public AbstractModelWriter(ModelElement modelElement, Map<String, ModelWriter> register) {
+        this.modelElement = modelElement;
         this.register = register;
     }
     
+    /**
+     * @param trustDomain
+     * @param trust
+     * @param writers
+     */
+    public AbstractModelWriter(ModelElement trustDomain, XMLElement trust, Map<String, ModelWriter> writers) {
+        this(trustDomain, writers);
+        this.parentElement = trust;
+    }
+
     public ModelWriter get(String writerKey) {
         ModelWriter writer = this.register.get(writerKey);
         
@@ -51,12 +69,42 @@ public abstract class AbstractModelWriter implements ModelWriter {
         
         return writer;
     }
+    
+    protected List<SimpleAttributeDefinition> getAttributeDefinitions() {
+        return SubsystemDescriber.getAttributeDefinition(this.modelElement);
+    } 
 
-    public void writeAttributes(XMLStreamWriter writer, Property property, SimpleAttributeDefinition... attributes) throws XMLStreamException {
-        for (SimpleAttributeDefinition simpleAttributeDefinition : attributes) {
-            if (property.getValue().hasDefined(simpleAttributeDefinition.getXmlName())) {
-                simpleAttributeDefinition.marshallAsAttribute(property.getValue(), writer);
+    protected List<ResourceDefinition> getChildResourceDefinitions() {
+        return SubsystemDescriber.getChildResourceDefinitions(this.modelElement);
+    } 
+
+    /**
+     * Parses the attributes.
+     * 
+     * @param writer
+     * @param modelNode
+     * @param attributes
+     * @throws XMLStreamException
+     */
+    public void writeAttributes(XMLStreamWriter writer, ModelNode modelNode) throws XMLStreamException {
+        for (SimpleAttributeDefinition simpleAttributeDefinition : getAttributeDefinitions()) {
+            if (modelNode.hasDefined(simpleAttributeDefinition.getXmlName())) {
+                simpleAttributeDefinition.marshallAsAttribute(modelNode, writer);
             }
         }
+    }
+    
+    /**
+     * @return the modelElement
+     */
+    public ModelElement getModelElement() {
+        return modelElement;
+    }
+
+    /**
+     * @return the parentElement
+     */
+    public XMLElement getParentElement() {
+        return this.parentElement;
     }
 }

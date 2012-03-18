@@ -22,20 +22,18 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelType;
-import org.picketlink.as.subsystem.PicketLinkExtension;
+import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
+public class TrustDomainResourceDefinition extends AbstractResourceDefinition {
 
     public static final TrustDomainResourceDefinition INSTANCE = new TrustDomainResourceDefinition();
 
@@ -43,9 +41,7 @@ public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
             ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     private TrustDomainResourceDefinition() {
-        super(PathElement.pathElement(ModelElement.TRUST_DOMAIN.getName()), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelElement.TRUST_DOMAIN.getName()), TrustDomainAddHandler.INSTANCE,
-                TrustDomainRemoveHandler.INSTANCE);
+        super(ModelElement.TRUST_DOMAIN, TrustDomainAddHandler.INSTANCE, TrustDomainRemoveHandler.INSTANCE);
     }
 
     /*
@@ -56,8 +52,7 @@ public class TrustDomainResourceDefinition extends SimpleResourceDefinition {
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerReadWriteAttribute(NAME, null,
-                TrustDomainNameHandler.INSTANCE);
+        addAttributeDefinition(NAME, null, TrustDomainNameHandler.INSTANCE, resourceRegistration);
     }
 
 }

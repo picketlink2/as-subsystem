@@ -109,42 +109,106 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             if (XMLElement.forName(reader.getLocalName()) != null) {
                 continue;
             }
-            
+
             ModelElement modelKey = ModelElement.forName(reader.getLocalName());
 
             switch (modelKey) {
                 case FEDERATION:
-                    parentNode = parseConfig(reader, FEDERATION.getName(), FederationResourceDefinition.ALIAS.getName(), list,
-                            parentNode, FederationResourceDefinition.ALIAS);
-
-                    // if a federation node was parsed store it in a variable to use it as a parent node for others
-                    // configurations.
-                    federationNode = parentNode;
+                    federationNode = parseFederationConfig(reader, list, parentNode);
                     break;
                 case IDENTITY_PROVIDER:
-                    parentNode = parseConfig(reader, IDENTITY_PROVIDER.getName(),
-                            IdentityProviderResourceDefinition.ALIAS.getName(), list, federationNode,
-                            IdentityProviderResourceDefinition.ALIAS,
-                            IdentityProviderResourceDefinition.URL,
-                            IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
-                            IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
-
-                    // if a identity-provider node was parsed store it in a variable to use it as a parent node for others
-                    // configurations.
-                    identityProviderNode = parentNode;
+                    identityProviderNode = parseIdentityProviderConfig(reader, list, federationNode);
                     break;
                 case TRUST_DOMAIN:
-                    parseConfig(reader, TRUST_DOMAIN.getName(), TrustDomainResourceDefinition.NAME.getName(),
-                            list, identityProviderNode, TrustDomainResourceDefinition.NAME);
+                    parseTrustDomainConfig(reader, list, identityProviderNode);
                     break;
                 case SERVICE_PROVIDER:
-                    parseConfig(reader, SERVICE_PROVIDER.getName(), ServiceProviderResourceDefinition.ALIAS.getName(), list,
-                            federationNode, ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
+                    parseServiceProviderConfig(reader, list, federationNode);
                     break;
                 default:
                     unexpectedElement(reader);
             }
         }
+    }
+
+    /**
+     * @param reader
+     * @param list
+     * @param federationNode
+     * @throws XMLStreamException
+     */
+    private void parseServiceProviderConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
+            throws XMLStreamException {
+        parseConfig(reader, SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list, federationNode,
+                getServiceProviderAttributes());
+    }
+
+    /**
+     * @param reader
+     * @param list
+     * @param identityProviderNode
+     * @throws XMLStreamException
+     */
+    private void parseTrustDomainConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
+            throws XMLStreamException {
+        parseConfig(reader, TRUST_DOMAIN, TrustDomainResourceDefinition.NAME.getName(), list, identityProviderNode,
+                getTrustDomainAttributes());
+    }
+
+    /**
+     * @param reader
+     * @param list
+     * @param federationNode
+     * @return
+     * @throws XMLStreamException
+     */
+    private ModelNode parseIdentityProviderConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
+            throws XMLStreamException {
+        return parseConfig(reader, IDENTITY_PROVIDER, IdentityProviderResourceDefinition.ALIAS.getName(), list,
+                federationNode, getIdentityProviderAttributes());
+    }
+
+    /**
+     * @param reader
+     * @param list
+     * @param parentNode
+     * @return
+     * @throws XMLStreamException
+     */
+    private ModelNode parseFederationConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode parentNode)
+            throws XMLStreamException {
+        return parseConfig(reader, FEDERATION, FederationResourceDefinition.ALIAS.getName(), list, parentNode,
+                getFederationAttributes());
+    }
+
+    /**
+     * @return
+     */
+    private SimpleAttributeDefinition[] getServiceProviderAttributes() {
+        return asArray(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
+    }
+
+    /**
+     * @return
+     */
+    private SimpleAttributeDefinition[] getTrustDomainAttributes() {
+        return asArray(TrustDomainResourceDefinition.NAME);
+    }
+
+    /**
+     * @return
+     */
+    private SimpleAttributeDefinition[] getIdentityProviderAttributes() {
+        return asArray(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.URL,
+                IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
+                IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
+    }
+
+    /**
+     * @return
+     */
+    private SimpleAttributeDefinition[] getFederationAttributes() {
+        return asArray(FederationResourceDefinition.ALIAS);
     }
 
     /**
@@ -176,9 +240,9 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      * 
      * @throws XMLStreamException
      */
-    private ModelNode parseConfig(XMLExtendedStreamReader reader, String xmlElement, String key, List<ModelNode> list,
-            ModelNode lastNode, SimpleAttributeDefinition... attributes) throws XMLStreamException {
-        if (!reader.getLocalName().equals(xmlElement)) {
+    private ModelNode parseConfig(XMLExtendedStreamReader reader, ModelElement xmlElement, String key, List<ModelNode> list,
+            ModelNode lastNode, SimpleAttributeDefinition[] attributes) throws XMLStreamException {
+        if (!reader.getLocalName().equals(xmlElement.getName())) {
             return null;
         }
 
@@ -189,11 +253,15 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                     reader.getAttributeValue("", simpleAttributeDefinition.getXmlName()), modelNode, reader);
         }
 
-        modelNode.get(ModelDescriptionConstants.OP_ADDR).set(lastNode.clone().get(OP_ADDR).add(xmlElement, modelNode.get(key)));
+        modelNode.get(ModelDescriptionConstants.OP_ADDR).set(
+                lastNode.clone().get(OP_ADDR).add(xmlElement.getName(), modelNode.get(key)));
 
         list.add(modelNode);
 
         return modelNode;
     }
 
+    private SimpleAttributeDefinition[] asArray(SimpleAttributeDefinition... attributes) {
+        return attributes;
+    }
 }

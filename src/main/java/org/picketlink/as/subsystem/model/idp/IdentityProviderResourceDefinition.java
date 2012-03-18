@@ -22,22 +22,19 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
-
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.picketlink.as.subsystem.PicketLinkExtension;
+import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class IdentityProviderResourceDefinition extends SimpleResourceDefinition {
+public class IdentityProviderResourceDefinition extends AbstractResourceDefinition {
 
     public static final IdentityProviderResourceDefinition INSTANCE = new IdentityProviderResourceDefinition();
 
@@ -54,9 +51,7 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
 
     private IdentityProviderResourceDefinition() {
-        super(PathElement.pathElement(ModelElement.IDENTITY_PROVIDER.getName()), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelElement.IDENTITY_PROVIDER.getName()), IdentityProviderAddHandler.INSTANCE,
-                IdentityProviderRemoveHandler.INSTANCE);
+        super(ModelElement.IDENTITY_PROVIDER, IdentityProviderAddHandler.INSTANCE, IdentityProviderRemoveHandler.INSTANCE);
     }
 
     /*
@@ -67,12 +62,10 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerReadWriteAttribute(ALIAS, null, IdentityProviderAliasHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(URL, null, IdentityProviderURLHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(SIGN_OUTGOING_MESSAGES, null,
-                IdentityProviderSignOutgoingMessagesHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(IGNORE_INCOMING_SIGNATURES, null,
-                IdentityProviderIgnoreInSignMsgHandler.INSTANCE);
+        addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(URL, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
     }
 
     /*
@@ -83,6 +76,6 @@ public class IdentityProviderResourceDefinition extends SimpleResourceDefinition
      */
     @Override
     public void registerChildren(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerSubModel(TrustDomainResourceDefinition.INSTANCE);
+        addChildResourceDefinition(TrustDomainResourceDefinition.INSTANCE, resourceRegistration);
     }
 }

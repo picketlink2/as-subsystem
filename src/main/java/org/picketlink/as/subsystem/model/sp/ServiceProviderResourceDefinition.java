@@ -22,33 +22,30 @@
 
 package org.picketlink.as.subsystem.model.sp;
 
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.picketlink.as.subsystem.PicketLinkExtension;
+import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class ServiceProviderResourceDefinition extends SimpleResourceDefinition {
+public class ServiceProviderResourceDefinition extends AbstractResourceDefinition {
 
     public static final ServiceProviderResourceDefinition INSTANCE = new ServiceProviderResourceDefinition();
 
-    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_ALIAS.getName(),
-            ModelType.STRING, false).setDefaultValue(new ModelNode().set("sp")).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(), ModelType.STRING,
-            false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("sp"))
+            .setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
+            ModelType.STRING, false).setAllowExpression(false).build();
 
     private ServiceProviderResourceDefinition() {
-        super(PathElement.pathElement(ModelElement.SERVICE_PROVIDER.getName()), PicketLinkExtension
-                .getResourceDescriptionResolver(ModelElement.SERVICE_PROVIDER.getName()), ServiceProviderAddHandler.INSTANCE,
-                ServiceProviderRemoveHandler.INSTANCE);
+        super(ModelElement.SERVICE_PROVIDER, ServiceProviderAddHandler.INSTANCE, ServiceProviderRemoveHandler.INSTANCE);
     }
 
     /*
@@ -59,7 +56,7 @@ public class ServiceProviderResourceDefinition extends SimpleResourceDefinition 
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerReadWriteAttribute(ALIAS, null, ServiceProviderAliasHandler.INSTANCE);
-        resourceRegistration.registerReadWriteAttribute(URL, null, ServiceProviderURLHandler.INSTANCE);
+        addAttributeDefinition(ALIAS, null, ServiceProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(URL, null, ServiceProviderURLHandler.INSTANCE, resourceRegistration);
     }
 }
