@@ -26,6 +26,7 @@ import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationContext.Stage;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
@@ -51,7 +52,7 @@ public class IgnoreInSignMsgHandler implements OperationStepHandler {
         
         node.get(ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).set(ignoreIncomingSignatures);
         
-        final String alias = operation.get(COMMON_ALIAS.getName()).asString();
+        final String alias = operation.get(ModelDescriptionConstants.OP_ADDR).asPropertyList().get(2).getValue().asString();
         
         context.addStep(new OperationStepHandler() {
             @Override
