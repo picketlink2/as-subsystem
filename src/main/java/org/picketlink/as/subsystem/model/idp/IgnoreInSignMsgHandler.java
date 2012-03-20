@@ -30,6 +30,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -48,7 +49,7 @@ public class IgnoreInSignMsgHandler implements OperationStepHandler {
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(COMMON_URL.getName()).set(ignoreIncomingSignatures);
+        node.get(ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).set(ignoreIncomingSignatures);
         
         final String alias = operation.get(COMMON_ALIAS.getName()).asString();
         

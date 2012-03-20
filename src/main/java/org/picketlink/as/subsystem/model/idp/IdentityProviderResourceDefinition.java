@@ -44,10 +44,10 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build();
     public static final SimpleAttributeDefinition SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.STRING, false)
+            ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.BOOLEAN, false)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.STRING, false)
+            ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.BOOLEAN, false)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
 
     private IdentityProviderResourceDefinition() {
@@ -63,9 +63,9 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
         addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(URL, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(URL, null, IdentityProviderURLHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, SignOutgoingMessagesHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IgnoreInSignMsgHandler.INSTANCE, resourceRegistration);
     }
 
     /*

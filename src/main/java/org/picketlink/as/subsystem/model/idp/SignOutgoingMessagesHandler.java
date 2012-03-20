@@ -47,7 +47,7 @@ public class SignOutgoingMessagesHandler implements OperationStepHandler {
         
         ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(ModelElement.COMMON_URL.getName()).set(signOutgoingMessages);
+        node.get(ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).set(signOutgoingMessages);
         
         final String alias = operation.get(ModelDescriptionConstants.OP_ADDR).asPropertyList().get(2).getValue().asString();
         
