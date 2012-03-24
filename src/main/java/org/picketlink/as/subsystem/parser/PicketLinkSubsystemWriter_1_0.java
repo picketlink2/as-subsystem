@@ -60,8 +60,12 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
     /** {@inheritDoc} */
     @Override
     public void writeContent(XMLExtendedStreamWriter writer, SubsystemMarshallingContext context) throws XMLStreamException {
+        if (!context.getModelNode().isDefined()) {
+            return;
+        }
+        
         context.startSubsystemElement(Namespace.CURRENT.getUri(), false);
-
+        
         List<ModelNode> federation = context.getModelNode().asList();
 
         for (ModelNode modelNode : federation) {

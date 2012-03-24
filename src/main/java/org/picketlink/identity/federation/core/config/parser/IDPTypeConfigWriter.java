@@ -22,7 +22,9 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -51,11 +53,11 @@ public class IDPTypeConfigWriter implements ConfigWriter {
     /* (non-Javadoc)
      * @see org.picketlink.identity.federation.core.config.parser.ConfigWriter#write(java.io.OutputStream)
      */
-    public void write(OutputStream stream) {
+    public void write(File file) {
         XMLStreamWriter writer = null;
         
         try {
-            writer = StaxUtil.getXMLStreamWriter(stream);
+            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
             
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDP, NAMESPACE);
             
@@ -73,6 +75,8 @@ public class IDPTypeConfigWriter implements ConfigWriter {
 
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (writer != null) {

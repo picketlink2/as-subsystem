@@ -24,13 +24,13 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
     /**
      * See {@link Phase} for a description of the different phases
      */
-    public static final Phase PHASE = Phase.DEPENDENCIES;
+    public static final Phase PHASE = Phase.PARSE;
 
     /**
      * The relative order of this processor within the {@link #PHASE}. The current number is large enough for it to happen after
      * all the standard deployment unit processors that come with JBoss AS.
      */
-    public static final int PRIORITY = 0x4000;
+    public static final int PRIORITY = 1;
 
     /* (non-Javadoc)
      * @see org.jboss.as.server.deployment.DeploymentUnitProcessor#deploy(org.jboss.as.server.deployment.DeploymentPhaseContext)

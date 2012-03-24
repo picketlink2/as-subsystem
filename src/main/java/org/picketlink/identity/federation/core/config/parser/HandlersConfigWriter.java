@@ -22,7 +22,9 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -51,11 +53,11 @@ public class HandlersConfigWriter implements ConfigWriter  {
         this.configuration = idpTypeSubsystem;
     }
     
-    public void write(OutputStream stream) {
+    public void write(File file) {
         XMLStreamWriter writer = null;
         
         try {
-            writer = StaxUtil.getXMLStreamWriter(stream);
+            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
             
             StaxUtil.writeStartElement(writer, "", HANDLERS_ELEMENT, "urn:picketlink:identity-federation:handler:config:1.0");
             
@@ -71,6 +73,8 @@ public class HandlersConfigWriter implements ConfigWriter  {
 
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (writer != null) {

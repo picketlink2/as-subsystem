@@ -22,7 +22,9 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,34 +57,35 @@ public class ContextConfigWriter implements ConfigWriter {
     public ContextConfigWriter(ProviderType idpTypeSubsystem) {
         this.configuration = idpTypeSubsystem;
     }
-    
-    public void write(OutputStream stream) {
+
+    public void write(File file) {
         XMLStreamWriter writer = null;
-        
+
         try {
-            writer = StaxUtil.getXMLStreamWriter(stream);
+            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
             
             StaxUtil.writeStartElement(writer, "", CONTEXT_ELEMENT, "");
-            
+
             if (this.configuration instanceof IDPTypeSubsystem) {
                 IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
 
-                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", null);
-                
-                Map<String,String> attributes = new HashMap<String, String>();
-                
+                Map<String, String> attributes = new HashMap<String, String>();
+
                 attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
-                attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE, String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
-                
+                attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
+                        String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
+
                 writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
             } else if (this.configuration instanceof SPTypeSubsystem) {
                 SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
-                
+
                 writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);
             }
-            
+
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
             if (writer != null) {
@@ -93,20 +96,20 @@ public class ContextConfigWriter implements ConfigWriter {
                     e.printStackTrace();
                 }
             }
-        }        
+        }
     }
-    
-    public void writeValve(XMLStreamWriter writer, String className, Map<String,String> attributes) throws ProcessingException {
+
+    public void writeValve(XMLStreamWriter writer, String className, Map<String, String> attributes) throws ProcessingException {
         StaxUtil.writeStartElement(writer, "", VALVE_ELEMENT, "");
         StaxUtil.writeAttribute(writer, CLASS_NAME_ATTRIBUTE, className);
-        
+
         if (attributes != null) {
             for (String key : attributes.keySet()) {
                 StaxUtil.writeAttribute(writer, key, attributes.get(key));
             }
         }
-        
+
         StaxUtil.writeEndElement(writer);
     }
-    
+
 }

@@ -22,7 +22,6 @@
 
 package org.picketlink.as.subsystem.service;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.jboss.as.server.deployment.module.ResourceRoot;
@@ -34,10 +33,10 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
-import org.picketlink.identity.federation.core.config.parser.ContextConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
+import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 
 /**
  * <p>
@@ -87,19 +86,18 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      * @param warDeployment
      */
     public void configure(ResourceRoot warDeployment) {
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/context.xml");
+        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
         VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
         VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
 
         try {
-            if (context.getPhysicalFile().createNewFile()) {
-                new ContextConfigWriter(this.idpConfiguration).write(new FileOutputStream(context.getPhysicalFile()));
-            }
+            new JBossWebConfigWriter(this.idpConfiguration).write(context.getPhysicalFile());
+            
             if (handlers.getPhysicalFile().createNewFile()) {
-                new HandlersConfigWriter(this.idpConfiguration).write(new FileOutputStream(handlers.getPhysicalFile()));
+                new HandlersConfigWriter(this.idpConfiguration).write(handlers.getPhysicalFile());
             }
             if (config.getPhysicalFile().createNewFile()) {
-                new IDPTypeConfigWriter(this.idpConfiguration).write(new FileOutputStream(config.getPhysicalFile()));                    
+                new IDPTypeConfigWriter(this.idpConfiguration).write(config.getPhysicalFile());                    
             }
         } catch (IOException e) {
             e.printStackTrace();

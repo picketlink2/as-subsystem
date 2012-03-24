@@ -22,25 +22,16 @@
 package org.picketlink.as.subsystem.model.idp;
 
 
-import org.jboss.as.controller.AbstractAddStepHandler;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.dmr.ModelNode;
+import org.jboss.as.controller.AbstractRemoveStepHandler;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class TrustDomainRemoveHandler extends AbstractAddStepHandler {
+public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
 
     public static final TrustDomainRemoveHandler INSTANCE = new TrustDomainRemoveHandler();
 
     private TrustDomainRemoveHandler() {
-    }
-
-    /* (non-Javadoc)
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
     }
 
 }

@@ -22,7 +22,7 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.OutputStream;
+import java.io.File;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -33,6 +33,6 @@ public interface ConfigWriter {
     /**
      * @param stream
      */
-    void write(OutputStream stream);
+    void write(File stream);
     
 }
