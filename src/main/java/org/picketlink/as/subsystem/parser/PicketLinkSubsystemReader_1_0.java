@@ -185,7 +185,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      * @return
      */
     private SimpleAttributeDefinition[] getServiceProviderAttributes() {
-        return asArray(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL);
+        return asArray(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL, ServiceProviderResourceDefinition.POST_BINDING);
     }
 
     /**

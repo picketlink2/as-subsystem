@@ -21,39 +21,20 @@
  */
 package org.picketlink.as.subsystem.model.federation;
 
-import java.util.List;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 
-import org.jboss.as.controller.AbstractAddStepHandler;
-import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.ServiceVerificationHandler;
-import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.ServiceController;
+
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class FederationAddHandler extends AbstractAddStepHandler  {
+public class FederationAddHandler extends AbstractResourceAddStepHandler  {
 
     public static final FederationAddHandler INSTANCE = new FederationAddHandler();
 
     private FederationAddHandler() {
+        super(ModelElement.FEDERATION);
     }
 
-    /* (non-Javadoc)
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        FederationResourceDefinition.ALIAS.validateAndSet(operation, model);
-    }
-
-    /* (non-Javadoc)
-     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
-     */
-    @Override
-    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
-            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
-            throws OperationFailedException {
-    }
 }

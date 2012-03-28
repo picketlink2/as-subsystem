@@ -159,12 +159,17 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
                 attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
                         String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
-
+                
                 writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
             } else if (this.configuration instanceof SPTypeSubsystem) {
                 SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
 
-                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);
+                if (spConfiguration.isPostBinding()) {
+                    writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator", null);    
+                } else {
+                    writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);
+                }
+                
             }
         } catch (ProcessingException e) {
             e.printStackTrace();

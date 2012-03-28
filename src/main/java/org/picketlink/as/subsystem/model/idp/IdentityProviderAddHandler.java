@@ -28,7 +28,6 @@ import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_S
 
 import java.util.List;
 
-import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
@@ -38,29 +37,19 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class IdentityProviderAddHandler extends AbstractAddStepHandler {
+public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
 
     public static final IdentityProviderAddHandler INSTANCE = new IdentityProviderAddHandler();
 
     private IdentityProviderAddHandler() {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        IdentityProviderResourceDefinition.ALIAS.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.URL.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES.validateAndSet(operation, model);
-        IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES.validateAndSet(operation, model);
+        super(ModelElement.IDENTITY_PROVIDER);
     }
 
     /* (non-Javadoc)

@@ -71,9 +71,9 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
         subsystemXml.append("</trust>");
         subsystemXml.append("</identity-provider>");
         subsystemXml.append("<service-providers>");
-        subsystemXml.append("<service-provider alias=\"sales.war\" url=\"http://localhost:8080/sales\"/>");
-        subsystemXml.append("<service-provider alias=\"employee.war\" url=\"http://localhost:8080/employee\"/>");
-        subsystemXml.append("<service-provider alias=\"employee2.war\" url=\"http://localhost:8080/employee2\"/>");
+        subsystemXml.append("<service-provider alias=\"sales.war\" url=\"http://localhost:8080/sales\" post-binding=\"true\"/>");
+        subsystemXml.append("<service-provider alias=\"employee.war\" url=\"http://localhost:8080/employee\" post-binding=\"true\"/>");
+        subsystemXml.append("<service-provider alias=\"employee2.war\" url=\"http://localhost:8080/employee2\" post-binding=\"true\"/>");
         subsystemXml.append("</service-providers>");
         subsystemXml.append("</federation>");
         subsystemXml.append("</subsystem>");

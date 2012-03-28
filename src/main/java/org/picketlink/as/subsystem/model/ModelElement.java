@@ -45,7 +45,8 @@ public enum ModelElement {
     IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES("signOutgoingMessages"),
     IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES("ignoreIncomingSignatures"),
     
-    SERVICE_PROVIDER("service-provider");
+    SERVICE_PROVIDER("service-provider"), 
+    SERVICE_PROVIDER_POST_BINDING ("post-binding");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     

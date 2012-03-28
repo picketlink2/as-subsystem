@@ -43,6 +43,8 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
             .setAllowExpression(false).build();
     public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
             ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition POST_BINDING = new SimpleAttributeDefinitionBuilder(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName(),
+            ModelType.STRING, true).setAllowExpression(false).setDefaultValue(new ModelNode().set(true)).build();
 
     private ServiceProviderResourceDefinition() {
         super(ModelElement.SERVICE_PROVIDER, ServiceProviderAddHandler.INSTANCE, ServiceProviderRemoveHandler.INSTANCE);
@@ -58,5 +60,6 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
         addAttributeDefinition(ALIAS, null, ServiceProviderAliasHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(URL, null, ServiceProviderURLHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(POST_BINDING, null, PostBindingHandler.INSTANCE, resourceRegistration);
     }
 }

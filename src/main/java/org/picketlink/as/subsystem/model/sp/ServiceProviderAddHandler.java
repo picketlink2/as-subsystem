@@ -28,7 +28,6 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUB
 import java.util.List;
 import java.util.Set;
 
-import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
@@ -47,22 +46,12 @@ import org.picketlink.as.subsystem.service.SPConfigurationService;
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class ServiceProviderAddHandler extends AbstractAddStepHandler {
+public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
 
     public static final ServiceProviderAddHandler INSTANCE = new ServiceProviderAddHandler();
 
     private ServiceProviderAddHandler() {
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        ServiceProviderResourceDefinition.ALIAS.validateAndSet(operation, model);
-        ServiceProviderResourceDefinition.URL.validateAndSet(operation, model);
+        super(ModelElement.SERVICE_PROVIDER);
     }
 
     @Override
@@ -71,6 +60,7 @@ public class ServiceProviderAddHandler extends AbstractAddStepHandler {
             throws OperationFailedException {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         String url = operation.get(ModelElement.COMMON_URL.getName()).asString();
+        boolean postBinding = operation.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
         String idpUrl = null;
           
@@ -93,7 +83,8 @@ public class ServiceProviderAddHandler extends AbstractAddStepHandler {
         ServiceController<SPConfigurationService> controller = context.getServiceTarget().addService(name, service)
                 .addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
 
-        service.getSPConfiguration().setIdentityURL(idpUrl);
+        service.getSPConfiguration().setIdentityURL(idpUrl + "/");
+        service.getSPConfiguration().setPostBinding(postBinding);
         
         newControllers.add(controller);
     }

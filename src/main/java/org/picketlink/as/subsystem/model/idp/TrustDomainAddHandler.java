@@ -24,7 +24,6 @@ package org.picketlink.as.subsystem.model.idp;
 
 import java.util.List;
 
-import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.ServiceVerificationHandler;
@@ -32,26 +31,20 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class TrustDomainAddHandler extends AbstractAddStepHandler {
+public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
 
     public static final TrustDomainAddHandler INSTANCE = new TrustDomainAddHandler();
 
     private TrustDomainAddHandler() {
+        super(ModelElement.TRUST_DOMAIN);
     }
 
-    /* (non-Javadoc)
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        TrustDomainResourceDefinition.NAME.validateAndSet(operation, model);
-    }
-    
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
