@@ -121,14 +121,19 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
         return null;
     }
     
-    public static ServiceName createServiceName(String alias) {
-        return ServiceName.JBOSS.append("IDPConfigurationService", alias);
-    }
-
     /**
      * @return the idpConfiguration
      */
     public IDPTypeSubsystem getIdpConfiguration() {
         return this.idpConfiguration;
+    }
+
+    /**
+     * @param fedAlias
+     * @param alias2
+     * @return
+     */
+    public static ServiceName createServiceName(String alias) {
+        return ServiceName.JBOSS.append("IDPConfigurationService", alias);
     }
 }

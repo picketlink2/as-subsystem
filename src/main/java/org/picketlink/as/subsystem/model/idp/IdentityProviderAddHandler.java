@@ -59,11 +59,12 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
+        PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
+        
+        String alias = pathAddress.getLastElement().getValue();
         String url = operation.get(COMMON_URL.getName()).asString();
         boolean signOutgoingMessages = operation.get(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).asBoolean();
         boolean ignoreIncomingSignatures = operation.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
-
         IDPConfigurationService service = new IDPConfigurationService(alias, url);
         ServiceName name = IDPConfigurationService.createServiceName(alias);
         ServiceController<IDPConfigurationService> controller = context.getServiceTarget().addService(name, service)
