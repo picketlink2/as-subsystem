@@ -62,7 +62,7 @@ public class IDPTypeConfigWriter implements ConfigWriter {
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDP, NAMESPACE);
             
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-            StaxUtil.writeCharacters(writer, this.idpConfiguration.getIdentityURL());
+            StaxUtil.writeCharacters(writer, this.idpConfiguration.getIdentityURL() + "/");
             StaxUtil.writeEndElement(writer);
             
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.TRUST, "");

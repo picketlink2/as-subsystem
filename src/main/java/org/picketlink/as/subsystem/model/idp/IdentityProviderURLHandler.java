@@ -48,7 +48,7 @@ public class IdentityProviderURLHandler implements OperationStepHandler {
         
         node.get(ModelElement.COMMON_URL.getName()).set(url);
         
-        final String alias = operation.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        final String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
         
         context.addStep(new OperationStepHandler() {
             @Override

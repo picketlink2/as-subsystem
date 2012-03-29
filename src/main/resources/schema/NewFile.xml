@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<subsystem xmlns="urn:jboss:picketlink:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="urn:jboss:picketlink:1.0 picketlink-subsystem.xsd ">
+	<federation>
+		<identity-provider>
+			<trust>
+				<domain />
+			</trust>
+		</identity-provider>
+		<service-providers>
+			<service-provider />
+		</service-providers>
+	</federation>
+</subsystem>

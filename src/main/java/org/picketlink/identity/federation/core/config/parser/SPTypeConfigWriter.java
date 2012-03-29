@@ -58,11 +58,11 @@ public class SPTypeConfigWriter implements ConfigWriter {
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SP, "urn:picketlink:identity-federation:config:1.0");
             
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SERVICE_URL, "");
-            StaxUtil.writeCharacters(writer, this.configuration.getServiceURL());
+            StaxUtil.writeCharacters(writer, this.configuration.getServiceURL() + "/");
             StaxUtil.writeEndElement(writer);
 
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-            StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL());
+            StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL() + "/");
             StaxUtil.writeEndElement(writer);
 
             StaxUtil.writeEndElement(writer);

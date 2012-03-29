@@ -83,7 +83,7 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
         ServiceController<SPConfigurationService> controller = context.getServiceTarget().addService(name, service)
                 .addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
 
-        service.getSPConfiguration().setIdentityURL(idpUrl + "/");
+        service.getSPConfiguration().setIdentityURL(idpUrl);
         service.getSPConfiguration().setPostBinding(postBinding);
         
         newControllers.add(controller);

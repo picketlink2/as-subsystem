@@ -1,62 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ JBoss, Home of Professional Open Source.
-  ~ Copyright 2011, Red Hat, Inc., and individual contributors
-  ~ as indicated by the @author tags. See the copyright.txt file in the
-  ~ distribution for a full listing of individual contributors.
-  ~
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  -->
-  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="urn:jboss:picketlink:1.0"
-            xmlns="urn:jboss:picketlink:1.0"
-            elementFormDefault="qualified"
-            attributeFormDefault="unqualified"
-            version="1.0">
+<!-- ~ JBoss, Home of Professional Open Source. ~ Copyright 2011, Red Hat, 
+	Inc., and individual contributors ~ as indicated by the @author tags. See 
+	the copyright.txt file in the ~ distribution for a full listing of individual 
+	contributors. ~ ~ This is free software; you can redistribute it and/or modify 
+	it ~ under the terms of the GNU Lesser General Public License as ~ published 
+	by the Free Software Foundation; either version 2.1 of ~ the License, or 
+	(at your option) any later version. ~ ~ This software is distributed in the 
+	hope that it will be useful, ~ but WITHOUT ANY WARRANTY; without even the 
+	implied warranty of ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	See the GNU ~ Lesser General Public License for more details. ~ ~ You should 
+	have received a copy of the GNU Lesser General Public ~ License along with 
+	this software; if not, write to the Free ~ Software Foundation, Inc., 51 
+	Franklin St, Fifth Floor, Boston, MA ~ 02110-1301 USA, or see the FSF site: 
+	http://www.fsf.org. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:jboss:picketlink:1.0" xmlns="urn:jboss:picketlink:1.0"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	version="1.0">
 
-    <!-- The subsystem root element -->
-    <xsd:element name="picketlink" type="picketlinkType"/>
+	<!-- The subsystem root element -->
+	<xsd:element name="subsystem" type="subsystemType" />
 
-    <xsd:complexType name="picketlinkType">
-    </xsd:complexType>
+	<xsd:complexType name="subsystemType">
+		<xsd:sequence>
+			<xsd:element name="federation" type="federationType"
+				minOccurs="0" maxOccurs="*" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="federationType">
-    	<xsd:sequence>
-    		<xsd:element name="identity-provider" type="identityProviderType" minOccurs="0" maxOccurs="*"/>
-    	</xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="federationType">
+		<xsd:sequence>
+			<xsd:attribute name="alias" type="xsd:string" nillable="false" />
+			<xsd:element name="identity-provider" type="identityProviderType"
+				minOccurs="0" maxOccurs="1" />
+			<xsd:element name="service-providers" type="serviceProvidersType"
+				minOccurs="0" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="identityProviderType">
-    	<xsd:sequence>
-    		<xsd:attribute name="deploy-name" type="xsd:string" nillable="false" />
-    		<xsd:attribute name="url" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false" />
-    		<xsd:element name="trust" type="trustType" minOccurs="1" maxOccurs="1" nillable="true" />
-    	</xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="identityProviderType">
+		<xsd:sequence>
+			<xsd:attribute name="deploy-name" type="xsd:string"
+				nillable="false" />
+			<xsd:attribute name="url" type="xsd:string" minOccurs="1"
+				maxOccurs="1" nillable="false" />
+			<xsd:element name="trust" type="trustType" minOccurs="1"
+				maxOccurs="1" nillable="true" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="trustType">
-    	<xsd:sequence>
-    		<xsd:element name="domain" type="domainType" minOccurs="1" maxOccurs="*" nillable="false" />
-    	</xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="serviceProvidersType">
+		<xsd:sequence>
+			<xsd:element name="service-provider" type="serviceProviderType"
+				minOccurs="1" maxOccurs="*" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="domainType">
-    	<xsd:sequence>
-    		<xsd:attribute name="name" type="xsd:string" nillable="false" />
-    	</xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="serviceProviderType">
+		<xsd:sequence>
+			<xsd:attribute name="alias" type="xsd:string" nillable="false" />
+			<xsd:attribute name="url" type="xsd:string" minOccurs="1"
+				nillable="false" />
+			<xsd:attribute name="post-binding" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="trustType">
+		<xsd:sequence>
+			<xsd:element name="domain" type="domainType" minOccurs="1"
+				maxOccurs="*" nillable="false" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="domainType">
+		<xsd:sequence>
+			<xsd:attribute name="name" type="xsd:string" nillable="false" />
+		</xsd:sequence>
+	</xsd:complexType>
 
 </xsd:schema>
