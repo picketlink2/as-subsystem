@@ -52,7 +52,7 @@ public class PostBindingHandler implements OperationStepHandler {
         
         node.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).set(postBinding);
         
-        final String alias = operation.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        final String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
         
         context.addStep(new OperationStepHandler() {
             @Override
