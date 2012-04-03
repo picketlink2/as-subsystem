@@ -1,0 +1,21 @@
+<subsystem xmlns="urn:jboss:picketlink:1.0">
+	<federation alias="my-fed">
+		<identity-provider alias="idp.war" url="http://localhost:8080/idp"
+			signOutgoingMessages="false" ignoreIncomingSignatures="true">
+			<trust>
+				<trust-domain name="localhost" />
+				<trust-domain name="mycompany.com2" />
+				<trust-domain name="mycompany.com3" />
+				<trust-domain name="mycompany.com4" />
+			</trust>
+		</identity-provider>
+		<service-providers>
+			<service-provider alias="sales.war"
+				url="http://localhost:8080/sales" post-binding="true" />
+			<service-provider alias="employee.war"
+				url="http://localhost:8080/employee" post-binding="true" />
+			<service-provider alias="employee2.war"
+				url="http://localhost:8080/employee2" post-binding="true" />
+		</service-providers>
+	</federation>
+</subsystem>

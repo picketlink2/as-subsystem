@@ -26,10 +26,15 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.subsystem.test.AbstractSubsystemTest;
@@ -40,7 +45,9 @@ import org.picketlink.as.subsystem.Namespace;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 
 /**
+ * <p>
  * Tests that the PicketLink Subsystem parsing mechanism is functional.
+ * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 9, 2012
@@ -57,28 +64,16 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
      * @return
      */
     private String getValidSubsystemXML() {
-        StringBuffer subsystemXml = new StringBuffer();
+        String content = null;
+        
+        try {
+            content = FileUtils.readFileToString(new File(Thread.currentThread().getContextClassLoader()
+                    .getResource("picketlink-subsystem.xml").getFile()));
+        } catch (IOException e) {
+            Assert.fail("Error while reading the subsystem configuration file.");
+        }
 
-        subsystemXml.append("<subsystem xmlns=\"" + Namespace.CURRENT.getUri() + "\">");
-        subsystemXml.append("<federation alias=\"my-fed\">");
-        subsystemXml
-                .append("<identity-provider alias=\"idp.war\" url=\"http://localhost:8080/idp\" signOutgoingMessages=\"false\" ignoreIncomingSignatures=\"true\">");
-        subsystemXml.append("<trust>");
-        subsystemXml.append("<trust-domain name=\"localhost\" />");
-        subsystemXml.append("<trust-domain name=\"mycompany.com2\" />");
-        subsystemXml.append("<trust-domain name=\"mycompany.com3\" />");
-        subsystemXml.append("<trust-domain name=\"mycompany.com4\" />");
-        subsystemXml.append("</trust>");
-        subsystemXml.append("</identity-provider>");
-        subsystemXml.append("<service-providers>");
-        subsystemXml.append("<service-provider alias=\"sales.war\" url=\"http://localhost:8080/sales\" post-binding=\"true\"/>");
-        subsystemXml.append("<service-provider alias=\"employee.war\" url=\"http://localhost:8080/employee\" post-binding=\"true\"/>");
-        subsystemXml.append("<service-provider alias=\"employee2.war\" url=\"http://localhost:8080/employee2\" post-binding=\"true\"/>");
-        subsystemXml.append("</service-providers>");
-        subsystemXml.append("</federation>");
-        subsystemXml.append("</subsystem>");
-
-        return subsystemXml.toString();
+        return content;
     }
 
     /**

@@ -53,14 +53,20 @@
 		<jboss.as.scm.connection>git@github.com:picketlink/as-subsystem.git</jboss.as.scm.connection>
 
 		<!-- Build configuration -->
+		<module.name>org.picketlink</module.name>
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 
-		<version.jboss.as>7.1.0.Final</version.jboss.as>
-		<version.junit>4.8.2</version.junit>
+		<!-- Current version of JBoss AS7 supported by this subsystem. -->
+		<version.jboss_as>7.1.0.Final</version.jboss_as>
+
+		<!-- Current version of PicketLink supported by this subsystem. -->
 		<version.picketlink>2.0.2.Final</version.picketlink>
 
-		<module.name>org.picketlink</module.name>
+		<!-- Test dependencies version. -->
+		<version.arquillian>1.0.0.CR7</version.arquillian>
+		<version.arquillian_drone>1.0.0.CR4</version.arquillian_drone>
+		<version.junit>4.8.2</version.junit>
 	</properties>
 
 	<dependencyManagement>
@@ -68,24 +74,12 @@
 			<dependency>
 				<groupId>org.jboss.as</groupId>
 				<artifactId>jboss-as-controller</artifactId>
-				<version>${version.jboss.as}</version>
+				<version>${version.jboss_as}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.as</groupId>
 				<artifactId>jboss-as-server</artifactId>
-				<version>${version.jboss.as}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-subsystem-test</artifactId>
-				<version>${version.jboss.as}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<scope>test</scope>
-				<version>${version.junit}</version>
+				<version>${version.jboss_as}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.picketlink</groupId>
@@ -105,6 +99,40 @@
 				<version>${version.picketlink}</version>
 				<scope>provided</scope>
 			</dependency>
+
+			<!-- Test dependencies -->
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>${version.arquillian}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian.extension</groupId>
+				<artifactId>arquillian-drone-bom</artifactId>
+				<version>${version.arquillian_drone}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.as</groupId>
+				<artifactId>jboss-as-subsystem-test</artifactId>
+				<version>${version.jboss_as}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.as</groupId>
+				<artifactId>jboss-as-arquillian-container-managed</artifactId>
+				<version>${version.jboss_as}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${version.junit}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -118,16 +146,6 @@
 			<artifactId>jboss-as-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-subsystem-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-fed-core</artifactId>
 		</dependency>
@@ -139,10 +157,168 @@
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-bindings</artifactId>
 		</dependency>
+
+		<!-- TestDependencies -->
+		<dependency>
+			<groupId>org.jboss.as</groupId>
+			<artifactId>jboss-as-subsystem-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.as</groupId>
+			<artifactId>jboss-as-arquillian-container-managed</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-container-test-impl-base</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-drone-impl</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-drone-selenium</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-drone-selenium-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-server</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0.3</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>1.6</version>
+								</requireJavaVersion>
+								<requireProperty>
+									<property>jboss.as.home</property>
+									<message>System property 'jboss.as.home' is not set. This
+										property must be set and point to a JBoss AS
+										${version.jboss_as} installation in order to run the
+										integration tests.</message>
+								</requireProperty>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- This plugin execute some transformations in the standalone.xml fo 
+				the JBoss AS7 installation in order to run the integration tests. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+						<configuration>
+							<transformationSets>
+								<transformationSet>
+									<dir>${jboss.as.home}/standalone/configuration/</dir>
+									<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+									<includes>
+										<include>standalone.xml</include>
+									</includes>
+									<stylesheet>src/test/resources/xslt/addExtension.xslt</stylesheet>
+								</transformationSet>
+								<transformationSet>
+									<dir>${jboss.as.home}/standalone/configuration/</dir>
+									<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+									<includes>
+										<include>standalone.xml</include>
+									</includes>
+									<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
+								</transformationSet>
+							</transformationSets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- The testes are organized in Unit Tests and Integration Tests. -->
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+				<!-- Test execution for unit tests. -->
+				<executions>
+					<execution>
+						<id>unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+							<excludes>
+								<exclude>test/**/integration/*TestCase.java</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+					<!-- Test execution for integration tests. -->
+					<execution>
+						<id>integration-test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+							<systemPropertyVariables>
+								<jbossHome>${jboss.as.home}</jbossHome>
+							</systemPropertyVariables>
+							<includes>
+								<include>**/integration/*TestCase.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.1</version>
@@ -153,29 +329,10 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.8.1</version>
-				<configuration>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<enableAssertions>true</enableAssertions>
-					<argLine>-Xmx512m</argLine>
-					<systemProperties>
-						<property>
-							<name>jboss.home</name>
-							<value>${jboss.home}</value>
-						</property>
-					</systemProperties>
-					<includes>
-						<include>**/*TestCase.java</include>
-					</includes>
-					<forkMode>once</forkMode>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<inherited>false</inherited>
 				<version>1.6</version>
+				<!-- This execution prepares a distribution package for the subsystem. -->
 				<executions>
 					<execution>
 						<id>build-dist</id>
@@ -222,12 +379,4 @@
 		</repository>
 	</repositories>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jdepend-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>

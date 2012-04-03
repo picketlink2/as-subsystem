@@ -1,0 +1,9 @@
+<jboss-deployment-structure>
+
+	<deployment>
+		<!-- Add picketlink module dependency -->
+		<dependencies>
+			<module name="org.picketlink" slot="2.1.0" />
+		</dependencies>
+	</deployment>
+</jboss-deployment-structure>
