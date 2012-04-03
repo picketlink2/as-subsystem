@@ -1,5 +1,5 @@
 # PicketLink AS7 Subsystem Project #
-
+ 
 This project is a AS7 Subsystem for the [PicketLink Project](http://www.jboss.org/picketlink "PicketLink Project").
 
 For more information about this project, see this [thread](https://community.jboss.org/thread/196424 "PicketLink Subsystem Discussion Thread"). 
