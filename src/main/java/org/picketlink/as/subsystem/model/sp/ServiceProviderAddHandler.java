@@ -41,6 +41,7 @@ import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.SPConfigurationService;
 
 /**
@@ -54,29 +55,38 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
         super(ModelElement.SERVICE_PROVIDER);
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+     */
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), getFederationAlias(operation));
+        
+        SPConfigurationService service = createSPService(context, operation, verificationHandler, newControllers);
+        
+        // if the parent federation has a keyprovider configuration sets it in the sp service
+        service.getSPConfiguration().setKeyProvider(federationService.getKeyProvider());
+
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link SPConfigurationService} instance for this SP configuration.
+     * </p>
+     * @param context
+     * @param operation
+     * @param verificationHandler
+     * @param newControllers
+     * @return
+     */
+    private SPConfigurationService createSPService(OperationContext context, ModelNode operation,
+            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers) {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         String url = operation.get(ModelElement.COMMON_URL.getName()).asString();
         boolean postBinding = operation.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
-        String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
-        String idpUrl = null;
-          
-        PathAddress addr = PathAddress.pathAddress(PathElement.pathElement(ModelElement.FEDERATION.getName(), fedAlias));
-        
-        Set<ResourceEntry> federationChilds = context.getRootResource().getChild(
-                PathElement.pathElement(
-                        SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME))
-                        .navigate(addr).getChildren(ModelElement.IDENTITY_PROVIDER.getName());
-        
-        for (ResourceEntry resourceEntry : federationChilds) {
-            if (resourceEntry.getPathElement().getKey().equals(ModelElement.IDENTITY_PROVIDER.getName())) {
-                idpUrl = resourceEntry.getModel().get(ModelElement.COMMON_URL.getName()).asString();
-                break;
-            }
-        } 
+        String idpUrl = getIdentityURL(context, operation); 
         
         SPConfigurationService service = new SPConfigurationService(alias, url);
         ServiceName name = SPConfigurationService.createServiceName(alias);
@@ -87,6 +97,49 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
         service.getSPConfiguration().setPostBinding(postBinding);
         
         newControllers.add(controller);
+        
+        return service;
+    }
+
+    /**
+     * <p>
+     * Returns the alias for the parent federation onfiguration. 
+     * </p>
+     * 
+     * @param operation
+     * @return
+     */
+    private String getFederationAlias(ModelNode operation) {
+        return PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
+    }
+
+    /**
+     * <p>
+     * Try do discover the IDP URL.
+     * </p>
+     * 
+     * @param context
+     * @param operation 
+     * @param pathAddress
+     * @return
+     */
+    private String getIdentityURL(OperationContext context, ModelNode operation) {
+        String identityURL = null;
+        PathAddress pathAddress = PathAddress.pathAddress(PathElement.pathElement(ModelElement.FEDERATION.getName(), getFederationAlias(operation)));
+        
+        Set<ResourceEntry> federationChilds = context.getRootResource().getChild(
+                PathElement.pathElement(
+                        SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME))
+                        .navigate(pathAddress).getChildren(ModelElement.IDENTITY_PROVIDER.getName());
+        
+        for (ResourceEntry resourceEntry : federationChilds) {
+            if (resourceEntry.getPathElement().getKey().equals(ModelElement.IDENTITY_PROVIDER.getName())) {
+                identityURL = resourceEntry.getModel().get(ModelElement.COMMON_URL.getName()).asString();
+                break;
+            }
+        }
+        
+        return identityURL;
     }
     
 }

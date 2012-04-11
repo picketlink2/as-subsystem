@@ -25,10 +25,13 @@ package org.picketlink.identity.federation.core.config.parser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
@@ -64,6 +67,33 @@ public class SPTypeConfigWriter implements ConfigWriter {
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
             StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL() + "/");
             StaxUtil.writeEndElement(writer);
+            
+            if (this.configuration.getKeyProvider() != null) {
+                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.KEY_PROVIDER, "");
+                StaxUtil.writeAttribute(writer, "ClassName", "org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
+                
+                for (AuthPropertyType authProperty : this.configuration.getKeyProvider().getAuth()) {
+                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.AUTH, "");
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, authProperty.getKey());
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, authProperty.getValue());
+                    StaxUtil.writeEndElement(writer);
+                }
+                
+                String idpHost = null;
+                
+                try {
+                    idpHost = new URL(this.configuration.getIdentityURL()).getHost();
+                } catch (MalformedURLException e) {
+                    throw new IllegalStateException("The Identity URL for the Service Provider " + this.configuration.getServiceURL() + " is invalid.", e);
+                }
+                
+                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
+                StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, idpHost);
+                StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, idpHost);
+                StaxUtil.writeEndElement(writer);
+                
+                StaxUtil.writeEndElement(writer);
+            }
 
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {

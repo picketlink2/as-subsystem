@@ -1,21 +1,63 @@
-<subsystem xmlns="urn:jboss:picketlink:1.0">
-	<federation alias="my-fed">
-		<identity-provider alias="idp.war" url="http://localhost:8080/idp"
-			signOutgoingMessages="false" ignoreIncomingSignatures="true">
-			<trust>
-				<trust-domain name="localhost" />
-				<trust-domain name="mycompany.com2" />
-				<trust-domain name="mycompany.com3" />
-				<trust-domain name="mycompany.com4" />
-			</trust>
-		</identity-provider>
-		<service-providers>
-			<service-provider alias="sales.war"
-				url="http://localhost:8080/sales" post-binding="true" />
-			<service-provider alias="employee.war"
-				url="http://localhost:8080/employee" post-binding="true" />
-			<service-provider alias="employee2.war"
-				url="http://localhost:8080/employee2" post-binding="true" />
-		</service-providers>
-	</federation>
+<subsystem xmlns="urn:jboss:picketlink:1.0" >
+
+    <federation alias="my-fed" >
+
+        <key-store
+            passwd="MASK-O1P+U1Domeec8lCaoIkTGg=="
+            sign-key-alias="servercert"
+            sign-key-passwd="MASK-AJbh4WmHwy8="
+            url="/pedroigor/java/workspace/picketlink/as-subsystem/src/test/resources/jbid_test_keystore.jks" />
+
+        <identity-provider
+            alias="idp.war"
+            ignoreIncomingSignatures="true"
+            signOutgoingMessages="false"
+            url="http://localhost:8080/idp" >
+
+            <idp-metadata wantAuthnRequestsSigned="true" >
+
+                <organization
+                    name="Acme"
+                    url="http://acme.com" />
+
+                <contact
+                    name="pedro"
+                    company="Red Hat Inc."
+                    email="psilva@redhat.com"
+                    phone="1122222222"
+                    surName="silva"
+                    type="technical" />
+            </idp-metadata>
+
+            <trust>
+
+                <trust-domain name="localhost" />
+
+                <trust-domain name="mycompany.com2" />
+
+                <trust-domain name="mycompany.com3" />
+
+                <trust-domain name="mycompany.com4" />
+            </trust>
+        </identity-provider>
+
+        <service-providers>
+
+            <service-provider
+                alias="sales.war"
+                post-binding="true"
+                url="http://localhost:8080/sales" />
+
+            <service-provider
+                alias="employee.war"
+                post-binding="true"
+                url="http://localhost:8080/employee" />
+
+            <service-provider
+                alias="employee2.war"
+                post-binding="true"
+                url="http://localhost:8080/employee2" />
+        </service-providers>
+    </federation>
+
 </subsystem>

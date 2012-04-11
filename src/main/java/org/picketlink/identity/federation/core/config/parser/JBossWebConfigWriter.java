@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +62,7 @@ import org.w3c.dom.Node;
  */
 public class JBossWebConfigWriter implements ConfigWriter {
 
+    private static final String SP_SIGNATURE_IDP_ADDRESS = "idpAddress";
     private static final String VALVE_PARAM_VALUE = "param-value";
     private static final String VALVE_PARAM_NAME = "param-name";
     private static final String VALVE_CLASS_NAME = "class-name";
@@ -68,6 +71,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
     
     private static final String IGNORE_INCOMING_SIGNATURES_ATTRIBUTE = "ignoreIncomingSignatures";
     private static final String SIGN_OUTGOING_MESSAGES_ATTRIBUTE = "signOutgoingMessages";
+    private static final String VALIDATING_ALIAS_TO_TOKEN_ISSUER = "validatingAliasToTokenIssuer";
 
     private ProviderType configuration;
 
@@ -160,18 +164,32 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
                         String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
                 
+                if (this.configuration.getKeyProvider() != null) {
+                    attributes.put(VALIDATING_ALIAS_TO_TOKEN_ISSUER, Boolean.TRUE.toString());
+                }
+                
                 writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
             } else if (this.configuration instanceof SPTypeSubsystem) {
                 SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
-
+                
                 if (spConfiguration.isPostBinding()) {
-                    writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator", null);    
+                    if (spConfiguration.getKeyProvider() != null) {
+                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostSignatureFormAuthenticator", getSPSignatureAttributes(spConfiguration));
+                    } else {
+                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator", null);                        
+                    }
                 } else {
-                    writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);
+                    if (spConfiguration.getKeyProvider() != null) {
+                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectSignatureFormAuthenticator", getSPSignatureAttributes(spConfiguration));
+                    } else {
+                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);                        
+                    }
                 }
                 
             }
         } catch (ProcessingException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         } finally {
             if (writer != null) {
@@ -185,6 +203,13 @@ public class JBossWebConfigWriter implements ConfigWriter {
         }
         
         return result.getNode();
+    }
+
+    private Map<String, String> getSPSignatureAttributes(SPTypeSubsystem spConfiguration) throws MalformedURLException {
+        Map<String, String> attributes = new HashMap<String, String>();
+
+        attributes.put(SP_SIGNATURE_IDP_ADDRESS, new URL(spConfiguration.getIdentityURL()).getHost());
+        return attributes;
     }
 
     public void writeValve(XMLStreamWriter writer, String className, Map<String, String> attributes) throws ProcessingException {

@@ -29,6 +29,8 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.federation.KeyStoreResourceDefinition;
+import org.picketlink.as.subsystem.model.idp.metadata.IDPSAMLMetadataResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -76,6 +78,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
      */
     @Override
     public void registerChildren(ManagementResourceRegistration resourceRegistration) {
+        addChildResourceDefinition(IDPSAMLMetadataResourceDefinition.INSTANCE, resourceRegistration);
         addChildResourceDefinition(TrustDomainResourceDefinition.INSTANCE, resourceRegistration);
     }
 }

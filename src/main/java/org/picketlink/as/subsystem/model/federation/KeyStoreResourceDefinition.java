@@ -22,32 +22,32 @@
 
 package org.picketlink.as.subsystem.model.federation;
 
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
-
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
-import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.idp.IdentityProviderAliasHandler;
-import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
-import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class FederationResourceDefinition extends AbstractResourceDefinition {
+public class KeyStoreResourceDefinition extends AbstractResourceDefinition {
 
-    public static final FederationResourceDefinition INSTANCE = new FederationResourceDefinition();
+    public static final KeyStoreResourceDefinition INSTANCE = new KeyStoreResourceDefinition();
 
-    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(COMMON_ALIAS.getName(),
-            ModelType.STRING, false).setDefaultValue(new ModelNode().set("localhost")).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_URL.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition PASSWD = new SimpleAttributeDefinitionBuilder(
+            ModelElement.KEY_STORE_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition SIGN_KEY_ALIAS = new SimpleAttributeDefinitionBuilder(
+            ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition SIGN_KEY_PASSWD = new SimpleAttributeDefinitionBuilder(
+            ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
-    private FederationResourceDefinition() {
-        super(ModelElement.FEDERATION, FederationAddHandler.INSTANCE, FederationRemoveHandler.INSTANCE);
+    private KeyStoreResourceDefinition() {
+        super(ModelElement.KEY_STORE, KeyStoreAddHandler.INSTANCE, KeyStoreRemoveHandler.INSTANCE);
     }
 
     /*
@@ -58,19 +58,10 @@ public class FederationResourceDefinition extends AbstractResourceDefinition {
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(URL, null, KeyStoreURLHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(PASSWD, null, KeyStorePasswdHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SIGN_KEY_ALIAS, null, KeyStoreSignKeyAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SIGN_KEY_PASSWD, null, KeyStoreSignKeyPasswdHandler.INSTANCE, resourceRegistration);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerChildren(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
-    @Override
-    public void registerChildren(ManagementResourceRegistration resourceRegistration) {
-        addChildResourceDefinition(KeyStoreResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(IdentityProviderResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(ServiceProviderResourceDefinition.INSTANCE, resourceRegistration);
-    }
 }

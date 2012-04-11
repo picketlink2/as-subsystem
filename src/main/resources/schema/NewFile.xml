@@ -3,6 +3,12 @@
 	xsi:schemaLocation="urn:jboss:picketlink:1.0 picketlink-subsystem.xsd ">
 	<federation>
 		<identity-provider>
+		    <saml>
+		    	<idp-metadata wantAuthnRequestsSigned="true">
+		    	    <organization name="Acme" url="http://acme.com">
+		    	</idp-metadata>    
+		    </saml>
+		    
 			<trust>
 				<domain />
 			</trust>

@@ -27,10 +27,13 @@ import java.util.List;
 import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 import org.picketlink.as.subsystem.service.SPConfigurationService;
 
@@ -55,6 +58,21 @@ public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
             throws OperationFailedException {
         removeIdentityProviderService(context, model);
         removeServiceProviderService(context, model);
+        removeFederationService(context, operation);
+    }
+
+    /**
+     * <p>
+     * Removes the registered {@ FederationService}.
+     * </p>
+     * 
+     * @param context
+     * @param operation
+     */
+    private void removeFederationService(OperationContext context, ModelNode operation) {
+        String suffix = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
+        ServiceName name = FederationService.createServiceName(suffix);
+        context.removeService(name);
     }
 
     /**
@@ -102,6 +120,6 @@ public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
     }
 
     private boolean hasIdentityProvider(ModelNode model) {
-        return model.get(ModelElement.IDENTITY_PROVIDER.getName()).isDefined() && model.get(ModelElement.IDENTITY_PROVIDER.getName()).asPropertyList().isEmpty();
+        return model.get(ModelElement.IDENTITY_PROVIDER.getName()).isDefined() && !model.get(ModelElement.IDENTITY_PROVIDER.getName()).asPropertyList().isEmpty();
     }
 }

@@ -36,6 +36,7 @@ public enum ModelElement {
 
     COMMON_ALIAS ("alias"),
     COMMON_URL ("url"),
+    COMMON_NAME ("name"),
     
     FEDERATION("federation"),
     
@@ -44,6 +45,19 @@ public enum ModelElement {
     TRUST_DOMAIN_NAME("name"),
     IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES("signOutgoingMessages"),
     IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES("ignoreIncomingSignatures"),
+    KEY_STORE ("key-store"),
+    IDENTITY_PROVIDER_SAML_METADATA ("idp-metadata"),
+    IDENTITY_PROVIDER_SAML_METADATA_WANT_AUTHN_REQUESTS_SIGNED ("wantAuthnRequestsSigned"),
+    IDENTITY_PROVIDER_SAML_METADATA_ORGANIZATION ("organization"),
+    KEY_STORE_PASSWD ("passwd"), 
+    KEY_STORE_SIGN_KEY_ALIAS ("sign-key-alias"), 
+    KEY_STORE_SIGN_KEY_PASSWD ("sign-key-passwd"),
+    CONTACT ("contact"),
+    CONTACT_SUR_NAME ("surName"), 
+    CONTACT_PHONE ("phone"), 
+    CONTACT_EMAIL ("email"), 
+    CONTACT_TYPE ("type"), 
+    CONTACT_COMPANY ("company"),
     
     SERVICE_PROVIDER("service-provider"), 
     SERVICE_PROVIDER_POST_BINDING ("post-binding");

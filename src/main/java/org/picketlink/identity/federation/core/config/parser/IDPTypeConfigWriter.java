@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.picketlink.identity.federation.core.config.AuthPropertyType;
+import org.picketlink.identity.federation.core.config.KeyValueType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
@@ -64,13 +66,32 @@ public class IDPTypeConfigWriter implements ConfigWriter {
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
             StaxUtil.writeCharacters(writer, this.idpConfiguration.getIdentityURL() + "/");
             StaxUtil.writeEndElement(writer);
+
+            if (this.idpConfiguration.getKeyProvider() != null) {
+                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.KEY_PROVIDER, "");
+                StaxUtil.writeAttribute(writer, "ClassName", "org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
+                
+                for (AuthPropertyType authProperty : this.idpConfiguration.getKeyProvider().getAuth()) {
+                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.AUTH, "");
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, authProperty.getKey());
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, authProperty.getValue());
+                    StaxUtil.writeEndElement(writer);
+                }
+                
+                for (KeyValueType validatingAlias : this.idpConfiguration.getKeyProvider().getValidatingAlias()) {
+                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, validatingAlias.getKey());
+                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, validatingAlias.getValue());
+                    StaxUtil.writeEndElement(writer);
+                }
+                
+                StaxUtil.writeEndElement(writer);
+            }
             
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.TRUST, "");
-
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.DOMAINS, "");
             StaxUtil.writeCharacters(writer, this.idpConfiguration.getTrust().getDomains());
             StaxUtil.writeEndElement(writer);
-            
             StaxUtil.writeEndElement(writer);
 
             StaxUtil.writeEndElement(writer);

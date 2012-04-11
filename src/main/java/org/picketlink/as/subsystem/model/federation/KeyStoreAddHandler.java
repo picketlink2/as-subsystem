@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.idp;
+package org.picketlink.as.subsystem.model.federation;
 
 import java.util.List;
 
@@ -32,42 +32,62 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.KeyValueType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
+public class KeyStoreAddHandler extends AbstractResourceAddStepHandler {
 
-    public static final TrustDomainAddHandler INSTANCE = new TrustDomainAddHandler();
+    public static final KeyStoreAddHandler INSTANCE = new KeyStoreAddHandler();
 
-    private TrustDomainAddHandler() {
-        super(ModelElement.TRUST_DOMAIN);
+    private KeyStoreAddHandler() {
+        super(ModelElement.KEY_STORE);
     }
 
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
+        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
 
-        IDPConfigurationService service = IDPConfigurationService.getService(context.getServiceRegistry(true), alias);
+        FederationService service = FederationService.getService(context.getServiceRegistry(true), alias);
         
-        KeyProviderType keyProvider = service.getIdpConfiguration().getKeyProvider();
+        KeyProviderType keyProviderType = new KeyProviderType();
         
-        if (keyProvider != null) {
-            KeyValueType keyValue = new KeyValueType();
-            
-            keyValue.setKey(domain);
-            keyValue.setValue(domain);
-            
-            keyProvider.add(keyValue);
-        }
+        keyProviderType.setSigningAlias(model.get(ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName()).asString());
         
-        service.getIdpConfiguration().addTrustDomain(domain);
+        AuthPropertyType keyStoreURL = new AuthPropertyType();
+        
+        keyStoreURL.setKey("KeyStoreURL");
+        keyStoreURL.setValue(model.get(ModelElement.COMMON_URL.getName()).asString());
+        
+        keyProviderType.add(keyStoreURL);
+        
+        AuthPropertyType keyStorePass = new AuthPropertyType();
+
+        keyStorePass.setKey("KeyStorePass");
+        keyStorePass.setValue(model.get(ModelElement.KEY_STORE_PASSWD.getName()).asString());
+
+        keyProviderType.add(keyStorePass);
+        
+        AuthPropertyType signingKeyPass = new AuthPropertyType();
+
+        signingKeyPass.setKey("SigningKeyPass");
+        signingKeyPass.setValue(model.get(ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName()).asString());
+
+        keyProviderType.add(signingKeyPass);
+
+        AuthPropertyType signingKeyAlias = new AuthPropertyType();
+
+        signingKeyAlias.setKey("SigningKeyAlias");
+        signingKeyAlias.setValue(model.get(ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName()).asString());
+
+        keyProviderType.add(signingKeyAlias);
+
+        service.setKeyProvider(keyProviderType);
     }
     
 }

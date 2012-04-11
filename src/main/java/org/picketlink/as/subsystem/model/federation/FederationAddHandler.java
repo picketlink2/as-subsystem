@@ -21,8 +21,20 @@
  */
 package org.picketlink.as.subsystem.model.federation;
 
+import java.util.List;
+
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.ServiceVerificationHandler;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.dmr.ModelNode;
+import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceController.Mode;
+import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
+import org.picketlink.as.subsystem.service.FederationService;
 
 
 
@@ -35,6 +47,38 @@ public class FederationAddHandler extends AbstractResourceAddStepHandler  {
 
     private FederationAddHandler() {
         super(ModelElement.FEDERATION);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+     */
+    @Override
+    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
+            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
+            throws OperationFailedException {
+        PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
+        
+        createFederationService(pathAddress.getLastElement().getValue(), context, verificationHandler, newControllers);
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link FederationService} instance for this configuration.
+     * </p>
+     * 
+     * @param alias
+     * @param context
+     * @param verificationHandler
+     * @param newControllers
+     */
+    private void createFederationService(String alias, OperationContext context, ServiceVerificationHandler verificationHandler,
+            List<ServiceController<?>> newControllers) {
+        FederationService service = new FederationService(alias);
+        ServiceName name = FederationService.createServiceName(alias);
+        ServiceController<FederationService> controller = context.getServiceTarget().addService(name, service)
+                .addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
+        
+        newControllers.add(controller);
     }
 
 }
