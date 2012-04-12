@@ -10,9 +10,10 @@ To execute a simple(default) build run **mvn clean install**.
 
 To execute a build running all unit tests run **mvn -Punit-tests clean install**. 
 
-To execute a build running all integration tests run **mvn -Pintegration-tests clean install**.
+To execute a build running all integration tests run **mvn -Djboss.as.home=$JBOSS_HOME -Pintegration-tests clean install**. The ${jboss.as.home} variable must point to
+a fresh JBoss AS 7 installation in order to run the tests.
 
-To execute a release build run **mvn -Punit-tests,integration-tests,release clean install**. *(the release build process is still being defined)*
+To execute a release build run **mvn -Djboss.as.home=$JBOSS_HOME -Punit-tests,integration-tests,release clean install**. *(the release build process is still being defined)*
 
 ## How to install ##
 
