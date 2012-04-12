@@ -244,41 +244,6 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<inherited>false</inherited>
-				<version>1.6</version>
-				<!-- This execution prepares a distribution package for the subsystem. -->
-				<executions>
-					<execution>
-						<id>build-dist</id>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<!-- Replace the '.' in ${module.name} with '/' to get its path -->
-								<tempfile property="temp.file" />
-								<echo message="${module.name}" file="${temp.file}" />
-								<replace file="${temp.file}" token="." value="/" />
-								<loadfile srcfile="${temp.file}" property="module.path" />
-								<delete file="${temp.file}" />
-								<delete dir="target/module" />
-								<property name="module.dir" value="target/module/${module.path}/main" />
-								<copy file="src/main/resources/module/main/module.xml"
-									tofile="${module.dir}/module.xml" />
-								<copy file="target/${project.artifactId}-${project.version}.jar"
-									todir="${module.dir}" />
-								<echo>Module ${module.name} has been created in the
-									target/module directory. Copy to your JBoss AS 7
-									installation.</echo>
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -378,6 +343,67 @@
 											<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
 										</transformationSet>
 									</transformationSets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<inherited>false</inherited>
+						<version>1.6</version>
+						<!-- This execution prepares a distribution package for the subsystem. -->
+						<executions>
+							<execution>
+								<id>build-dist</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<target>
+										<!-- Replace the '.' in ${module.name} with '/' to get its path -->
+										<tempfile property="temp.file" />
+										<echo message="${module.name}" file="${temp.file}" />
+										<replace file="${temp.file}" token="." value="/" />
+										<loadfile srcfile="${temp.file}" property="module.path" />
+										<delete file="${temp.file}" />
+										<delete dir="target/module" />
+										<property name="module.dir" value="target/module/${module.path}/main" />
+										<copy file="src/main/resources/module/main/module.xml"
+											tofile="${module.dir}/module.xml" />
+										<copy file="target/${project.artifactId}-${project.version}.jar"
+											todir="${module.dir}" />
+										<echo>Module ${module.name} has been created in the
+											target/module directory. Copy to your JBoss AS 7
+											installation.</echo>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>update-jboss-as-module</id>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<phase>integration-test</phase>
+								<configuration>
+									<target>
+										<property name="module.dir" value="target/module/org/picketlink/main" />
+										<property name="jboss.as.module.dir"
+											value="${jboss.as.home}/modules/org/picketlink/main/" />
+
+										<delete
+											file="${jboss.as.module.dir}/${project.artifactId}-${project.version}.jar" />
+
+										<copy
+											file="${module.dir}/${project.artifactId}-${project.version}.jar"
+											todir="${jboss.as.module.dir}" />
+
+										<copy file="${module.dir}/module.xml" todir="${jboss.as.module.dir}" />
+
+										<echo>JBoss AS7 Integration Test Server update with the module
+											configuration.</echo>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
