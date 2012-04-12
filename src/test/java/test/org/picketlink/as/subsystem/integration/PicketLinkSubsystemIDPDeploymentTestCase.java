@@ -13,6 +13,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 
@@ -28,14 +29,13 @@ import com.thoughtworks.selenium.DefaultSelenium;
 @RunWith(Arquillian.class)
 public class PicketLinkSubsystemIDPDeploymentTestCase {
 
-    /**
-     * Directory where the configuration files used to deploy the IDP are located.
-     */
-    private static final String DEPLOYMENT_ROOT_DIR = "deployment/idp";
+    private static final String DEPLOYMENT_ROOT_DIR = "deployment";
+    private static final String IDP_DEPLOYMENT_ROOT_DIR = DEPLOYMENT_ROOT_DIR + "/idp";
+    private static final String SP_DEPLOYMENT_ROOT_DIR = DEPLOYMENT_ROOT_DIR + "/sp";
 
     @Drone
     private DefaultSelenium browser;
-
+    
     @ArquillianResource
     private URL deploymentURL;
 
@@ -46,23 +46,55 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
      */
     @Deployment(name = "idp", testable = false)
     @TargetsContainer("jboss-as7")
-    public static WebArchive createDeployment() {
+    public static WebArchive createIDPDeployment() {
         return ShrinkWrap
                 .create(WebArchive.class, "idp.war")
-                .addAsManifestResource(DEPLOYMENT_ROOT_DIR + "/META-INF/jboss-deployment-structure.xml",
-                        "jboss-deployment-structure.xml").setWebXML(DEPLOYMENT_ROOT_DIR + "/WEB-INF/web.xml")
-                .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/WEB-INF/jboss-web.xml", "WEB-INF/jboss-web.xml")
-                .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jsp/login.jsp", "jsp/login.jsp")
-                .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jsp/error.jsp", "jsp/error.jsp");
+                .addAsManifestResource(IDP_DEPLOYMENT_ROOT_DIR + "/META-INF/jboss-deployment-structure.xml",
+                        "jboss-deployment-structure.xml").setWebXML(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/web.xml")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/jboss-web.xml", "WEB-INF/jboss-web.xml")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/classes/users.properties", "WEB-INF/classes/users.properties")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/classes/roles.properties", "WEB-INF/classes/roles.properties")
+                .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jbid_test_keystore.jks", "WEB-INF/classes/jbid_test_keystore.jks")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/jsp/login.jsp", "jsp/login.jsp")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/jsp/error.jsp", "jsp/error.jsp");
+    }
+
+    /**
+     * Configures an IDP deployment.
+     * 
+     * @return
+     */
+    @Deployment(name = "sales", testable = false)
+    @TargetsContainer("jboss-as7")
+    public static WebArchive createSalesDeployment() {
+        return ShrinkWrap
+                .create(WebArchive.class, "sales.war")
+                .addAsManifestResource(SP_DEPLOYMENT_ROOT_DIR + "/META-INF/jboss-deployment-structure.xml",
+                        "jboss-deployment-structure.xml")
+                 .setWebXML(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/web.xml")
+                .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/jboss-web.xml", "WEB-INF/jboss-web.xml")
+                .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jbid_test_keystore.jks", "WEB-INF/classes/jbid_test_keystore.jks")
+                .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/index.jsp", "index.jsp");
     }
 
     @Test
-    @OperateOnDeployment("idp")
-    public void testDeploy() {
+    @OperateOnDeployment("sales")
+    public void testDeploy() throws InterruptedException {
         browser.open(deploymentURL.toString());
-
+        
+        Thread.sleep(5000l);
+        
         Assert.assertTrue("IDP login page should be presented",
                 browser.isElementPresent("xpath=//input[@type='submit' and @value='login']"));
+        
+        browser.type("id=usernameText", "tomcat");
+        browser.type("id=passwordText", "tomcat");
+        browser.click("id=loginButton");
+        
+        Thread.sleep(5000l);
+
+        Assert.assertTrue("Service Provider welcomePage page should be presented",
+                browser.isElementPresent("xpath=//h1[@id='welcomePage']"));
     }
 
 }

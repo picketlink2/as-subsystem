@@ -3,10 +3,10 @@
     <federation alias="my-fed" >
 
         <key-store
-            passwd="MASK-O1P+U1Domeec8lCaoIkTGg=="
-            sign-key-alias="servercert"
-            sign-key-passwd="MASK-AJbh4WmHwy8="
-            url="/pedroigor/java/workspace/picketlink/as-subsystem/src/test/resources/jbid_test_keystore.jks" />
+            passwd="changeit"
+            sign-key-alias="localhost"
+            sign-key-passwd="changeit"
+            url="/jbid_test_keystore.jks" />
 
         <identity-provider
             alias="idp.war"

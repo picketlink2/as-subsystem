@@ -116,6 +116,11 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.jboss.arquillian.extension</groupId>
+				<artifactId>arquillian-drone-webdriver</artifactId>
+				<version>1.0.0.Final</version>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.as</groupId>
 				<artifactId>jboss-as-subsystem-test</artifactId>
 				<version>${version.jboss_as}</version>
@@ -342,6 +347,14 @@
 											</includes>
 											<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
 										</transformationSet>
+										<transformationSet>
+											<dir>${jboss.as.home}/standalone/configuration/</dir>
+											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+											<includes>
+												<include>standalone.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/addSecurityDomain.xslt</stylesheet>
+										</transformationSet>
 									</transformationSets>
 								</configuration>
 							</execution>
@@ -380,6 +393,7 @@
 									</target>
 								</configuration>
 							</execution>
+							<!-- Update the JBoss AS 7 installation with the necessary files for testing. -->
 							<execution>
 								<id>update-jboss-as-module</id>
 								<goals>
@@ -401,8 +415,7 @@
 
 										<copy file="${module.dir}/module.xml" todir="${jboss.as.module.dir}" />
 
-										<echo>JBoss AS7 Integration Test Server update with the module
-											configuration.</echo>
+										<echo>JBoss AS7 Integration Test Server configurations update for testing.</echo>
 									</target>
 								</configuration>
 							</execution>
