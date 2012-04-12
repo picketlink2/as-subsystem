@@ -69,4 +69,4 @@ Open both files (idp.war and sales.war) and remove the following configuration f
 
 These files must be removed since they will be generated at runtime by the subsystem.
 
-To make sure that everything is ok, please start the JBoss AS and try to access the sales application. You should be redirected to the idp application. If you want to log in the sales and idp applications, don't forget to configure the security domain for both. See [https://community.jboss.org/wiki/CheatsheetPicketLinkAndJBossAS](https://community.jboss.org/wiki/CheatsheetPicketLinkAndJBossAS).
+To make sure that everything is ok, please start the JBoss AS and try to access the sales application. You should be redirected to the idp application. If you want to log in the sales and idp applications, don't forget to configure the security domain for both. See [https://community.jboss.org/wiki/SAMLWebBrowserSSOOnJBossAS70](https://community.jboss.org/wiki/SAMLWebBrowserSSOOnJBossAS70).
