@@ -231,90 +231,7 @@
 								<requireJavaVersion>
 									<version>1.6</version>
 								</requireJavaVersion>
-								<requireProperty>
-									<property>jboss.as.home</property>
-									<message>System property 'jboss.as.home' is not set. This
-										property must be set and point to a JBoss AS
-										${version.jboss_as} installation in order to run the
-										integration tests.</message>
-								</requireProperty>
 							</rules>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- This plugin execute some transformations in the standalone.xml fo 
-				the JBoss AS7 installation in order to run the integration tests. -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xml-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>transform</goal>
-						</goals>
-						<configuration>
-							<transformationSets>
-								<transformationSet>
-									<dir>${jboss.as.home}/standalone/configuration/</dir>
-									<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
-									<includes>
-										<include>standalone.xml</include>
-									</includes>
-									<stylesheet>src/test/resources/xslt/addExtension.xslt</stylesheet>
-								</transformationSet>
-								<transformationSet>
-									<dir>${jboss.as.home}/standalone/configuration/</dir>
-									<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
-									<includes>
-										<include>standalone.xml</include>
-									</includes>
-									<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
-								</transformationSet>
-							</transformationSets>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- The testes are organized in Unit Tests and Integration Tests. -->
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-				<!-- Test execution for unit tests. -->
-				<executions>
-					<execution>
-						<id>unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<excludes>
-								<exclude>test/**/integration/*TestCase.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<!-- Test execution for integration tests. -->
-					<execution>
-						<id>integration-test</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<configuration>
-							<skip>false</skip>
-							<systemPropertyVariables>
-								<jbossHome>${jboss.as.home}</jbossHome>
-							</systemPropertyVariables>
-							<includes>
-								<include>**/integration/*TestCase.java</include>
-							</includes>
 						</configuration>
 					</execution>
 				</executions>
@@ -355,7 +272,8 @@
 								<copy file="target/${project.artifactId}-${project.version}.jar"
 									todir="${module.dir}" />
 								<echo>Module ${module.name} has been created in the
-									target/module directory. Copy to your JBoss AS 7 installation.</echo>
+									target/module directory. Copy to your JBoss AS 7
+									installation.</echo>
 							</target>
 						</configuration>
 					</execution>
@@ -363,6 +281,142 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- This profiles executes all unit tests during the build process. -->
+		<profile>
+			<id>unit-tests</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<!-- The testes are organized in Unit Tests and Integration Tests. -->
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.12</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+						<!-- Test execution for unit tests. -->
+						<executions>
+							<execution>
+								<id>unit-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<excludes>
+										<exclude>test/**/integration/*TestCase.java</exclude>
+									</excludes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- This profiles executes all integration tests during the build process. -->
+		<profile>
+			<id>integration-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>1.0.1</version>
+						<executions>
+							<execution>
+								<id>enforce-versions</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireProperty>
+											<property>jboss.as.home</property>
+											<message>System property 'jboss.as.home' is not set. This
+												property must be set and point to a JBoss AS
+												${version.jboss_as} installation in order to run the
+												integration tests.</message>
+										</requireProperty>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- This plugin execute some transformations in the standalone.xml 
+						fo the JBoss AS7 installation in order to run the integration tests. -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>xml-maven-plugin</artifactId>
+						<version>1.0</version>
+						<executions>
+							<execution>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>transform</goal>
+								</goals>
+								<configuration>
+									<transformationSets>
+										<transformationSet>
+											<dir>${jboss.as.home}/standalone/configuration/</dir>
+											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+											<includes>
+												<include>standalone.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/addExtension.xslt</stylesheet>
+										</transformationSet>
+										<transformationSet>
+											<dir>${jboss.as.home}/standalone/configuration/</dir>
+											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+											<includes>
+												<include>standalone.xml</include>
+											</includes>
+											<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
+										</transformationSet>
+									</transformationSets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- The testes are organized in Unit Tests and Integration Tests. -->
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.12</version>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+						<executions>
+							<!-- Test execution for integration tests. -->
+							<execution>
+								<id>integration-test</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<skip>false</skip>
+									<systemPropertyVariables>
+										<jbossHome>${jboss.as.home}</jbossHome>
+									</systemPropertyVariables>
+									<includes>
+										<include>**/integration/*TestCase.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- This profiles is intended to be used during the release process. -->
+		<profile>
+			<id>release</id>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>

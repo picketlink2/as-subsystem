@@ -4,6 +4,16 @@ This project is a AS7 Subsystem for the [PicketLink Project](http://www.jboss.or
 
 For more information about this project, see this [thread](https://community.jboss.org/thread/196424 "PicketLink Subsystem Discussion Thread"). 
 
+## How to build ##
+
+To execute a simple(default) build run **mvn clean install**.
+
+To execute a build running all unit tests run **mvn -Punit-tests clean install**. 
+
+To execute a build running all integration tests run **mvn -Pintegration-tests clean install**.
+
+To execute a release build run **mvn -Punit-tests,integration-tests,release clean install**. *(the release build process is still being defined)*
+
 ## How to install ##
 
 Download and install [JBoss AS 7.1.0.Final](http://www.jboss.org/jbossas/downloads/ "JBoss AS7 Downloads").
@@ -12,7 +22,7 @@ Download and install [JBoss AS 7.1.0.Final](http://www.jboss.org/jbossas/downloa
 
 Use **mvn clean package** to build the project.
 
-Copy the contents of target/module/org/picketlink/main to ${jboss.home.dir}/modules/org/picketlink/main.
+Copy the contents of **target/module/org/picketlink/main** to **${jboss.home.dir}/modules/org/picketlink/main**.
 
 Change your standalone.xml to add an extension for the PicketLink module:
 
@@ -38,11 +48,15 @@ Open the standalone.xml and add the following configuration for the PicketLink s
             </federation>
         </subsystem>
 
+The XML above is just a sample generated from the supported schema. You can access it from [here](https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd).
+
 ## How to use ##
  
-*The current version supports only a small set of the PicketLink configurations. The actual version of the schema supports only the configurations used in the idp.war and sales.war web applications.*
+*The current version supports only a small set of the PicketLink configurations. Take a look at the schema for all available configurations.*
  
-First, download the web applications from [here](https://repository.jboss.org/nexus/content/groups/public/org/picketlink/picketlink-fed-webapps-as7-assembly/2.0.2.Final/picketlink-fed-webapps-as7-assembly-2.0.2.Final.zip "PicketLink Examples Web Applications").
+Take a look at our [Getting Started Guide] (https://docs.jboss.org/author/display/PLINK/Getting+Started).
+
+Download the example web applications.
 
 Extract the file and copy the idp.war and sales.war to ${jboss.home.dir}/standalone/deployments.
 
