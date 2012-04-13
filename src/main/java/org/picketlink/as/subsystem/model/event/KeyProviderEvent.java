@@ -1,6 +1,5 @@
 package org.picketlink.as.subsystem.model.event;
 
-import org.picketlink.as.subsystem.service.Observer;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 public class KeyProviderEvent implements Event<KeyProviderType> {
