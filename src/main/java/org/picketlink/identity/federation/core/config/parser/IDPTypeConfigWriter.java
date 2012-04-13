@@ -78,11 +78,15 @@ public class IDPTypeConfigWriter implements ConfigWriter {
                     StaxUtil.writeEndElement(writer);
                 }
                 
-                for (KeyValueType validatingAlias : this.idpConfiguration.getKeyProvider().getValidatingAlias()) {
-                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, validatingAlias.getKey());
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, validatingAlias.getValue());
-                    StaxUtil.writeEndElement(writer);
+                if (this.idpConfiguration.getTrust() != null && this.idpConfiguration.getTrust().getDomains() != null) {
+                    String[] domains = this.idpConfiguration.getTrust().getDomains().split(",");
+                    
+                    for (String domain : domains) {
+                        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
+                        StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, domain);
+                        StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, domain);
+                        StaxUtil.writeEndElement(writer);
+                    }
                 }
                 
                 StaxUtil.writeEndElement(writer);
