@@ -38,6 +38,7 @@ import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
@@ -71,6 +72,8 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
         
         // if the parent federation has a keyprovider configuration sets it in the idp service
         idpService.getIdpConfiguration().setKeyProvider(federationService.getKeyProvider());
+        
+        federationService.getEventManager().addObserver(KeyProviderEvent.class, idpService);
     }
 
     /**

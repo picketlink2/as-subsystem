@@ -41,6 +41,7 @@ import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.SPConfigurationService;
 
@@ -64,11 +65,12 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         FederationService federationService = FederationService.getService(context.getServiceRegistry(true), getFederationAlias(operation));
         
-        SPConfigurationService service = createSPService(context, operation, verificationHandler, newControllers);
+        SPConfigurationService spService = createSPService(context, operation, verificationHandler, newControllers);
         
         // if the parent federation has a keyprovider configuration sets it in the sp service
-        service.getSPConfiguration().setKeyProvider(federationService.getKeyProvider());
-
+        spService.getSPConfiguration().setKeyProvider(federationService.getKeyProvider());
+        
+        federationService.getEventManager().addObserver(KeyProviderEvent.class, spService);
     }
 
     /**

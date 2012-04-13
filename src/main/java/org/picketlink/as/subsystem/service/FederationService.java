@@ -29,6 +29,7 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import org.picketlink.as.subsystem.model.event.EventManager;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 /**
@@ -42,7 +43,9 @@ public class FederationService implements Service<FederationService> {
 
     private String alias;
     
-    private KeyProviderType keyProvider; 
+    private KeyProviderType keyProvider;
+
+    private EventManager eventManager = new EventManager(); 
 
     public FederationService(String alias) {
         this.alias = alias;
@@ -108,5 +111,9 @@ public class FederationService implements Service<FederationService> {
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append("FederationService", alias);
     }
-
+    
+    public EventManager getEventManager() {
+        return this.eventManager ;
+    }
+    
 }

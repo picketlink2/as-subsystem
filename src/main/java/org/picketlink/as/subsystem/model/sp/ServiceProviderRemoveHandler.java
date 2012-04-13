@@ -36,6 +36,8 @@ import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.as.subsystem.service.IDPConfigurationService;
 import org.picketlink.as.subsystem.service.SPConfigurationService;
 
 /**
@@ -67,9 +69,15 @@ public class ServiceProviderRemoveHandler extends AbstractRemoveStepHandler impl
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
-        String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        ServiceName name = SPConfigurationService.createServiceName(alias);
-        context.removeService(name);
+        String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
+        String idpAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
+        
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
+        SPConfigurationService idpService = SPConfigurationService.getService(context.getServiceRegistry(true), idpAlias);
+        
+        federationService.getEventManager().removeObserver(idpService);
+        
+        context.removeService(IDPConfigurationService.createServiceName(idpAlias));
     }
 
 }

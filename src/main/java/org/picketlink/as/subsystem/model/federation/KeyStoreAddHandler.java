@@ -31,6 +31,7 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.identity.federation.core.config.AuthPropertyType;
@@ -53,9 +54,9 @@ public class KeyStoreAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
 
-        FederationService service = FederationService.getService(context.getServiceRegistry(true), alias);
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), alias);
         
-        KeyProviderType keyProviderType = new KeyProviderType();
+        final KeyProviderType keyProviderType = new KeyProviderType();
         
         keyProviderType.setSigningAlias(model.get(ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName()).asString());
         
@@ -87,7 +88,9 @@ public class KeyStoreAddHandler extends AbstractResourceAddStepHandler {
 
         keyProviderType.add(signingKeyAlias);
 
-        service.setKeyProvider(keyProviderType);
+        federationService.setKeyProvider(keyProviderType);
+        
+        new KeyProviderEvent(keyProviderType).raise(federationService.getEventManager());
     }
     
 }

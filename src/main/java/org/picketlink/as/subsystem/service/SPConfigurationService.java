@@ -33,6 +33,8 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
+import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
@@ -46,7 +48,7 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 
-public class SPConfigurationService implements Service<SPConfigurationService> {
+public class SPConfigurationService implements Service<SPConfigurationService>, KeyProviderEvent.KeyStoreObserver {
 
     private String alias;
     
@@ -131,5 +133,10 @@ public class SPConfigurationService implements Service<SPConfigurationService> {
      */
     public SPTypeSubsystem getSPConfiguration() {
         return this.spConfiguration;
+    }
+
+    @Override
+    public void onUpdateKeyStore(KeyProviderType keyProviderType) {
+        this.spConfiguration.setKeyProvider(keyProviderType);
     }
 }

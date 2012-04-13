@@ -32,7 +32,10 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import org.jboss.msc.value.InjectedValue;
 import org.jboss.vfs.VirtualFile;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
+import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
@@ -45,8 +48,10 @@ import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWrite
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class IDPConfigurationService implements Service<IDPConfigurationService> {
+public class IDPConfigurationService implements Service<IDPConfigurationService>, KeyProviderEvent.KeyStoreObserver {
 
+    private InjectedValue<FederationService> federationService = new InjectedValue<FederationService>();
+    
     private String alias;
     
     private IDPTypeSubsystem idpConfiguration = new IDPTypeSubsystem(); 
@@ -135,5 +140,13 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      */
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append("IDPConfigurationService", alias);
+    }
+
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
+     */
+    @Override
+    public void onUpdateKeyStore(KeyProviderType keyProviderType) {
+        this.idpConfiguration.setKeyProvider(keyProviderType);        
     }
 }
