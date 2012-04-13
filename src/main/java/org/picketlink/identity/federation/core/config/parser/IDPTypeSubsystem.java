@@ -27,8 +27,8 @@ import org.picketlink.identity.federation.core.config.TrustType;
 
 /**
  * <p>
- * This class is responsible to store all informations about a given Identity Provider deployment. The state is
- * populated with values from the subsystem configuration. 
+ * This class is responsible to store all informations about a given Identity Provider deployment. The state is populated with
+ * values from the subsystem configuration.
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -43,7 +43,7 @@ public class IDPTypeSubsystem extends IDPType {
         this.setTrust(new TrustType());
         this.getTrust().setDomains("");
     }
-    
+
     /**
      * @return the signOutgoingMessages
      */
@@ -78,10 +78,23 @@ public class IDPTypeSubsystem extends IDPType {
      * @param domain
      */
     public void addTrustDomain(String domain) {
-        if (this.getTrust().getDomains() != null && !this.getTrust().getDomains().isEmpty()) {
-            this.getTrust().setDomains(this.getTrust().getDomains() + ",");
+        if (this.getTrust().getDomains() != null 
+                && this.getTrust().getDomains().indexOf(domain) == -1) {
+            this.getTrust().setDomains(this.getTrust().getDomains() + domain);
         }
-        
-        this.getTrust().setDomains(this.getTrust().getDomains() + domain);
+    }
+
+    public void removeTrustDomain(String domain) {
+        if (this.getTrust().getDomains() != null && !this.getTrust().getDomains().isEmpty()) {
+            this.getTrust().setDomains("");
+            
+            String[] domains = this.getTrust().getDomains().split(",");
+
+            for (String currentDomain : domains) {
+                if (!domain.equals(currentDomain)) {
+                    this.getTrust().setDomains(currentDomain + ",");
+                }
+            }
+        }
     }
 }

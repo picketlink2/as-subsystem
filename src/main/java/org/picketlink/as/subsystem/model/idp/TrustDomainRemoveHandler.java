@@ -22,7 +22,17 @@
 package org.picketlink.as.subsystem.model.idp;
 
 
+import java.util.ArrayList;
+
 import org.jboss.as.controller.AbstractRemoveStepHandler;
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.KeyValueType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -33,5 +43,24 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
 
     private TrustDomainRemoveHandler() {
     }
+    
+    @Override
+    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
+            throws OperationFailedException {
+        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
+        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
 
+        IDPConfigurationService service = IDPConfigurationService.getService(context.getServiceRegistry(true), alias);
+        
+        KeyProviderType keyProvider = service.getIdpConfiguration().getKeyProvider();
+        
+        if (keyProvider != null) {
+            for (KeyValueType validatinAlias : new ArrayList<KeyValueType>(keyProvider.getValidatingAlias())) {
+                keyProvider.remove(validatinAlias);
+            }
+        }
+        
+        service.getIdpConfiguration().removeTrustDomain(domain);
+    }
+    
 }
