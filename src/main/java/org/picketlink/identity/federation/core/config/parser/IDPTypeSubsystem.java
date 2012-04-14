@@ -95,6 +95,8 @@ public class IDPTypeSubsystem extends IDPType {
                     this.getTrust().setDomains(currentDomain + ",");
                 }
             }
+        } else if (this.getTrust().getDomains() == null){
+            this.getTrust().setDomains("");
         }
     }
 }
