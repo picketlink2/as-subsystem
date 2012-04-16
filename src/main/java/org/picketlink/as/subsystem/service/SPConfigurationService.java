@@ -22,8 +22,10 @@
 
 package org.picketlink.as.subsystem.service;
 
+
 import java.io.IOException;
 
+import org.picketlink.as.subsystem.model.event.IdentityProviderURLEvent;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.ServiceController;
@@ -48,7 +50,7 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 
-public class SPConfigurationService implements Service<SPConfigurationService>, KeyProviderEvent.KeyStoreObserver {
+public class SPConfigurationService implements Service<SPConfigurationService>, KeyProviderEvent.KeyStoreObserver, IdentityProviderURLEvent.IdentityProviderURLObserver {
 
     private String alias;
     
@@ -138,5 +140,10 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
     @Override
     public void onUpdateKeyStore(KeyProviderType keyProviderType) {
         this.spConfiguration.setKeyProvider(keyProviderType);
+    }
+
+    @Override
+    public void onUpdateIdentityURL(String identityURL) {
+        this.spConfiguration.setIdentityURL(identityURL);
     }
 }

@@ -26,8 +26,11 @@ import org.jboss.as.controller.OperationContext.Stage;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.IdentityProviderURLEvent;
+import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.IDPConfigurationService;
 
 /**
@@ -49,6 +52,12 @@ public class IdentityProviderURLHandler implements OperationStepHandler {
         node.get(ModelElement.COMMON_URL.getName()).set(url);
         
         final String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        
+        String fedAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
+
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
+        
+        new IdentityProviderURLEvent(url).raise(federationService.getEventManager());
         
         context.addStep(new OperationStepHandler() {
             @Override
