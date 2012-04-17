@@ -37,6 +37,7 @@ public enum ModelElement {
     COMMON_ALIAS ("alias"),
     COMMON_URL ("url"),
     COMMON_NAME ("name"),
+    COMMON_SECURITY_DOMAIN ("security-domain"),
     
     FEDERATION("federation"),
     

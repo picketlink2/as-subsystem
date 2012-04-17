@@ -89,6 +89,7 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers) {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         String url = operation.get(ModelElement.COMMON_URL.getName()).asString();
+        String securityDomain = operation.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
         boolean postBinding = operation.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         String idpUrl = getIdentityURL(context, operation); 
         
@@ -99,6 +100,7 @@ public class ServiceProviderAddHandler extends AbstractResourceAddStepHandler {
 
         service.getSPConfiguration().setIdentityURL(idpUrl);
         service.getSPConfiguration().setPostBinding(postBinding);
+        service.getSPConfiguration().setSecurityDomain(securityDomain);
         
         newControllers.add(controller);
         

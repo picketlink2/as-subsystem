@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
 import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES;
 import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES;
@@ -93,6 +94,7 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
         String url = operation.get(COMMON_URL.getName()).asString();
         boolean signOutgoingMessages = operation.get(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).asBoolean();
         boolean ignoreIncomingSignatures = operation.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
+        String securityDomain = operation.get(COMMON_SECURITY_DOMAIN.getName()).asString();
 
         IDPConfigurationService identityProviderService = new IDPConfigurationService(alias, url);
         ServiceName name = IDPConfigurationService.createServiceName(alias);
@@ -103,6 +105,7 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
 
         controller.getValue().getIdpConfiguration().setSignOutgoingMessages(signOutgoingMessages);
         controller.getValue().getIdpConfiguration().setIgnoreIncomingSignatures(ignoreIncomingSignatures);
+        controller.getValue().getIdpConfiguration().setSecurityDomain(securityDomain);
 
         newControllers.add(controller);
         

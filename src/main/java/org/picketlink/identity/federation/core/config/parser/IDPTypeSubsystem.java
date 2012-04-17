@@ -36,6 +36,8 @@ import org.picketlink.identity.federation.core.config.TrustType;
  */
 public class IDPTypeSubsystem extends IDPType {
 
+    private String securityDomain;
+    
     private boolean signOutgoingMessages;
     private boolean ignoreIncomingSignatures = true;
 
@@ -99,4 +101,13 @@ public class IDPTypeSubsystem extends IDPType {
             this.getTrust().setDomains("");
         }
     }
+
+    public String getSecurityDomain() {
+        return this.securityDomain;
+    }
+
+    public void setSecurityDomain(String securityDomain) {
+        this.securityDomain = securityDomain;
+    }
+    
 }

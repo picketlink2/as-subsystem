@@ -36,6 +36,7 @@ import org.picketlink.identity.federation.core.config.SPType;
 public class SPTypeSubsystem extends SPType {
 
     private boolean postBinding;
+    private String securityDomain;
 
     /**
      * @param url
@@ -51,4 +52,12 @@ public class SPTypeSubsystem extends SPType {
         return this.postBinding;
     }
 
+    public String getSecurityDomain() {
+        return securityDomain;
+    }
+
+    public void setSecurityDomain(String securityDomain) {
+        this.securityDomain = securityDomain;
+    }
+    
 }

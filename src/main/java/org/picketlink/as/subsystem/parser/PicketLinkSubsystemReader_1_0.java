@@ -118,11 +118,11 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             }
 
             ModelElement modelKey = ModelElement.forName(reader.getLocalName());
-            
+
             if (modelKey == null) {
                 throw unexpectedElement(reader);
             }
-            
+
             switch (modelKey) {
                 case FEDERATION:
                     federationNode = parseFederationConfig(reader, list, parentNode);
@@ -153,12 +153,15 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             }
         }
     }
-    
-    private void parseIdentityProviderKeyStoreConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode idpSAMLMetadataProviderNode) throws XMLStreamException {
-        parseConfig(reader, ModelElement.KEY_STORE, KeyStoreResourceDefinition.SIGN_KEY_ALIAS.getName(), list, idpSAMLMetadataProviderNode, getIdentityProviderKeyStoreAttributes());
+
+    private void parseIdentityProviderKeyStoreConfig(XMLExtendedStreamReader reader, List<ModelNode> list,
+            ModelNode idpSAMLMetadataProviderNode) throws XMLStreamException {
+        parseConfig(reader, ModelElement.KEY_STORE, KeyStoreResourceDefinition.SIGN_KEY_ALIAS.getName(), list,
+                idpSAMLMetadataProviderNode, getIdentityProviderKeyStoreAttributes());
     }
 
-    private void parseContactConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode idpSAMLMetadataProviderNode) throws XMLStreamException {
+    private void parseContactConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode idpSAMLMetadataProviderNode)
+            throws XMLStreamException {
         parseConfig(reader, ModelElement.CONTACT, null, list, idpSAMLMetadataProviderNode, getContactAttributes());
     }
 
@@ -227,8 +230,8 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      * @return
      */
     private SimpleAttributeDefinition[] getServiceProviderAttributes() {
-        return asArray(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.URL,
-                ServiceProviderResourceDefinition.POST_BINDING);
+        return asArray(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.SECURITY_DOMAIN,
+                ServiceProviderResourceDefinition.URL, ServiceProviderResourceDefinition.POST_BINDING);
     }
 
     /**
@@ -243,6 +246,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      */
     private SimpleAttributeDefinition[] getIdentityProviderAttributes() {
         return asArray(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.URL,
+                IdentityProviderResourceDefinition.SECURITY_DOMAIN,
                 IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
                 IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
     }
@@ -261,7 +265,8 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
     }
 
     private SimpleAttributeDefinition[] getIdentityProviderKeyStoreAttributes() {
-        return asArray(KeyStoreResourceDefinition.URL, KeyStoreResourceDefinition.PASSWD, KeyStoreResourceDefinition.SIGN_KEY_ALIAS, KeyStoreResourceDefinition.SIGN_KEY_PASSWD);
+        return asArray(KeyStoreResourceDefinition.URL, KeyStoreResourceDefinition.PASSWD,
+                KeyStoreResourceDefinition.SIGN_KEY_ALIAS, KeyStoreResourceDefinition.SIGN_KEY_PASSWD);
     }
 
     /**

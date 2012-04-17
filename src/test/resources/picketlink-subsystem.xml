@@ -10,9 +10,10 @@
 
         <identity-provider
             alias="idp.war"
+            security-domain="idp"
             ignoreIncomingSignatures="true"
             signOutgoingMessages="false"
-            url="http://localhost:8080/idp" >
+            url="http://localhost:8080/idp">
 
             <idp-metadata wantAuthnRequestsSigned="true" >
 
@@ -45,16 +46,19 @@
 
             <service-provider
                 alias="sales.war"
+                security-domain="sp"
                 post-binding="true"
                 url="http://localhost:8080/sales" />
 
             <service-provider
                 alias="employee.war"
+                security-domain="sp"
                 post-binding="true"
                 url="http://localhost:8080/employee" />
 
             <service-provider
                 alias="employee2.war"
+                security-domain="sp"
                 post-binding="true"
                 url="http://localhost:8080/employee2" />
         </service-providers>

@@ -41,6 +41,8 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("sp"))
             .setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition SECURITY_DOMAIN = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
             ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition POST_BINDING = new SimpleAttributeDefinitionBuilder(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName(),
@@ -59,6 +61,7 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
         addAttributeDefinition(ALIAS, null, ServiceProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SECURITY_DOMAIN, null, ServiceProviderSecurityDomainHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(URL, null, ServiceProviderURLHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(POST_BINDING, null, PostBindingHandler.INSTANCE, resourceRegistration);
     }

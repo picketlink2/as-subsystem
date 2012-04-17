@@ -50,6 +50,7 @@ import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -62,6 +63,7 @@ import org.w3c.dom.Node;
  */
 public class JBossWebConfigWriter implements ConfigWriter {
 
+    private static final String SECURITY_DOMAIN = "security-domain";
     private static final String SP_SIGNATURE_IDP_ADDRESS = "idpAddress";
     private static final String VALVE_PARAM_VALUE = "param-value";
     private static final String VALVE_PARAM_NAME = "param-name";
@@ -112,6 +114,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
     }
 
 
+    // TODO: REFACTOR ME. Create interfaces for the sp and idp types.
     public void write(File file) {
         DocumentBuilder newDocumentBuilder = null;
         Document existingDocument = null;
@@ -120,6 +123,26 @@ public class JBossWebConfigWriter implements ConfigWriter {
             newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             existingDocument = newDocumentBuilder.parse(new FileInputStream(file));
         } catch (Exception e) {
+        }
+        
+        String securityDomain = null;
+        
+        if (this.configuration instanceof IDPTypeSubsystem) {
+            IDPTypeSubsystem idpConfig = (IDPTypeSubsystem) this.configuration;
+            
+            securityDomain = idpConfig.getSecurityDomain();
+        } else if (this.configuration instanceof SPTypeSubsystem) {
+            SPTypeSubsystem spConfig = (SPTypeSubsystem) this.configuration;
+            
+            securityDomain = spConfig.getSecurityDomain(); 
+        }
+
+        if (securityDomain != null) {
+            Element securityDomainElement = existingDocument.createElement(SECURITY_DOMAIN);
+            
+            securityDomainElement.setTextContent(securityDomain);
+            
+            existingDocument.getFirstChild().appendChild(securityDomainElement);
         }
 
         Node node = getNodeToAppend(file);
@@ -157,7 +180,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
             
             if (this.configuration instanceof IDPTypeSubsystem) {
                 IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
-
+                
                 Map<String, String> attributes = new HashMap<String, String>();
 
                 attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
@@ -166,7 +189,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 
                 if (this.configuration.getKeyProvider() != null) {
                     attributes.put(VALIDATING_ALIAS_TO_TOKEN_ISSUER, Boolean.TRUE.toString());
-                }
+                } 
                 
                 writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
             } else if (this.configuration instanceof SPTypeSubsystem) {

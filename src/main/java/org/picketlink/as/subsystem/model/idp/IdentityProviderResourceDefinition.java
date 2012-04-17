@@ -42,6 +42,8 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
 
     public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_URL.getName(),
             ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition SECURITY_DOMAIN = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build();
@@ -65,6 +67,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
         addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SECURITY_DOMAIN, null, IdentityProviderSecurityDomainHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(URL, null, IdentityProviderURLHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, SignOutgoingMessagesHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IgnoreInSignMsgHandler.INSTANCE, resourceRegistration);
