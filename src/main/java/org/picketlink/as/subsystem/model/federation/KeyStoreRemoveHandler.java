@@ -29,7 +29,6 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>

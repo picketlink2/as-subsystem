@@ -147,6 +147,11 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      */
     @Override
     public void onUpdateKeyStore(KeyProviderType keyProviderType) {
-        this.idpConfiguration.setKeyProvider(keyProviderType);        
+        this.idpConfiguration.setKeyProvider(keyProviderType);
+        
+        if (keyProviderType == null) {
+            this.idpConfiguration.setSignOutgoingMessages(false);
+            this.idpConfiguration.setIgnoreIncomingSignatures(true);
+        }
     }
 }
