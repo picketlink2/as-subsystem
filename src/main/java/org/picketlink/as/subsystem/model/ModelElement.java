@@ -50,6 +50,7 @@ public enum ModelElement {
     IDENTITY_PROVIDER_SAML_METADATA ("idp-metadata"),
     IDENTITY_PROVIDER_SAML_METADATA_WANT_AUTHN_REQUESTS_SIGNED ("wantAuthnRequestsSigned"),
     IDENTITY_PROVIDER_SAML_METADATA_ORGANIZATION ("organization"),
+    IDENTITY_PROVIDER_EXTERNAL ("external"),
     KEY_STORE_PASSWD ("passwd"), 
     KEY_STORE_SIGN_KEY_ALIAS ("sign-key-alias"), 
     KEY_STORE_SIGN_KEY_PASSWD ("sign-key-passwd"),

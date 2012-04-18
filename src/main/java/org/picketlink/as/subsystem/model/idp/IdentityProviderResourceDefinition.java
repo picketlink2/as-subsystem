@@ -29,7 +29,6 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.federation.KeyStoreResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.metadata.IDPSAMLMetadataResourceDefinition;
 
 /**
@@ -47,6 +46,9 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("idp"))
             .setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition EXTERNAL = new SimpleAttributeDefinitionBuilder(
+            ModelElement.IDENTITY_PROVIDER_EXTERNAL.getName(), ModelType.BOOLEAN, true)
+            .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.BOOLEAN, false)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
@@ -69,6 +71,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(SECURITY_DOMAIN, null, IdentityProviderSecurityDomainHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(URL, null, IdentityProviderURLHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(EXTERNAL, null, ExternalHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, SignOutgoingMessagesHandler.INSTANCE, resourceRegistration);
         addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IgnoreInSignMsgHandler.INSTANCE, resourceRegistration);
     }

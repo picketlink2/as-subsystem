@@ -247,6 +247,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
     private SimpleAttributeDefinition[] getIdentityProviderAttributes() {
         return asArray(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.URL,
                 IdentityProviderResourceDefinition.SECURITY_DOMAIN,
+                IdentityProviderResourceDefinition.EXTERNAL,
                 IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
                 IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
     }
