@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 

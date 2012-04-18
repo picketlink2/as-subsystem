@@ -19,45 +19,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.picketlink.as.subsystem.model.idp;
 
-package org.picketlink.identity.federation.core.config.parser;
-
-import org.picketlink.identity.federation.core.config.SPType;
+import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.OperationStepHandler;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
- * <p>
- * This class is responsible to store all informations about a given Service Provider deployment. The state is
- * populated with values from the subsystem configuration. 
- * </p>
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 12, 2012
  */
-public class SPTypeSubsystem extends SPType implements ProviderType {
-
-    private boolean postBinding;
-    private String securityDomain;
-
-    /**
-     * @param url
+public class ExternalHandler implements OperationStepHandler {
+ 
+    public static final ExternalHandler INSTANCE = new ExternalHandler();
+ 
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.OperationStepHandler#execute(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode)
      */
-    public void setPostBinding(boolean url) {
-        this.postBinding = url;
+    @Override
+    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
+        final boolean signOutgoingMessages = operation.require("value").asBoolean();
+        
+        ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
+        
+        node.get(ModelElement.IDENTITY_PROVIDER_EXTERNAL.getName()).set(signOutgoingMessages);
+        
+        context.completeStep();
     }
-    
-    /**
-     * @return the postBinding
-     */
-    public boolean isPostBinding() {
-        return this.postBinding;
-    }
-
-    public String getSecurityDomain() {
-        return securityDomain;
-    }
-
-    public void setSecurityDomain(String securityDomain) {
-        this.securityDomain = securityDomain;
-    }
-    
 }

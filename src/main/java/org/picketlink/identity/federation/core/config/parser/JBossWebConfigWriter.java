@@ -46,7 +46,6 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 import org.w3c.dom.Document;
@@ -125,7 +124,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
         } catch (Exception e) {
         }
         
-        String securityDomain = null;
+        String securityDomain = this.configuration.getSecurityDomain();
         
         if (this.configuration instanceof IDPTypeSubsystem) {
             IDPTypeSubsystem idpConfig = (IDPTypeSubsystem) this.configuration;
@@ -187,7 +186,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
                         String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
                 
-                if (this.configuration.getKeyProvider() != null) {
+                if (idpConfiguration.getKeyProvider() != null) {
                     attributes.put(VALIDATING_ALIAS_TO_TOKEN_ISSUER, Boolean.TRUE.toString());
                 } 
                 

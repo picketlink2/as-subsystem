@@ -34,7 +34,7 @@ import org.picketlink.identity.federation.core.config.TrustType;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
-public class IDPTypeSubsystem extends IDPType {
+public class IDPTypeSubsystem extends IDPType implements ProviderType {
 
     private String securityDomain;
     
