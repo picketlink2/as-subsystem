@@ -57,8 +57,8 @@ public class IdentityProviderURLHandler implements OperationStepHandler {
 
         FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
         
-        new IdentityProviderURLEvent(url).raise(federationService.getEventManager());
-        
+        federationService.getEventManager().raise(new IdentityProviderURLEvent(url));
+
         context.addStep(new OperationStepHandler() {
             @Override
             public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {

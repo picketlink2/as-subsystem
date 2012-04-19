@@ -90,7 +90,7 @@ public class KeyStoreAddHandler extends AbstractResourceAddStepHandler {
 
         federationService.setKeyProvider(keyProviderType);
         
-        new KeyProviderEvent(keyProviderType).raise(federationService.getEventManager());
+        federationService.getEventManager().raise(new KeyProviderEvent(keyProviderType));
     }
     
 }

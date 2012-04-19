@@ -22,8 +22,6 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
-
 import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -61,7 +59,7 @@ public class IdentityProviderRemoveHandler extends AbstractRemoveStepHandler {
         
         federationService.getEventManager().removeObserver(idpService);
         
-        new IdentityProviderURLEvent(null).raise(federationService.getEventManager());
+        federationService.getEventManager().raise(new IdentityProviderURLEvent(null));
         
         context.removeService(IDPConfigurationService.createServiceName(idpAlias));
     }

@@ -34,7 +34,7 @@ import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.msc.value.InjectedValue;
 import org.jboss.vfs.VirtualFile;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
+import org.picketlink.as.subsystem.model.event.KeyStoreObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
@@ -48,7 +48,7 @@ import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWrite
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class IDPConfigurationService implements Service<IDPConfigurationService>, KeyProviderEvent.KeyStoreObserver {
+public class IDPConfigurationService implements Service<IDPConfigurationService>, KeyStoreObserver {
 
     private InjectedValue<FederationService> federationService = new InjectedValue<FederationService>();
     

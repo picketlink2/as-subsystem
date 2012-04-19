@@ -76,8 +76,8 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
         idpService.getIdpConfiguration().setKeyProvider(federationService.getKeyProvider());
         
         federationService.getEventManager().addObserver(KeyProviderEvent.class, idpService);
-        
-        new IdentityProviderURLEvent(operation.get(COMMON_URL.getName()).asString()).raise(federationService.getEventManager());
+
+        federationService.getEventManager().raise(new IdentityProviderURLEvent(operation.get(COMMON_URL.getName()).asString()));
     }
 
     /**

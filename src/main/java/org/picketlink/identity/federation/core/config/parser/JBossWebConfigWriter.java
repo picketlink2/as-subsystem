@@ -25,7 +25,6 @@ package org.picketlink.identity.federation.core.config.parser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -87,7 +86,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
      * @return
      * @throws ProcessingException
      */
-    public static XMLStreamWriter getXMLStreamWriter(final Result outStream) throws ProcessingException {
+    private XMLStreamWriter getXMLStreamWriter(final Result outStream) throws ProcessingException {
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
         try {
             return xmlOutputFactory.createXMLStreamWriter(outStream);
@@ -96,34 +95,32 @@ public class JBossWebConfigWriter implements ConfigWriter {
         }
     }
     
-    /**
-     * Get an {@code XMLStreamWriter}
-     * 
-     * @param outStream
-     * @return
-     * @throws ProcessingException
-     */
-    public static XMLStreamWriter getXMLStreamWriter(final OutputStream outStream) throws ProcessingException {
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-        try {
-            return xmlOutputFactory.createXMLStreamWriter(outStream);
-        } catch (XMLStreamException e) {
-            throw new ProcessingException(e);
-        }
-    }
-
-
     // TODO: REFACTOR ME. Create interfaces for the sp and idp types.
     public void write(File file) {
-        DocumentBuilder newDocumentBuilder = null;
-        Document existingDocument = null;
-        
-        try {
-            newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            existingDocument = newDocumentBuilder.parse(new FileInputStream(file));
-        } catch (Exception e) {
+        Document jbossWebXmlDoc = getJBossWebXMLDocument(file);
+
+        String securityDomain = getSecurityDomain();
+
+        if (securityDomain != null) {
+            Element securityDomainElement = jbossWebXmlDoc.createElement(SECURITY_DOMAIN);
+            
+            securityDomainElement.setTextContent(securityDomain);
+            
+            jbossWebXmlDoc.getFirstChild().appendChild(securityDomainElement);
         }
+
+        Node valvesConfiguration = getValvesConfiguration(file);
         
+        Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes().item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
+        
+        Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
+        
+        lastNode.getParentNode().appendChild(importNode);
+        
+        writeXmlFile(jbossWebXmlDoc, file);
+    }
+
+    private String getSecurityDomain() {
         String securityDomain = this.configuration.getSecurityDomain();
         
         if (this.configuration instanceof IDPTypeSubsystem) {
@@ -135,31 +132,26 @@ public class JBossWebConfigWriter implements ConfigWriter {
             
             securityDomain = spConfig.getSecurityDomain(); 
         }
+        return securityDomain;
+    }
 
-        if (securityDomain != null) {
-            Element securityDomainElement = existingDocument.createElement(SECURITY_DOMAIN);
-            
-            securityDomainElement.setTextContent(securityDomain);
-            
-            existingDocument.getFirstChild().appendChild(securityDomainElement);
+    private Document getJBossWebXMLDocument(File file) {
+        DocumentBuilder newDocumentBuilder = null;
+        Document existingDocument = null;
+        
+        try {
+            newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            existingDocument = newDocumentBuilder.parse(new FileInputStream(file));
+        } catch (Exception e) {
         }
-
-        Node node = getNodeToAppend(file);
-        
-        Node lastNode = existingDocument.getFirstChild().getChildNodes().item(existingDocument.getFirstChild().getChildNodes().getLength() - 1);
-        
-        Node importNode = existingDocument.importNode(node.getFirstChild(), true);
-        
-        lastNode.getParentNode().appendChild(importNode);
-        
-        writeXmlFile(existingDocument, file);
+        return existingDocument;
     }
 
     /**
      * @param file
      * @return
      */
-    private Node getNodeToAppend(File file) {
+    private Node getValvesConfiguration(File file) {
         XMLStreamWriter writer = null;
         DocumentBuilder newDocumentBuilder = null;
         
@@ -231,6 +223,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
         Map<String, String> attributes = new HashMap<String, String>();
 
         attributes.put(SP_SIGNATURE_IDP_ADDRESS, new URL(spConfiguration.getIdentityURL()).getHost());
+        
         return attributes;
     }
 

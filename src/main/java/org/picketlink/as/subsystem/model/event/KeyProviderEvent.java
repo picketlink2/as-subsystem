@@ -2,7 +2,7 @@ package org.picketlink.as.subsystem.model.event;
 
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
-public class KeyProviderEvent implements Event<KeyProviderType> {
+public class KeyProviderEvent implements Event<KeyStoreObserver> {
 
     private KeyProviderType keyProviderType;
     
@@ -15,20 +15,8 @@ public class KeyProviderEvent implements Event<KeyProviderType> {
     }
 
     @Override
-    public void raise(EventManager manager) {
-        if (manager.getObserver().get(this.getClass().getName()) != null) {
-            for (Observer observer : manager.getObserver().get(this.getClass().getName())) {
-                KeyStoreObserver keyStoreObserver = (KeyStoreObserver) observer;
-                
-                keyStoreObserver.onUpdateKeyStore(getSource());
-            }
-        }
+    public void raise(KeyStoreObserver observer) {
+        observer.onUpdateKeyStore(this.keyProviderType);
     }
-    
-    public interface KeyStoreObserver extends Observer {
 
-        void onUpdateKeyStore(KeyProviderType keyProviderType);
-        
-    }
-    
 }

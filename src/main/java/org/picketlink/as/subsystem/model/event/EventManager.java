@@ -22,6 +22,14 @@ public class EventManager {
         observers.add(observer);
     }
     
+    public void raise(Event event) {
+        if (getObserver().get(this.getClass().getName()) != null) {
+            for (Observer observer : getObserver().get(event.getClass().getName())) {
+                event.raise(observer);
+            }
+        }
+    }
+    
     public Map<String, List<Observer>> getObserver() {
         if (this.observer == null) {
             this.observer = new HashMap<String, List<Observer>>();

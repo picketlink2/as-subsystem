@@ -1,7 +1,7 @@
 package org.picketlink.as.subsystem.model.event;
 
 
-public class IdentityProviderURLEvent implements Event<String> {
+public class IdentityProviderURLEvent implements Event<IdentityProviderURLObserver> {
 
     private String identityURL;
     
@@ -10,25 +10,8 @@ public class IdentityProviderURLEvent implements Event<String> {
     }
 
     @Override
-    public String getSource() {
-        return this.identityURL;
-    }
-    
-    @Override
-    public void raise(EventManager manager) {
-        if (manager.getObserver().get(this.getClass().getName()) != null) {
-            for (Observer observer : manager.getObserver().get(this.getClass().getName())) {
-                IdentityProviderURLObserver keyStoreObserver = (IdentityProviderURLObserver) observer;
-                
-                keyStoreObserver.onUpdateIdentityURL(getSource());
-            }
-        }
-    }
-    
-    public interface IdentityProviderURLObserver extends Observer {
-
-        void onUpdateIdentityURL(String identityURL);
-        
+    public void raise(IdentityProviderURLObserver observer) {
+        observer.onUpdateIdentityURL(this.identityURL);
     }
     
 }

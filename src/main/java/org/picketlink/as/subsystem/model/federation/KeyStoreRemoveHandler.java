@@ -50,6 +50,6 @@ public class KeyStoreRemoveHandler extends AbstractRemoveStepHandler {
 
         FederationService federationService = FederationService.getService(context.getServiceRegistry(true), alias);
         
-        new KeyProviderEvent(null).raise(federationService.getEventManager());
+        federationService.getEventManager().raise(new KeyProviderEvent(null));
     }
 }

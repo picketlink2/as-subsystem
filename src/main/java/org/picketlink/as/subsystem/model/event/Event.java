@@ -1,9 +1,8 @@
 package org.picketlink.as.subsystem.model.event;
 
 
-public interface Event<T> {
+public interface Event<T extends Observer> {
     
-    T getSource();
+    void raise(T observer);
     
-    void raise(EventManager manager);
 }
