@@ -101,6 +101,12 @@ public class JBossWebConfigWriter implements ConfigWriter {
 
         String securityDomain = getSecurityDomain();
 
+        for (int i = 0; i < jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).getLength(); i++) {
+            Node securityDomainElm = jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).item(i);
+            
+            securityDomainElm.getParentNode().removeChild(securityDomainElm);
+        }
+
         if (securityDomain != null) {
             Element securityDomainElement = jbossWebXmlDoc.createElement(SECURITY_DOMAIN);
             
@@ -108,7 +114,13 @@ public class JBossWebConfigWriter implements ConfigWriter {
             
             jbossWebXmlDoc.getFirstChild().appendChild(securityDomainElement);
         }
-
+        
+        for (int i = 0; i < jbossWebXmlDoc.getElementsByTagName(VALVE_ELEMENT).getLength(); i++) {
+            Node valve = jbossWebXmlDoc.getElementsByTagName(VALVE_ELEMENT).item(i);
+            
+            valve.getParentNode().removeChild(valve);
+        }
+        
         Node valvesConfiguration = getValvesConfiguration(file);
         
         Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes().item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);

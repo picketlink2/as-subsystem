@@ -98,9 +98,18 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
         try {
             new JBossWebConfigWriter(this.spConfiguration).write(context.getPhysicalFile());
             
+            if (handlers.exists()) {
+                handlers.delete();
+            }
+            
             if (handlers.getPhysicalFile().createNewFile()) {
                 new HandlersConfigWriter(this.spConfiguration).write(handlers.getPhysicalFile());
             }
+            
+            if (config.exists()) {
+                config.delete();
+            }
+            
             if (config.getPhysicalFile().createNewFile()) {
                 new SPTypeConfigWriter(this.spConfiguration).write(config.getPhysicalFile());                    
             }

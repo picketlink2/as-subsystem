@@ -98,9 +98,18 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
         try {
             new JBossWebConfigWriter(this.idpConfiguration).write(context.getPhysicalFile());
             
+            if (handlers.exists()) {
+                handlers.delete();
+            }
+            
             if (handlers.getPhysicalFile().createNewFile()) {
                 new HandlersConfigWriter(this.idpConfiguration).write(handlers.getPhysicalFile());
             }
+            
+            if (config.exists()) {
+                config.delete();
+            }
+            
             if (config.getPhysicalFile().createNewFile()) {
                 new IDPTypeConfigWriter(this.idpConfiguration).write(config.getPhysicalFile());                    
             }
