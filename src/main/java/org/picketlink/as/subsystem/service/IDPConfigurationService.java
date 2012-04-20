@@ -32,10 +32,10 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.event.KeyStoreObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
@@ -50,8 +50,8 @@ import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWrite
  */
 public class IDPConfigurationService implements Service<IDPConfigurationService>, KeyStoreObserver {
 
-    private InjectedValue<FederationService> federationService = new InjectedValue<FederationService>();
-    
+    private static final String SERVICE_NAME = "IDPConfigurationService";
+
     private String alias;
     
     private IDPTypeSubsystem idpConfiguration = new IDPTypeSubsystem(); 
@@ -91,30 +91,69 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      * @param warDeployment
      */
     public void configure(ResourceRoot warDeployment) {
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
+        writeJBossWebConfig(warDeployment);
+        writeHandlersConfig(warDeployment);
+        writePicketLinkConfig(warDeployment);
+    }
 
+    /**
+     * <p>
+     * Writes the picketlink-idfed.xml config file.
+     * </p>
+     * 
+     * @param warDeployment
+     */
+    private void writePicketLinkConfig(ResourceRoot warDeployment) {
+        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
+        
+        writeConfig(config, new IDPTypeConfigWriter(this.idpConfiguration), true);
+    }
+
+    /**
+     * <p>
+     * Writes the picketlink-handlers.xml config file.
+     * </p>
+     * 
+     * @param warDeployment
+     */
+    private void writeHandlersConfig(ResourceRoot warDeployment) {
+        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
+        
+        writeConfig(handlers, new HandlersConfigWriter(this.idpConfiguration), true);
+    }
+
+    /**
+     * <p>
+     * Writes the jboss-web.xml config file.
+     * </p>
+     * 
+     * @param warDeployment
+     */
+    private void writeJBossWebConfig(ResourceRoot warDeployment) {
+        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
+        
+        writeConfig(context, new JBossWebConfigWriter(this.idpConfiguration), false);
+    }
+    
+    /**
+     * <p>
+     * Writes the contents to a file given the {@link ConfigWriter} instance.
+     * </p>
+     * 
+     * @param file File to be created or to have the configurations added.
+     * @param writer {@link ConfigWriter} instance specific to a given configuration file.
+     * @param recreate Indicates if the file has to be recreated. 
+     */
+    private void writeConfig(VirtualFile file, ConfigWriter writer, boolean recreate) {
         try {
-            new JBossWebConfigWriter(this.idpConfiguration).write(context.getPhysicalFile());
-            
-            if (handlers.exists()) {
-                handlers.delete();
+            if (recreate) {
+                file.delete();
+                file.getPhysicalFile().createNewFile();
             }
-            
-            if (handlers.getPhysicalFile().createNewFile()) {
-                new HandlersConfigWriter(this.idpConfiguration).write(handlers.getPhysicalFile());
-            }
-            
-            if (config.exists()) {
-                config.delete();
-            }
-            
-            if (config.getPhysicalFile().createNewFile()) {
-                new IDPTypeConfigWriter(this.idpConfiguration).write(config.getPhysicalFile());                    
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            writer.write(file.getPhysicalFile());
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 
@@ -148,7 +187,7 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      * @return
      */
     public static ServiceName createServiceName(String alias) {
-        return ServiceName.JBOSS.append("IDPConfigurationService", alias);
+        return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
 
     /* (non-Javadoc)

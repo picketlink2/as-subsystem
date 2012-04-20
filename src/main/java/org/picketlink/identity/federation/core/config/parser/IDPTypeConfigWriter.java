@@ -22,14 +22,8 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
@@ -42,76 +36,55 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
-public class IDPTypeConfigWriter implements ConfigWriter {
-
-    private static final String NAMESPACE = "urn:picketlink:identity-federation:config:1.0";
-    private IDPTypeSubsystem idpConfiguration;
+public class IDPTypeConfigWriter extends AbstractProviderTypeConfigWriter<IDPTypeSubsystem> {
 
     public IDPTypeConfigWriter(IDPTypeSubsystem idpTypeSubsystem) {
-        this.idpConfiguration = idpTypeSubsystem;
+        super(idpTypeSubsystem);
+    }
+
+    /* (non-Javadoc)
+     * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#doWrite(javax.xml.stream.XMLStreamWriter)
+     */
+    @Override
+    protected void doWrite(XMLStreamWriter writer) throws ProcessingException {
+        writeTrustedDomainsConfig(writer);
+    }
+    
+    @Override
+    protected String getProviderElementName() {
+        return SAMLConfigParser.IDP;
     }
     
     /* (non-Javadoc)
-     * @see org.picketlink.identity.federation.core.config.parser.ConfigWriter#write(java.io.OutputStream)
+     * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#writeValidatingAliasConfig(javax.xml.stream.XMLStreamWriter)
      */
-    public void write(File file) {
-        XMLStreamWriter writer = null;
-        
-        try {
-            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
+    protected void writeValidatingAliasConfig(XMLStreamWriter writer) throws ProcessingException {
+        if (getConfiguration().getTrust() != null && getConfiguration().getTrust().getDomains() != null) {
+            String[] domains = getConfiguration().getTrust().getDomains().split(",");
             
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDP, NAMESPACE);
-            
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-            StaxUtil.writeCharacters(writer, this.idpConfiguration.getIdentityURL() + "/");
-            StaxUtil.writeEndElement(writer);
-
-            if (this.idpConfiguration.getKeyProvider() != null) {
-                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.KEY_PROVIDER, "");
-                StaxUtil.writeAttribute(writer, "ClassName", "org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
-                
-                for (AuthPropertyType authProperty : this.idpConfiguration.getKeyProvider().getAuth()) {
-                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.AUTH, "");
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, authProperty.getKey());
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, authProperty.getValue());
-                    StaxUtil.writeEndElement(writer);
-                }
-                
-                if (this.idpConfiguration.getTrust() != null && this.idpConfiguration.getTrust().getDomains() != null) {
-                    String[] domains = this.idpConfiguration.getTrust().getDomains().split(",");
-                    
-                    for (String domain : domains) {
-                        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
-                        StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, domain);
-                        StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, domain);
-                        StaxUtil.writeEndElement(writer);
-                    }
-                }
-                
+            for (String domain : domains) {
+                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
+                StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, domain);
+                StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, domain);
                 StaxUtil.writeEndElement(writer);
             }
-            
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.TRUST, "");
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.DOMAINS, "");
-            StaxUtil.writeCharacters(writer, this.idpConfiguration.getTrust().getDomains());
-            StaxUtil.writeEndElement(writer);
-            StaxUtil.writeEndElement(writer);
-
-            StaxUtil.writeEndElement(writer);
-        } catch (ProcessingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                } catch (XMLStreamException e) {
-                    e.printStackTrace();
-                }
-            }
-        }        
+        }
     }
-    
+
+    /**
+     * <p>
+     * Writes the <Trust><Domains></Trust> elements.
+     * </p>
+     * 
+     * @param writer
+     * @throws ProcessingException
+     */
+    private void writeTrustedDomainsConfig(XMLStreamWriter writer) throws ProcessingException {
+        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.TRUST, "");
+        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.DOMAINS, "");
+        StaxUtil.writeCharacters(writer, getConfiguration().getTrust().getDomains());
+        StaxUtil.writeEndElement(writer);
+        StaxUtil.writeEndElement(writer);
+    }
+   
 }

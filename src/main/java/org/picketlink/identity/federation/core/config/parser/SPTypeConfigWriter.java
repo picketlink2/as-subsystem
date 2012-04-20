@@ -22,16 +22,11 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
@@ -44,72 +39,69 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
-public class SPTypeConfigWriter implements ConfigWriter {
+public class SPTypeConfigWriter extends AbstractProviderTypeConfigWriter<SPTypeSubsystem> {
 
-    private SPTypeSubsystem configuration;
 
-    public SPTypeConfigWriter(SPTypeSubsystem SPTypeSubsystem) {
-        this.configuration = SPTypeSubsystem;
+    public SPTypeConfigWriter(SPTypeSubsystem spTypeSubsystem) {
+        super(spTypeSubsystem);
     }
     
-    public void write(File file) {
-        XMLStreamWriter writer = null;
+    /* (non-Javadoc)
+     * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#doWrite(javax.xml.stream.XMLStreamWriter)
+     */
+    @Override
+    protected void doWrite(XMLStreamWriter writer) throws ProcessingException {
+        writeServiceURLConfig(writer);
+    }
+    
+    @Override
+    protected String getProviderElementName() {
+        return SAMLConfigParser.SP;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#writeValidatingAliasConfig(javax.xml.stream.XMLStreamWriter)
+     */
+    @Override
+    protected void writeValidatingAliasConfig(XMLStreamWriter writer) throws ProcessingException {
+        String idpHost = getIDPHostAddress();
+        
+        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
+        StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, idpHost);
+        StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, idpHost);
+        StaxUtil.writeEndElement(writer);
+    }
+    
+    /**
+     * <p>
+     * Returns the IDP host address.
+     * </p>
+     * 
+     * @return
+     */
+    private String getIDPHostAddress() {
+        String idpHost = null;
         
         try {
-            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
-            
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SP, "urn:picketlink:identity-federation:config:1.0");
-            
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SERVICE_URL, "");
-            StaxUtil.writeCharacters(writer, this.configuration.getServiceURL() + "/");
-            StaxUtil.writeEndElement(writer);
+            idpHost = new URL(getConfiguration().getIdentityURL()).getHost();
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("The Identity URL for the Service Provider " + getConfiguration().getServiceURL() + " is invalid.", e);
+        }
+        return idpHost;
+    }
 
-            StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-            StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL() + "/");
-            StaxUtil.writeEndElement(writer);
-            
-            if (this.configuration.getKeyProvider() != null) {
-                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.KEY_PROVIDER, "");
-                StaxUtil.writeAttribute(writer, "ClassName", "org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
-                
-                for (AuthPropertyType authProperty : this.configuration.getKeyProvider().getAuth()) {
-                    StaxUtil.writeStartElement(writer, "", SAMLConfigParser.AUTH, "");
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, authProperty.getKey());
-                    StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, authProperty.getValue());
-                    StaxUtil.writeEndElement(writer);
-                }
-                
-                String idpHost = null;
-                
-                try {
-                    idpHost = new URL(this.configuration.getIdentityURL()).getHost();
-                } catch (MalformedURLException e) {
-                    throw new IllegalStateException("The Identity URL for the Service Provider " + this.configuration.getServiceURL() + " is invalid.", e);
-                }
-                
-                StaxUtil.writeStartElement(writer, "", SAMLConfigParser.VALIDATING_ALIAS, "");
-                StaxUtil.writeAttribute(writer, SAMLConfigParser.KEY, idpHost);
-                StaxUtil.writeAttribute(writer, SAMLConfigParser.VALUE, idpHost);
-                StaxUtil.writeEndElement(writer);
-                
-                StaxUtil.writeEndElement(writer);
-            }
-
-            StaxUtil.writeEndElement(writer);
-        } catch (ProcessingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                } catch (XMLStreamException e) {
-                    e.printStackTrace();
-                }
-            }
-        }        
+    /**
+     * <p>
+     * Writes the <ServiceURL/> element.
+     * </p>
+     * 
+     * @param writer
+     * @throws ProcessingException
+     */
+    private void writeServiceURLConfig(XMLStreamWriter writer) throws ProcessingException {
+        StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SERVICE_URL, "");
+        StaxUtil.writeCharacters(writer, getConfiguration().getServiceURL() + "/");
+        StaxUtil.writeEndElement(writer);
     }
     
 }

@@ -68,7 +68,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
     private static final String VALVE_CLASS_NAME = "class-name";
     private static final String VALVE_ELEMENT = "valve";
     private static final String VALVE_PARAM = "param";
-    
+
     private static final String IGNORE_INCOMING_SIGNATURES_ATTRIBUTE = "ignoreIncomingSignatures";
     private static final String SIGN_OUTGOING_MESSAGES_ATTRIBUTE = "signOutgoingMessages";
     private static final String VALIDATING_ALIAS_TO_TOKEN_ISSUER = "validatingAliasToTokenIssuer";
@@ -94,79 +94,106 @@ public class JBossWebConfigWriter implements ConfigWriter {
             throw new ProcessingException(e);
         }
     }
-    
-    // TODO: REFACTOR ME. Create interfaces for the sp and idp types.
+
     public void write(File file) {
         Document jbossWebXmlDoc = getJBossWebXMLDocument(file);
 
-        String securityDomain = getSecurityDomain();
+        writeSecurityDomainConfig(jbossWebXmlDoc);
 
-        for (int i = 0; i < jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).getLength(); i++) {
-            Node securityDomainElm = jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).item(i);
-            
-            securityDomainElm.getParentNode().removeChild(securityDomainElm);
-        }
+        writeValvesConfig(file, jbossWebXmlDoc);
 
-        if (securityDomain != null) {
-            Element securityDomainElement = jbossWebXmlDoc.createElement(SECURITY_DOMAIN);
-            
-            securityDomainElement.setTextContent(securityDomain);
-            
-            jbossWebXmlDoc.getFirstChild().appendChild(securityDomainElement);
-        }
-        
+        writeXmlFile(jbossWebXmlDoc, file);
+    }
+
+    /**
+     * <p>
+     * Writes the <valve/> element. This methods checks first if there is a <valve/> element defined. If so,
+     * remove it and insert it again.
+     * </p>
+     * 
+     * @param file
+     * @param jbossWebXmlDoc
+     */
+    private void writeValvesConfig(File file, Document jbossWebXmlDoc) {
+        // removes all valve elements
         for (int i = 0; i < jbossWebXmlDoc.getElementsByTagName(VALVE_ELEMENT).getLength(); i++) {
             Node valve = jbossWebXmlDoc.getElementsByTagName(VALVE_ELEMENT).item(i);
-            
+
             valve.getParentNode().removeChild(valve);
         }
         
         Node valvesConfiguration = getValvesConfiguration(file);
         
-        Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes().item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
-        
+        // gets the last node defined in the jboss-web.xml
+        Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes()
+                .item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
+
+        // import the new valve node into the jboss-web.xml.
         Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
-        
+
+        // append the imported node in the jboss-web.xml.
         lastNode.getParentNode().appendChild(importNode);
-        
-        writeXmlFile(jbossWebXmlDoc, file);
     }
 
-    private String getSecurityDomain() {
-        String securityDomain = this.configuration.getSecurityDomain();
-        
-        if (this.configuration instanceof IDPTypeSubsystem) {
-            IDPTypeSubsystem idpConfig = (IDPTypeSubsystem) this.configuration;
-            
-            securityDomain = idpConfig.getSecurityDomain();
-        } else if (this.configuration instanceof SPTypeSubsystem) {
-            SPTypeSubsystem spConfig = (SPTypeSubsystem) this.configuration;
-            
-            securityDomain = spConfig.getSecurityDomain(); 
+    /**
+     * <p>
+     * Writes the <security-domain/> element. This methods checks first if there is a <security-domain/> element defined. If so,
+     * remove it and insert it with the new value.
+     * </p>
+     * 
+     * @param jbossWebXmlDoc
+     */
+    private void writeSecurityDomainConfig(Document jbossWebXmlDoc) {
+        if (this.configuration.getSecurityDomain() != null) {
+            // if there is a <security-domain/> element defined remove it first.
+            for (int i = 0; i < jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).getLength(); i++) {
+                Node securityDomainElm = jbossWebXmlDoc.getElementsByTagName(SECURITY_DOMAIN).item(i);
+
+                securityDomainElm.getParentNode().removeChild(securityDomainElm);
+            }
+
+            // creates a new <security-domain/> element with the new value.
+            Element securityDomainElement = jbossWebXmlDoc.createElement(SECURITY_DOMAIN);
+
+            securityDomainElement.setTextContent(this.configuration.getSecurityDomain());
+
+            jbossWebXmlDoc.getFirstChild().appendChild(securityDomainElement);
         }
-        return securityDomain;
+    }
+
+    private boolean isSPConfiguration() {
+        return this.configuration instanceof SPTypeSubsystem;
+    }
+
+    private boolean isIDPConfiguration() {
+        return this.configuration instanceof IDPTypeSubsystem;
     }
 
     private Document getJBossWebXMLDocument(File file) {
         DocumentBuilder newDocumentBuilder = null;
         Document existingDocument = null;
-        
+
         try {
             newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             existingDocument = newDocumentBuilder.parse(new FileInputStream(file));
         } catch (Exception e) {
         }
+        
         return existingDocument;
     }
 
     /**
+     * <p>
+     * Creates a new {@ Node} instance with the new <valve/> element. This node must be appended to the original jboss-web.xml.
+     * </p>
+     * 
      * @param file
      * @return
      */
     private Node getValvesConfiguration(File file) {
         XMLStreamWriter writer = null;
         DocumentBuilder newDocumentBuilder = null;
-        
+
         try {
             newDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         } catch (Exception e) {
@@ -178,40 +205,33 @@ public class JBossWebConfigWriter implements ConfigWriter {
             result = new DOMResult();
 
             result.setNode(newDocumentBuilder.newDocument());
-            
-            writer = getXMLStreamWriter(result);
-            
-            if (this.configuration instanceof IDPTypeSubsystem) {
-                IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
-                
-                Map<String, String> attributes = new HashMap<String, String>();
 
-                attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
-                attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
-                        String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
-                
-                if (idpConfiguration.getKeyProvider() != null) {
-                    attributes.put(VALIDATING_ALIAS_TO_TOKEN_ISSUER, Boolean.TRUE.toString());
-                } 
-                
-                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
-            } else if (this.configuration instanceof SPTypeSubsystem) {
+            writer = getXMLStreamWriter(result);
+
+            if (isIDPConfiguration()) {
+                writeIDPValves(writer);
+            } else if (isSPConfiguration()) {
                 SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
+                String valveClass = null;
+                Map<String, String> attributes = null;
                 
                 if (spConfiguration.isPostBinding()) {
                     if (spConfiguration.getKeyProvider() != null) {
-                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostSignatureFormAuthenticator", getSPSignatureAttributes(spConfiguration));
+                        valveClass =  "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostSignatureFormAuthenticator";
+                        attributes = getSPSignatureAttributes(spConfiguration);
                     } else {
-                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator", null);                        
+                        valveClass =  "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator";
                     }
                 } else {
                     if (spConfiguration.getKeyProvider() != null) {
-                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectSignatureFormAuthenticator", getSPSignatureAttributes(spConfiguration));
+                        valveClass = "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectSignatureFormAuthenticator";
+                        attributes = getSPSignatureAttributes(spConfiguration); 
                     } else {
-                        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator", null);                        
+                        valveClass = "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator";
                     }
                 }
                 
+                writeValve(writer, valveClass, attributes);
             }
         } catch (ProcessingException e) {
             e.printStackTrace();
@@ -227,37 +247,53 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 }
             }
         }
-        
+
         return result.getNode();
+    }
+
+    private void writeIDPValves(XMLStreamWriter writer) throws ProcessingException {
+        IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
+
+        Map<String, String> attributes = new HashMap<String, String>();
+
+        attributes.put(SIGN_OUTGOING_MESSAGES_ATTRIBUTE, String.valueOf(idpConfiguration.isSignOutgoingMessages()));
+        attributes.put(IGNORE_INCOMING_SIGNATURES_ATTRIBUTE,
+                String.valueOf(idpConfiguration.isIgnoreIncomingSignatures()));
+
+        if (idpConfiguration.getKeyProvider() != null) {
+            attributes.put(VALIDATING_ALIAS_TO_TOKEN_ISSUER, Boolean.TRUE.toString());
+        }
+
+        writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
     }
 
     private Map<String, String> getSPSignatureAttributes(SPTypeSubsystem spConfiguration) throws MalformedURLException {
         Map<String, String> attributes = new HashMap<String, String>();
 
         attributes.put(SP_SIGNATURE_IDP_ADDRESS, new URL(spConfiguration.getIdentityURL()).getHost());
-        
+
         return attributes;
     }
 
-    public void writeValve(XMLStreamWriter writer, String className, Map<String, String> attributes) throws ProcessingException {
+    private void writeValve(XMLStreamWriter writer, String className, Map<String, String> attributes) throws ProcessingException {
         StaxUtil.writeStartElement(writer, "", VALVE_ELEMENT, "");
-        
+
         StaxUtil.writeStartElement(writer, "", VALVE_CLASS_NAME, "");
         StaxUtil.writeCharacters(writer, className);
         StaxUtil.writeEndElement(writer);
-        
+
         if (attributes != null) {
             for (String key : attributes.keySet()) {
                 StaxUtil.writeStartElement(writer, "", VALVE_PARAM, "");
-                
+
                 StaxUtil.writeStartElement(writer, "", VALVE_PARAM_NAME, "");
                 StaxUtil.writeCharacters(writer, key);
                 StaxUtil.writeEndElement(writer);
-                
+
                 StaxUtil.writeStartElement(writer, "", VALVE_PARAM_VALUE, "");
                 StaxUtil.writeCharacters(writer, attributes.get(key));
                 StaxUtil.writeEndElement(writer);
-                
+
                 StaxUtil.writeEndElement(writer);
             }
         }
@@ -265,14 +301,14 @@ public class JBossWebConfigWriter implements ConfigWriter {
         StaxUtil.writeEndElement(writer);
     }
 
-    public static void writeXmlFile(Node doc, File file) {
+    private static void writeXmlFile(Node doc, File file) {
         try {
             if (file.exists()) {
                 file.delete();
             }
-            
+
             file.createNewFile();
-            
+
             // Prepare the DOM document for writing
             Source source = new DOMSource(doc);
 

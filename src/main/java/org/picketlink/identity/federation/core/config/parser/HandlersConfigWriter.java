@@ -60,14 +60,14 @@ public class HandlersConfigWriter implements ConfigWriter  {
             
             StaxUtil.writeStartElement(writer, "", HANDLERS_ELEMENT, "urn:picketlink:identity-federation:handler:config:1.0");
             
-            if (this.configuration instanceof IDPTypeSubsystem) {
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler");
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler");
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler");
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler");
-            } else if (this.configuration instanceof SPTypeSubsystem) {
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler");
-                writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler");
+            if (isIDPConfiguration()) {
+                writeIssuerHandler(writer);
+                writeLogoutHandler(writer);
+                writeAuthenticationHandler(writer);
+                writeRoleGeneratorHandler(writer);
+            } else if (isSPConfiguration()) {
+                writeLogoutHandler(writer);
+                writeAuthenticationHandler(writer);
             }
 
             StaxUtil.writeEndElement(writer);
@@ -86,8 +86,32 @@ public class HandlersConfigWriter implements ConfigWriter  {
             }
         }        
     }
+
+    private void writeRoleGeneratorHandler(XMLStreamWriter writer) throws ProcessingException {
+        writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler");
+    }
+
+    private void writeAuthenticationHandler(XMLStreamWriter writer) throws ProcessingException {
+        writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler");
+    }
+
+    private void writeLogoutHandler(XMLStreamWriter writer) throws ProcessingException {
+        writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler");
+    }
+
+    private void writeIssuerHandler(XMLStreamWriter writer) throws ProcessingException {
+        writeHandler(writer, "org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler");
+    }
+
+    private boolean isSPConfiguration() {
+        return this.configuration instanceof SPTypeSubsystem;
+    }
+
+    private boolean isIDPConfiguration() {
+        return this.configuration instanceof IDPTypeSubsystem;
+    }
     
-    public void writeHandler(XMLStreamWriter writer, String className) throws ProcessingException {
+    private void writeHandler(XMLStreamWriter writer, String className) throws ProcessingException {
         StaxUtil.writeStartElement(writer, "", HANDLER_ELEMENT, "");
         StaxUtil.writeAttribute(writer, CLASS_NAME_ATTRIBUTE, className);
         StaxUtil.writeEndElement(writer);
