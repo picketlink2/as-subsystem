@@ -54,7 +54,9 @@ import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.metadata.ContactResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.metadata.IDPSAMLMetadataResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.metadata.OrganizationResourceDefinition;
+import org.picketlink.as.subsystem.model.saml.SAMLResourceDefinition;
 import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
+import org.picketlink.as.subsystem.model.sts.STSResourceDefinition;
 
 /**
  * <p>
@@ -128,7 +130,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                     federationNode = parseFederationConfig(reader, list, parentNode);
                     break;
                 case KEY_STORE:
-                    parseIdentityProviderKeyStoreConfig(reader, list, federationNode);
+                    parseKeyStoreConfig(reader, list, federationNode);
                     break;
                 case IDENTITY_PROVIDER:
                     identityProviderNode = parseIdentityProviderConfig(reader, list, federationNode);
@@ -148,16 +150,22 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                 case SERVICE_PROVIDER:
                     parseServiceProviderConfig(reader, list, federationNode);
                     break;
+                case SECURITY_TOKEN_SERVICE:
+                    parseSecurityTokenServiceConfig(reader, list, federationNode);
+                    break;
+                case SAML:
+                    parseSAMLConfig(reader, list, federationNode);
+                    break;
                 default:
                     unexpectedElement(reader);
             }
         }
     }
 
-    private void parseIdentityProviderKeyStoreConfig(XMLExtendedStreamReader reader, List<ModelNode> list,
-            ModelNode idpSAMLMetadataProviderNode) throws XMLStreamException {
+    private void parseKeyStoreConfig(XMLExtendedStreamReader reader, List<ModelNode> list,
+            ModelNode federationNode) throws XMLStreamException {
         parseConfig(reader, ModelElement.KEY_STORE, KeyStoreResourceDefinition.SIGN_KEY_ALIAS.getName(), list,
-                idpSAMLMetadataProviderNode, getIdentityProviderKeyStoreAttributes());
+                federationNode, getKeyStoreAttributes());
     }
 
     private void parseContactConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode idpSAMLMetadataProviderNode)
@@ -186,6 +194,18 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             throws XMLStreamException {
         parseConfig(reader, SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list, federationNode,
                 getServiceProviderAttributes());
+    }
+
+    private void parseSecurityTokenServiceConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
+            throws XMLStreamException {
+        parseConfig(reader, ModelElement.SECURITY_TOKEN_SERVICE, STSResourceDefinition.ALIAS.getName(), list, federationNode,
+                getSecurityTokenServiceAttributes());
+    }
+
+    private void parseSAMLConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
+            throws XMLStreamException {
+        parseConfig(reader, ModelElement.SAML, null, list, federationNode,
+                getSAMLAttributes());
     }
 
     /**
@@ -237,6 +257,20 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
     /**
      * @return
      */
+    private SimpleAttributeDefinition[] getSecurityTokenServiceAttributes() {
+        return asArray(STSResourceDefinition.ALIAS, STSResourceDefinition.SECURITY_DOMAIN, STSResourceDefinition.ENDPOINT);
+    }
+
+    /**
+     * @return
+     */
+    private SimpleAttributeDefinition[] getSAMLAttributes() {
+        return asArray(SAMLResourceDefinition.TOKEN_TIMEOUT, SAMLResourceDefinition.CLOCK_SKEW);
+    }
+
+    /**
+     * @return
+     */
     private SimpleAttributeDefinition[] getTrustDomainAttributes() {
         return asArray(TrustDomainResourceDefinition.NAME);
     }
@@ -246,8 +280,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      */
     private SimpleAttributeDefinition[] getIdentityProviderAttributes() {
         return asArray(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.URL,
-                IdentityProviderResourceDefinition.SECURITY_DOMAIN,
-                IdentityProviderResourceDefinition.EXTERNAL,
+                IdentityProviderResourceDefinition.SECURITY_DOMAIN, IdentityProviderResourceDefinition.EXTERNAL,
                 IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES,
                 IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES);
     }
@@ -265,7 +298,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                 ContactResourceDefinition.EMAIL, ContactResourceDefinition.PHONE, ContactResourceDefinition.TYPE);
     }
 
-    private SimpleAttributeDefinition[] getIdentityProviderKeyStoreAttributes() {
+    private SimpleAttributeDefinition[] getKeyStoreAttributes() {
         return asArray(KeyStoreResourceDefinition.URL, KeyStoreResourceDefinition.PASSWD,
                 KeyStoreResourceDefinition.SIGN_KEY_ALIAS, KeyStoreResourceDefinition.SIGN_KEY_PASSWD);
     }
@@ -324,7 +357,7 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                     lastNode.clone().get(OP_ADDR).add(xmlElement.getName(), modelNode.get(key)));
         } else {
             modelNode.get(ModelDescriptionConstants.OP_ADDR).set(
-                    lastNode.clone().get(OP_ADDR).add(xmlElement.getName(), modelNode.get("*")));
+                    lastNode.clone().get(OP_ADDR).add(xmlElement.getName(), xmlElement.getName()));
         }
 
         list.add(modelNode);

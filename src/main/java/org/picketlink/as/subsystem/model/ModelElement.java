@@ -36,6 +36,7 @@ public enum ModelElement {
 
     COMMON_ALIAS ("alias"),
     COMMON_URL ("url"),
+    COMMON_ENDPOINT ("endpoint"),
     COMMON_NAME ("name"),
     COMMON_SECURITY_DOMAIN ("security-domain"),
     
@@ -62,7 +63,12 @@ public enum ModelElement {
     CONTACT_COMPANY ("company"),
     
     SERVICE_PROVIDER("service-provider"), 
-    SERVICE_PROVIDER_POST_BINDING ("post-binding");
+    SERVICE_PROVIDER_POST_BINDING ("post-binding"),
+    
+    SECURITY_TOKEN_SERVICE ("security-token-service"),
+    TOKEN_TIMEOUT ("token-timeout"),
+    CLOCK_SKEW ("clock-skew"),
+    SAML ("saml");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     

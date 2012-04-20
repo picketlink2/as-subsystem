@@ -7,13 +7,15 @@
             sign-key-alias="localhost"
             sign-key-passwd="changeit"
             url="/jbid_test_keystore.jks" />
-
+		
+        <saml token-timeout="4000" clock-skew="2000" />
+        
         <identity-provider
             alias="idp.war"
-            security-domain="idp"
             ignoreIncomingSignatures="true"
+            security-domain="idp"
             signOutgoingMessages="false"
-            url="http://localhost:8080/idp">
+            url="http://localhost:8080/idp" >
 
             <idp-metadata wantAuthnRequestsSigned="true" >
 
@@ -42,24 +44,29 @@
             </trust>
         </identity-provider>
 
+        <security-token-service
+            alias="PicketLinkSTS"
+            endpoint="http://localhost:8080/PicketLinkSTS"
+            security-domain="sp" />
+
         <service-providers>
 
             <service-provider
                 alias="sales.war"
-                security-domain="sp"
                 post-binding="true"
+                security-domain="sp"
                 url="http://localhost:8080/sales" />
 
             <service-provider
                 alias="employee.war"
-                security-domain="sp"
                 post-binding="true"
+                security-domain="sp"
                 url="http://localhost:8080/employee" />
 
             <service-provider
                 alias="employee2.war"
-                security-domain="sp"
                 post-binding="true"
+                security-domain="sp"
                 url="http://localhost:8080/employee2" />
         </service-providers>
     </federation>

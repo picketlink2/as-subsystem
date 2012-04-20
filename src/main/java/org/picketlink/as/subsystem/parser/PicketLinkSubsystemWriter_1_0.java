@@ -59,6 +59,8 @@ public class PicketLinkSubsystemWriter_1_0 implements XMLStreamConstants, XMLEle
         writers.put(ModelElement.CONTACT.getName(), new GenericModelElementWriter(ModelElement.CONTACT, writers));
         writers.put(ModelElement.TRUST_DOMAIN.getName(), new GenericModelElementWriter(ModelElement.TRUST_DOMAIN, XMLElement.TRUST, writers));
         writers.put(ModelElement.SERVICE_PROVIDER.getName(), new GenericModelElementWriter(ModelElement.SERVICE_PROVIDER, XMLElement.SERVICE_PROVIDERS, writers));
+        writers.put(ModelElement.SECURITY_TOKEN_SERVICE.getName(), new GenericModelElementWriter(ModelElement.SECURITY_TOKEN_SERVICE, writers));
+        writers.put(ModelElement.SAML.getName(), new GenericModelElementWriter(ModelElement.SAML, writers));
     }
     
     /** {@inheritDoc} */

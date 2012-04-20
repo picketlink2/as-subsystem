@@ -20,9 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.federation;
-
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
+package org.picketlink.as.subsystem.model.sts;
 
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
@@ -31,25 +29,25 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.idp.IdentityProviderAliasHandler;
-import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
-import org.picketlink.as.subsystem.model.saml.SAMLResourceDefinition;
-import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
-import org.picketlink.as.subsystem.model.sts.STSResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class FederationResourceDefinition extends AbstractResourceDefinition {
+public class STSResourceDefinition extends AbstractResourceDefinition {
 
-    public static final FederationResourceDefinition INSTANCE = new FederationResourceDefinition();
+    public static final STSResourceDefinition INSTANCE = new STSResourceDefinition();
 
-    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(COMMON_ALIAS.getName(),
-            ModelType.STRING, false).setDefaultValue(new ModelNode().set("localhost")).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("sts"))
+            .setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ENDPOINT = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_ENDPOINT.getName(),
+            ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition SECURITY_DOMAIN = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
-    private FederationResourceDefinition() {
-        super(ModelElement.FEDERATION, FederationAddHandler.INSTANCE, FederationRemoveHandler.INSTANCE);
+    private STSResourceDefinition() {
+        super(ModelElement.SECURITY_TOKEN_SERVICE, STSAddHandler.INSTANCE, STSRemoveHandler.INSTANCE);
     }
 
     /*
@@ -60,7 +58,9 @@ public class FederationResourceDefinition extends AbstractResourceDefinition {
      */
     @Override
     public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(ALIAS, null, EndpointHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(ENDPOINT, null, AliasHandler.INSTANCE, resourceRegistration);
+        addAttributeDefinition(SECURITY_DOMAIN, null, SecurityDomainHandler.INSTANCE, resourceRegistration);
     }
 
     /*
@@ -71,10 +71,5 @@ public class FederationResourceDefinition extends AbstractResourceDefinition {
      */
     @Override
     public void registerChildren(ManagementResourceRegistration resourceRegistration) {
-        addChildResourceDefinition(KeyStoreResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(IdentityProviderResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(ServiceProviderResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(STSResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(SAMLResourceDefinition.INSTANCE, resourceRegistration);
     }
 }
