@@ -41,7 +41,7 @@ import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
 
 /**
  * <p>
- * Service implementation to enable a deployed applications as a Identity Provider.
+ * Service implementation to enable a deployed applications as a Security Token Service.
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
