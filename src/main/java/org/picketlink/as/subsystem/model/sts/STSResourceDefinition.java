@@ -22,9 +22,9 @@
 
 package org.picketlink.as.subsystem.model.sts;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
@@ -46,30 +46,18 @@ public class STSResourceDefinition extends AbstractResourceDefinition {
     public static final SimpleAttributeDefinition SECURITY_DOMAIN = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
+    static {
+        INSTANCE.addAttribute(ALIAS);
+        INSTANCE.addAttribute(ENDPOINT);
+        INSTANCE.addAttribute(SECURITY_DOMAIN);
+    }
+    
     private STSResourceDefinition() {
         super(ModelElement.SECURITY_TOKEN_SERVICE, STSAddHandler.INSTANCE, STSRemoveHandler.INSTANCE);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(ALIAS, null, EndpointHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(ENDPOINT, null, AliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SECURITY_DOMAIN, null, SecurityDomainHandler.INSTANCE, resourceRegistration);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerChildren(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
-    @Override
-    public void registerChildren(ManagementResourceRegistration resourceRegistration) {
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return STSWriteAttributeHandler.INSTANCE;
     }
 }

@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -29,7 +30,6 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.idp.metadata.IDPSAMLMetadataResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -55,27 +55,28 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     public static final SimpleAttributeDefinition IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.BOOLEAN, false)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
-
+    
+    static {
+        INSTANCE.addAttribute(URL);
+        INSTANCE.addAttribute(ALIAS);
+        INSTANCE.addAttribute(SECURITY_DOMAIN);
+        INSTANCE.addAttribute(EXTERNAL);
+        INSTANCE.addAttribute(SIGN_OUTGOING_MESSAGES);
+        INSTANCE.addAttribute(IGNORE_INCOMING_SIGNATURES);
+    }
+    
     private IdentityProviderResourceDefinition() {
         super(ModelElement.IDENTITY_PROVIDER, IdentityProviderAddHandler.INSTANCE, IdentityProviderRemoveHandler.INSTANCE);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.AbstractResourceDefinition#registerResourceOperation(org.jboss.as.controller.registry.ManagementResourceRegistration)
      */
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(ALIAS, null, IdentityProviderAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SECURITY_DOMAIN, null, IdentityProviderSecurityDomainHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(URL, null, IdentityProviderURLHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(EXTERNAL, null, ExternalHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SIGN_OUTGOING_MESSAGES, null, SignOutgoingMessagesHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(IGNORE_INCOMING_SIGNATURES, null, IgnoreInSignMsgHandler.INSTANCE, resourceRegistration);
+    public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
+        resourceRegistration.registerOperationHandler(IDPReloadHandler.OPERATION_NAME, IDPReloadHandler.INSTANCE, IDPReloadHandler.INSTANCE);
     }
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -84,7 +85,11 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
      */
     @Override
     public void registerChildren(ManagementResourceRegistration resourceRegistration) {
-        addChildResourceDefinition(IDPSAMLMetadataResourceDefinition.INSTANCE, resourceRegistration);
         addChildResourceDefinition(TrustDomainResourceDefinition.INSTANCE, resourceRegistration);
+    }
+    
+    @Override
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return IDPWriteAttributeHandler.INSTANCE;
     }
 }

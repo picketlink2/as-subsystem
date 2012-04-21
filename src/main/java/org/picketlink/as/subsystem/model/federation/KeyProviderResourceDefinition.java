@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.model.federation;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -33,9 +34,9 @@ import org.picketlink.as.subsystem.model.ModelElement;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class KeyStoreResourceDefinition extends AbstractResourceDefinition {
+public class KeyProviderResourceDefinition extends AbstractResourceDefinition {
 
-    public static final KeyStoreResourceDefinition INSTANCE = new KeyStoreResourceDefinition();
+    public static final KeyProviderResourceDefinition INSTANCE = new KeyProviderResourceDefinition();
 
     public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_URL.getName(), ModelType.STRING, false).setAllowExpression(false).build();
@@ -46,22 +47,24 @@ public class KeyStoreResourceDefinition extends AbstractResourceDefinition {
     public static final SimpleAttributeDefinition SIGN_KEY_PASSWD = new SimpleAttributeDefinitionBuilder(
             ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
-    private KeyStoreResourceDefinition() {
-        super(ModelElement.KEY_STORE, KeyStoreAddHandler.INSTANCE, KeyStoreRemoveHandler.INSTANCE);
+    static {
+        INSTANCE.addAttribute(URL);
+        INSTANCE.addAttribute(PASSWD);
+        INSTANCE.addAttribute(SIGN_KEY_ALIAS);
+        INSTANCE.addAttribute(SIGN_KEY_PASSWD);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
+    
+    private KeyProviderResourceDefinition() {
+        super(ModelElement.KEY_STORE, KeyProviderAddHandler.INSTANCE, KeyProviderRemoveHandler.INSTANCE);
+    }
+    
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(URL, null, KeyStoreURLHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(PASSWD, null, KeyStorePasswdHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SIGN_KEY_ALIAS, null, KeyStoreSignKeyAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SIGN_KEY_PASSWD, null, KeyStoreSignKeyPasswdHandler.INSTANCE, resourceRegistration);
+    protected void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
+        resourceRegistration.registerOperationHandler(KeyProviderReloadHandler.OPERATION_NAME, KeyProviderReloadHandler.INSTANCE, KeyProviderReloadHandler.INSTANCE);
     }
-
+    
+    @Override
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return KeyProviderWriteAttributeHandler.INSTANCE;
+    }
 }

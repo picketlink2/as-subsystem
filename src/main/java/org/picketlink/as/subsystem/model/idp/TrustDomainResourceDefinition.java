@@ -22,9 +22,9 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
@@ -40,19 +40,16 @@ public class TrustDomainResourceDefinition extends AbstractResourceDefinition {
     public static final SimpleAttributeDefinition NAME = new SimpleAttributeDefinitionBuilder(
             ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
+    static {
+        INSTANCE.addAttribute(NAME);
+    }
+    
     private TrustDomainResourceDefinition() {
         super(ModelElement.TRUST_DOMAIN, TrustDomainAddHandler.INSTANCE, TrustDomainRemoveHandler.INSTANCE);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(NAME, null, TrustDomainNameHandler.INSTANCE, resourceRegistration);
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return TrustDomainWriteAttributeHandler.INSTANCE;
     }
-
 }

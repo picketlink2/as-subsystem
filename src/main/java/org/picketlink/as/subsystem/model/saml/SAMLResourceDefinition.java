@@ -22,9 +22,9 @@
 
 package org.picketlink.as.subsystem.model.saml;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
@@ -45,30 +45,17 @@ public class SAMLResourceDefinition extends AbstractResourceDefinition {
             ModelElement.CLOCK_SKEW.getName(), ModelType.INT, false).setDefaultValue(new ModelNode().set(10000))
             .setAllowExpression(false).build();
 
+    static {
+        INSTANCE.addAttribute(TOKEN_TIMEOUT);
+        INSTANCE.addAttribute(CLOCK_SKEW);
+    }
+    
     private SAMLResourceDefinition() {
         super(ModelElement.SAML, SAMLAddHandler.INSTANCE, SAMLRemoveHandler.INSTANCE);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
+    
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-//        addAttributeDefinition(ALIAS, null, AliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(TOKEN_TIMEOUT, null, TokenTimeoutHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(CLOCK_SKEW, null, ClockSkewHandler.INSTANCE, resourceRegistration);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerChildren(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
-     */
-    @Override
-    public void registerChildren(ManagementResourceRegistration resourceRegistration) {
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return SAMLWriteAttributeHandler.INSTANCE;
     }
 }

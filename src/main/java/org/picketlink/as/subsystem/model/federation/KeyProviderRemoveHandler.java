@@ -19,33 +19,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.saml;
+package org.picketlink.as.subsystem.model.federation;
 
-import static org.picketlink.as.subsystem.model.ModelElement.CLOCK_SKEW;
 
+import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.OperationStepHandler;
-import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
+import org.picketlink.as.subsystem.service.FederationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class ClockSkewHandler implements OperationStepHandler {
- 
-    public static final ClockSkewHandler INSTANCE = new ClockSkewHandler();
- 
-    private ClockSkewHandler() {
+public class KeyProviderRemoveHandler extends AbstractRemoveStepHandler {
+
+    public static final KeyProviderRemoveHandler INSTANCE = new KeyProviderRemoveHandler();
+
+    private KeyProviderRemoveHandler() {
     }
- 
+    
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.AbstractRemoveStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
+     */
     @Override
-    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-        final String name = operation.require("value").asString();
-        ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
+    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
+            throws OperationFailedException {
+        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
+
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), alias);
         
-        node.get(CLOCK_SKEW.getName()).set(name);
- 
-        context.completeStep();
+        federationService.getEventManager().raise(new KeyProviderEvent(null));
     }
 }

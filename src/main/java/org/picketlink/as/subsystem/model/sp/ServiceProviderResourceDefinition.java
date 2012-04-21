@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.model.sp;
 
+import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
@@ -48,21 +49,27 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public static final SimpleAttributeDefinition POST_BINDING = new SimpleAttributeDefinitionBuilder(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName(),
             ModelType.STRING, true).setAllowExpression(false).setDefaultValue(new ModelNode().set(true)).build();
 
+    static {
+        INSTANCE.addAttribute(ALIAS);
+        INSTANCE.addAttribute(SECURITY_DOMAIN);
+        INSTANCE.addAttribute(URL);
+        INSTANCE.addAttribute(POST_BINDING);
+    }
+
     private ServiceProviderResourceDefinition() {
         super(ModelElement.SERVICE_PROVIDER, ServiceProviderAddHandler.INSTANCE, ServiceProviderRemoveHandler.INSTANCE);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.SimpleResourceDefinition#registerAttributes(org.jboss.as.controller.registry.
-     * ManagementResourceRegistration)
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.AbstractResourceDefinition#registerResourceOperation(org.jboss.as.controller.registry.ManagementResourceRegistration)
      */
     @Override
-    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
-        addAttributeDefinition(ALIAS, null, ServiceProviderAliasHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(SECURITY_DOMAIN, null, ServiceProviderSecurityDomainHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(URL, null, ServiceProviderURLHandler.INSTANCE, resourceRegistration);
-        addAttributeDefinition(POST_BINDING, null, PostBindingHandler.INSTANCE, resourceRegistration);
+    public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
+        resourceRegistration.registerOperationHandler(SPReloadHandler.OPERATION_NAME, SPReloadHandler.INSTANCE, SPReloadHandler.INSTANCE);
+    }
+
+    @Override
+    protected OperationStepHandler doGetAttributeWriterHandler() {
+        return SPWriteAttributeHandler.INSTANCE;
     }
 }

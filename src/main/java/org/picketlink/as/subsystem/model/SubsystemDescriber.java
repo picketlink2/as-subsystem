@@ -22,6 +22,9 @@
 
 package org.picketlink.as.subsystem.model;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REPLY_PROPERTIES;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.Map;
 
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
+import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.dmr.ModelNode;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -84,6 +89,16 @@ public class SubsystemDescriber {
      */
     public static List<ResourceDefinition> getChildResourceDefinitions(ModelElement parentModelElement) {
         return childResourceDefinitions.get(parentModelElement);
+    }
+
+    public static final ModelNode getOperationDescription(String operationName, String description) {
+        final ModelNode root = new ModelNode();
+        
+        root.get(ModelDescriptionConstants.OPERATION_NAME).set(operationName);
+        root.get(DESCRIPTION).set(description);
+        root.get(REPLY_PROPERTIES).setEmptyObject();
+        
+        return root;
     }
 
 }

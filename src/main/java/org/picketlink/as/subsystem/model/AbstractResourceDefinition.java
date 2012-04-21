@@ -22,6 +22,9 @@
 
 package org.picketlink.as.subsystem.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ResourceDefinition;
@@ -29,6 +32,7 @@ import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.picketlink.as.subsystem.PicketLinkExtension;
+import org.picketlink.as.subsystem.model.idp.IDPWriteAttributeHandler;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -37,12 +41,36 @@ import org.picketlink.as.subsystem.PicketLinkExtension;
 public abstract class AbstractResourceDefinition extends SimpleResourceDefinition {
 
     private ModelElement modelElement;
+    private List<SimpleAttributeDefinition> attributes = new ArrayList<SimpleAttributeDefinition>();
     
     protected AbstractResourceDefinition(ModelElement modelElement, final OperationStepHandler addHandler, final OperationStepHandler removeHandler) {
         super(PathElement.pathElement(modelElement.getName()), PicketLinkExtension
                 .getResourceDescriptionResolver(modelElement.getName()), addHandler,
                 removeHandler);
         this.modelElement = modelElement;
+    }
+    
+    @Override
+    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
+        for (SimpleAttributeDefinition attribute : getAttributes()) {
+            addAttributeDefinition(attribute, null, doGetAttributeWriterHandler(), resourceRegistration);
+        }
+        
+        registerResourceOperation(resourceRegistration);
+    }
+
+    protected void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
+        
+    }
+
+    protected abstract OperationStepHandler doGetAttributeWriterHandler();
+
+    public List<SimpleAttributeDefinition> getAttributes() {
+        return this.attributes;
+    }
+    
+    protected void addAttribute(SimpleAttributeDefinition attribute) {
+        this.attributes.add(attribute);
     }
 
     protected void addAttributeDefinition(SimpleAttributeDefinition definition, OperationStepHandler readHandler,
