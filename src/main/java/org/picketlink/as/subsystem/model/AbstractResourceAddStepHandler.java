@@ -20,40 +20,35 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.saml;
+package org.picketlink.as.subsystem.model;
 
-
-import java.util.List;
-
-import org.jboss.as.controller.OperationContext;
+import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.ServiceVerificationHandler;
+import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.ServiceController;
-import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
-import org.picketlink.as.subsystem.model.ModelElement;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ * @since Mar 26, 2012
  */
-public class SAMLAddHandler extends AbstractResourceAddStepHandler {
+public class AbstractResourceAddStepHandler extends AbstractAddStepHandler {
 
-    public static final SAMLAddHandler INSTANCE = new SAMLAddHandler();
+    private ModelElement modelElement;
 
-    private SAMLAddHandler() {
-        super(ModelElement.SAML);
+    public AbstractResourceAddStepHandler(ModelElement modelElement) {
+        this.modelElement = modelElement;
     }
-
+    
     /*
      * (non-Javadoc)
      * 
-     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext,
-     * org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
      */
     @Override
-    protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
-            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
-            throws OperationFailedException {
+    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
+        for (SimpleAttributeDefinition attribute: SubsystemDescriber.getAttributeDefinition(this.modelElement)) {
+            attribute.validateAndSet(operation, model);
+        }
     }
-
+    
 }

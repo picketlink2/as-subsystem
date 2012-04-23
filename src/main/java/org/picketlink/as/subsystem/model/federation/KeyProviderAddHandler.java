@@ -22,19 +22,19 @@
 
 package org.picketlink.as.subsystem.model.federation;
 
+import static org.picketlink.as.subsystem.model.ModelUtils.toKeyProviderType;
+
 import java.util.List;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.ServiceVerificationHandler;
-import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
+import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
-import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 /**
@@ -48,49 +48,33 @@ public class KeyProviderAddHandler extends AbstractResourceAddStepHandler {
         super(ModelElement.KEY_STORE);
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+     */
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
-
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), alias);
+        KeyProviderType keyProviderType = toKeyProviderType(model);
         
-        final KeyProviderType keyProviderType = new KeyProviderType();
+        raiseKeyProviderChangeEvent(context, operation, keyProviderType);
+    }
+
+    /**
+     * <p>
+     * Notify registered observers about the new configuration.
+     * </p>
+     * 
+     * @param context
+     * @param operation
+     * @param keyProviderType
+     */
+    private void raiseKeyProviderChangeEvent(OperationContext context, ModelNode operation, KeyProviderType keyProviderType) {
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         
-        keyProviderType.setSigningAlias(model.get(ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName()).asString());
-        
-        AuthPropertyType keyStoreURL = new AuthPropertyType();
-        
-        keyStoreURL.setKey("KeyStoreURL");
-        keyStoreURL.setValue(model.get(ModelElement.COMMON_URL.getName()).asString());
-        
-        keyProviderType.add(keyStoreURL);
-        
-        AuthPropertyType keyStorePass = new AuthPropertyType();
-
-        keyStorePass.setKey("KeyStorePass");
-        keyStorePass.setValue(model.get(ModelElement.KEY_STORE_PASSWD.getName()).asString());
-
-        keyProviderType.add(keyStorePass);
-        
-        AuthPropertyType signingKeyPass = new AuthPropertyType();
-
-        signingKeyPass.setKey("SigningKeyPass");
-        signingKeyPass.setValue(model.get(ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName()).asString());
-
-        keyProviderType.add(signingKeyPass);
-
-        AuthPropertyType signingKeyAlias = new AuthPropertyType();
-
-        signingKeyAlias.setKey("SigningKeyAlias");
-        signingKeyAlias.setValue(model.get(ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName()).asString());
-
-        keyProviderType.add(signingKeyAlias);
-
         federationService.setKeyProvider(keyProviderType);
         
-        federationService.getEventManager().raise(new KeyProviderEvent(keyProviderType));
+        new KeyProviderEvent(keyProviderType, federationService.getEventManager()).raise();
     }
     
 }

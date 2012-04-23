@@ -30,9 +30,9 @@ import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
+import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.KeyValueType;
 
@@ -47,6 +47,9 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
         super(ModelElement.TRUST_DOMAIN);
     }
 
+    /* (non-Javadoc)
+     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+     */
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
@@ -54,9 +57,9 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
         String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
 
-        IDPConfigurationService service = IDPConfigurationService.getService(context.getServiceRegistry(true), alias);
+        IdentityProviderService service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
         
-        KeyProviderType keyProvider = service.getIdpConfiguration().getKeyProvider();
+        KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
         
         if (keyProvider != null) {
             KeyValueType keyValue = new KeyValueType();
@@ -67,7 +70,7 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
             keyProvider.add(keyValue);
         }
         
-        service.getIdpConfiguration().addTrustDomain(domain);
+        service.getConfiguration().addTrustDomain(domain);
     }
     
 }

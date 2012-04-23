@@ -25,7 +25,7 @@ public class EventManager {
     public void raise(Event event) {
         if (getObserver().get(event.getClass().getName()) != null) {
             for (Observer observer : getObserver().get(event.getClass().getName())) {
-                event.raise(observer);
+                event.execute(observer);
             }
         }
     }

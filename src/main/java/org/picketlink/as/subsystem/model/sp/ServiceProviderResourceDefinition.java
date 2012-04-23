@@ -65,7 +65,7 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
      */
     @Override
     public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(SPReloadHandler.OPERATION_NAME, SPReloadHandler.INSTANCE, SPReloadHandler.INSTANCE);
+        resourceRegistration.registerOperationHandler(ServiceProviderReloadOperationHandler.OPERATION_NAME, ServiceProviderReloadOperationHandler.INSTANCE, ServiceProviderReloadOperationHandler.INSTANCE);
     }
 
     @Override

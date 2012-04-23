@@ -19,38 +19,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.picketlink.as.subsystem.model.event;
 
-package org.picketlink.as.subsystem.model.sp;
-
-import org.jboss.as.controller.AbstractAddStepHandler;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.SimpleAttributeDefinition;
-import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.SubsystemDescriber;
+import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 26, 2012
+ *
  */
-public class AbstractResourceAddStepHandler extends AbstractAddStepHandler {
+public interface IdentityProviderObserver extends Observer {
 
-    private ModelElement modelElement;
-
-    public AbstractResourceAddStepHandler(ModelElement modelElement) {
-        this.modelElement = modelElement;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        for (SimpleAttributeDefinition attribute: SubsystemDescriber.getAttributeDefinition(this.modelElement)) {
-            attribute.validateAndSet(operation, model);
-        }
-    }
+    void onUpdateIdentityProvider(IDPTypeSubsystem idpType);
     
 }

@@ -25,8 +25,9 @@ package org.picketlink.as.subsystem.service;
 
 import java.io.IOException;
 
+import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.module.ResourceRoot;
-import org.jboss.msc.service.Service;
+import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceRegistry;
@@ -34,10 +35,12 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
-import org.picketlink.as.subsystem.model.event.IdentityProviderURLObserver;
-import org.picketlink.as.subsystem.model.event.KeyStoreObserver;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
+import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
+import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
@@ -50,23 +53,19 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 
-public class SPConfigurationService implements Service<SPConfigurationService>, KeyStoreObserver, IdentityProviderURLObserver {
+public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPTypeSubsystem> implements IdentityProviderObserver {
 
-    private String alias;
-    
-    private SPTypeSubsystem spConfiguration = new SPTypeSubsystem(); 
-
-    public SPConfigurationService(String alias, String url) {
-        this.alias = alias;
-        this.spConfiguration.setServiceURL(url);
+    public ServiceProviderService(OperationContext context, ModelNode modelNode) {
+        super(context, modelNode);
+        updateIdentityURL();
     }
-
+    
     /* (non-Javadoc)
-     * @see org.jboss.msc.value.Value#getValue()
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
      */
     @Override
-    public SPConfigurationService getValue() throws IllegalStateException, IllegalArgumentException {
-        return this;
+    protected SPTypeSubsystem toProviderType(ModelNode operation) {
+        return ModelUtils.toSPType(operation);
     }
 
     /* (non-Javadoc)
@@ -74,7 +73,8 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
      */
     @Override
     public void start(StartContext context) throws StartException {
-        //TODO: start service provider service
+        super.start(context);
+        getFederationService().getEventManager().addObserver(IdentityProviderUpdateEvent.class, this);
     }
 
     /* (non-Javadoc)
@@ -82,7 +82,8 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
      */
     @Override
     public void stop(StopContext context) {
-      //TODO: stop service provider service
+        super.stop(context);
+        this.setConfiguration(null);
     }
 
     /**
@@ -96,14 +97,14 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
         VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
 
         try {
-            new JBossWebConfigWriter(this.spConfiguration).write(context.getPhysicalFile());
+            new JBossWebConfigWriter(getConfiguration()).write(context.getPhysicalFile());
             
             if (handlers.exists()) {
                 handlers.delete();
             }
             
             if (handlers.getPhysicalFile().createNewFile()) {
-                new HandlersConfigWriter(this.spConfiguration).write(handlers.getPhysicalFile());
+                new HandlersConfigWriter(getConfiguration()).write(handlers.getPhysicalFile());
             }
             
             if (config.exists()) {
@@ -111,7 +112,7 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
             }
             
             if (config.getPhysicalFile().createNewFile()) {
-                new SPTypeConfigWriter(this.spConfiguration).write(config.getPhysicalFile());                    
+                new SPTypeConfigWriter(getConfiguration()).write(config.getPhysicalFile());                    
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,30 +130,35 @@ public class SPConfigurationService implements Service<SPConfigurationService>, 
      * @param name
      * @return
      */
-    public static SPConfigurationService getService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(SPConfigurationService.createServiceName(name));
+    public static ServiceProviderService getService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(ServiceProviderService.createServiceName(name));
         
         if (container != null) {
-            return (SPConfigurationService) container.getValue();
+            return (ServiceProviderService) container.getValue();
         }
         
         return null;
     }
 
-    /**
-     * @return the idpConfiguration
-     */
-    public SPTypeSubsystem getSPConfiguration() {
-        return this.spConfiguration;
+    @Override
+    public void setConfiguration(SPTypeSubsystem configuration) {
+        super.setConfiguration(configuration);
+        updateIdentityURL();
+    }
+    
+    private void updateIdentityURL() {
+        if (getFederationService().getIdentityProviderService() != null) {
+            getConfiguration().setIdentityURL(getFederationService().getIdentityProviderService().getConfiguration().getIdentityURL());            
+        }
+    }
+    
+    @Override
+    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
+        getConfiguration().setKeyProvider(keyProviderType);
     }
 
     @Override
-    public void onUpdateKeyStore(KeyProviderType keyProviderType) {
-        this.spConfiguration.setKeyProvider(keyProviderType);
-    }
-
-    @Override
-    public void onUpdateIdentityURL(String identityURL) {
-        this.spConfiguration.setIdentityURL(identityURL);
+    public void onUpdateIdentityProvider(IDPTypeSubsystem idpType) {
+        getConfiguration().setIdentityURL(idpType.getIdentityURL());
     }
 }

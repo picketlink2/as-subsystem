@@ -22,11 +22,6 @@
 
 package org.picketlink.as.subsystem.model.idp;
 
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
-import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES;
-import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES;
-
 import java.util.List;
 
 import org.jboss.as.controller.OperationContext;
@@ -37,13 +32,9 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
-import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.event.IdentityProviderURLEvent;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
-import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
-import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -68,51 +59,14 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
 
-        IDPConfigurationService idpService = createIDPService(pathAddress.getLastElement().getValue(), context, operation, verificationHandler, newControllers);
+        IdentityProviderService identityProviderService = new IdentityProviderService(context, operation);
+
+        ServiceController<IdentityProviderService> controller = context
+                .getServiceTarget()
+                .addService(IdentityProviderService.createServiceName(pathAddress.getLastElement().getValue()),
+                        identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
         
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), pathAddress.getElement(1).getValue());
-        
-        // if the parent federation has a keyprovider configuration sets it in the idp service
-        idpService.getIdpConfiguration().setKeyProvider(federationService.getKeyProvider());
-        
-        federationService.getEventManager().addObserver(KeyProviderEvent.class, idpService);
-
-        federationService.getEventManager().raise(new IdentityProviderURLEvent(operation.get(COMMON_URL.getName()).asString()));
-    }
-
-    /**
-     * <p>
-     * Creates a new {@link IDPConfigurationService} instance for this IDP configuration.
-     * </p>
-     * 
-     * @param alias
-     * @param context
-     * @param operation
-     * @param verificationHandler
-     * @param newControllers
-     * @return
-     */
-    private IDPConfigurationService createIDPService(String alias, OperationContext context, ModelNode operation,
-            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers) {
-        String url = operation.get(COMMON_URL.getName()).asString();
-        boolean signOutgoingMessages = operation.get(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).asBoolean();
-        boolean ignoreIncomingSignatures = operation.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
-        String securityDomain = operation.get(COMMON_SECURITY_DOMAIN.getName()).asString();
-
-        IDPConfigurationService identityProviderService = new IDPConfigurationService(alias, url);
-        ServiceName name = IDPConfigurationService.createServiceName(alias);
-
-        ServiceController<IDPConfigurationService> controller = context.getServiceTarget()
-                .addService(name, identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE)
-                .install();
-
-        controller.getValue().getIdpConfiguration().setSignOutgoingMessages(signOutgoingMessages);
-        controller.getValue().getIdpConfiguration().setIgnoreIncomingSignatures(ignoreIncomingSignatures);
-        controller.getValue().getIdpConfiguration().setSecurityDomain(securityDomain);
-
         newControllers.add(controller);
-        
-        return identityProviderService;
     }
 
 }

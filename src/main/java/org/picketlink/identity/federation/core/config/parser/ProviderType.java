@@ -29,9 +29,13 @@ import org.picketlink.identity.federation.core.config.KeyProviderType;
  */
 public interface ProviderType {
 
+    String getAlias();
+    
     String getSecurityDomain();
 
     KeyProviderType getKeyProvider();
+    
+    void setKeyProvider(KeyProviderType keyProvider);
 
     String getIdentityURL();
     

@@ -19,34 +19,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.federation;
+package org.picketlink.as.subsystem.model.sp;
 
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
+import java.util.Locale;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.model.SubsystemDescriber;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ *
  */
-public class FederationAliasHandler implements OperationStepHandler {
- 
-    public static final FederationAliasHandler INSTANCE = new FederationAliasHandler();
- 
-    private FederationAliasHandler() {
+public class ServiceProviderReloadOperationHandler implements OperationStepHandler, DescriptionProvider{
+
+    public static final String OPERATION_NAME = "reload";
+    
+    public static final ServiceProviderReloadOperationHandler INSTANCE = new ServiceProviderReloadOperationHandler();
+
+    private ServiceProviderReloadOperationHandler() {
+        
     }
- 
+    
+    @Override
+    public ModelNode getModelDescription(Locale locale) {
+        return SubsystemDescriber.getOperationDescription(OPERATION_NAME, "Relodas the SP configuration.");
+    }
+    
     @Override
     public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-        String alias = operation.require("value").asString();
-        ModelNode node = context.readResourceForUpdate(PathAddress.EMPTY_ADDRESS).getModel();
+        ModelNode node = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
         
-        node.get(COMMON_ALIAS.getName()).set(alias);
- 
-        context.completeStep();
+        String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        
+        ServiceProviderService service = (ServiceProviderService) context.getServiceRegistry(true).getRequiredService(ServiceProviderService.createServiceName(alias)).getValue();
+        
+        service.setConfiguration(ModelUtils.toSPType(node));
     }
+
 }

@@ -24,57 +24,45 @@ package org.picketlink.as.subsystem.service;
 
 import java.io.IOException;
 
+import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.module.ResourceRoot;
-import org.jboss.msc.service.Service;
+import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceRegistry;
-import org.jboss.msc.service.StartContext;
-import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
-import org.picketlink.as.subsystem.model.event.KeyStoreObserver;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
+import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
 
 /**
  * <p>
- * Service implementation to enable a deployed applications as a Identity Provider.
+ * Service implementation to enable a deployed applications as a Security Token Service.
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class IDPConfigurationService implements Service<IDPConfigurationService>, KeyStoreObserver {
+public class SecurityTokenServiceService extends AbstractEntityProviderService<SecurityTokenServiceService, STSTypeSubsystem> {
 
-    private static final String SERVICE_NAME = "IDPConfigurationService";
+    private static final String SERVICE_NAME = "STSConfigurationService";
 
-    private String alias;
-    
-    private IDPTypeSubsystem idpConfiguration = new IDPTypeSubsystem(); 
-
-    public IDPConfigurationService(String alias, String url) {
-        this.alias = alias;
-        this.idpConfiguration.setIdentityURL(url);
+    public SecurityTokenServiceService(OperationContext context, ModelNode operation) {
+        super(context, operation);
     }
 
+    @Override
+    protected STSTypeSubsystem toProviderType(ModelNode fromModel) {
+        return ModelUtils.toSTSType(fromModel);
+    }
+    
     /* (non-Javadoc)
      * @see org.jboss.msc.value.Value#getValue()
      */
     @Override
-    public IDPConfigurationService getValue() throws IllegalStateException, IllegalArgumentException {
+    public SecurityTokenServiceService getValue() throws IllegalStateException, IllegalArgumentException {
         return this;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
-     */
-    @Override
-    public void start(StartContext context) throws StartException {
-      //TODO: start identity provider service
     }
 
     /* (non-Javadoc)
@@ -82,7 +70,8 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      */
     @Override
     public void stop(StopContext context) {
-      //TODO: start identity provider service
+        this.setConfiguration(new STSTypeSubsystem());
+        super.stop(context);
     }
 
     /**
@@ -92,34 +81,6 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      */
     public void configure(ResourceRoot warDeployment) {
         writeJBossWebConfig(warDeployment);
-        writeHandlersConfig(warDeployment);
-        writePicketLinkConfig(warDeployment);
-    }
-
-    /**
-     * <p>
-     * Writes the picketlink-idfed.xml config file.
-     * </p>
-     * 
-     * @param warDeployment
-     */
-    private void writePicketLinkConfig(ResourceRoot warDeployment) {
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
-        
-        writeConfig(config, new IDPTypeConfigWriter(this.idpConfiguration), true);
-    }
-
-    /**
-     * <p>
-     * Writes the picketlink-handlers.xml config file.
-     * </p>
-     * 
-     * @param warDeployment
-     */
-    private void writeHandlersConfig(ResourceRoot warDeployment) {
-        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
-        
-        writeConfig(handlers, new HandlersConfigWriter(this.idpConfiguration), true);
     }
 
     /**
@@ -132,7 +93,7 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
     private void writeJBossWebConfig(ResourceRoot warDeployment) {
         VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
         
-        writeConfig(context, new JBossWebConfigWriter(this.idpConfiguration), false);
+        writeConfig(context, new JBossWebConfigWriter(this.getConfiguration()), false);
     }
     
     /**
@@ -164,23 +125,16 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
      * @param name
      * @return
      */
-    public static IDPConfigurationService getService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(IDPConfigurationService.createServiceName(name));
+    public static SecurityTokenServiceService getService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(SecurityTokenServiceService.createServiceName(name));
         
         if (container != null) {
-            return (IDPConfigurationService) container.getValue();
+            return (SecurityTokenServiceService) container.getValue();
         }
         
         return null;
     }
     
-    /**
-     * @return the idpConfiguration
-     */
-    public IDPTypeSubsystem getIdpConfiguration() {
-        return this.idpConfiguration;
-    }
-
     /**
      * @param fedAlias
      * @param alias2
@@ -190,16 +144,4 @@ public class IDPConfigurationService implements Service<IDPConfigurationService>
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
 
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
-     */
-    @Override
-    public void onUpdateKeyStore(KeyProviderType keyProviderType) {
-        this.idpConfiguration.setKeyProvider(keyProviderType);
-        
-        if (keyProviderType == null) {
-            this.idpConfiguration.setSignOutgoingMessages(false);
-            this.idpConfiguration.setIgnoreIncomingSignatures(true);
-        }
-    }
 }

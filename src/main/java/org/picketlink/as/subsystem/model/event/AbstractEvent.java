@@ -19,48 +19,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.identity.federation.core.config.parser;
-
-import org.picketlink.identity.federation.core.config.STSType;
+package org.picketlink.as.subsystem.model.event;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ *
+ * @param <T>
  */
-public class STSTypeSubsystem extends STSType implements ProviderType {
+public abstract class AbstractEvent<T extends Observer> implements Event<T> {
 
-    private String securityDomain;
-    private String endpoint;
-    private String alias;
-    
+    private final EventManager eventManager;
+
+    protected AbstractEvent(EventManager eventManager) {
+        this.eventManager = eventManager;
+    }
+
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.event.Event#raise()
+     */
     @Override
-    public String getSecurityDomain() {
-        return this.securityDomain;
-    }
-
-    @Override
-    public String getIdentityURL() {
-        return null;
-    }
-    
-    public void setSecurityDomain(String securityDomain) {
-        this.securityDomain = securityDomain;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
-    
-    public String getEndpoint() {
-        return this.endpoint;
-    }
-
-    @Override
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void raise() {
+        this.eventManager.raise(this);
     }
 
 }

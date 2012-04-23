@@ -29,7 +29,7 @@ import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.STSConfigurationService;
+import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -53,12 +53,12 @@ public class STSRemoveHandler extends AbstractRemoveStepHandler {
         String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
         String stsAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
-        STSConfigurationService stsService = STSConfigurationService.getService(context.getServiceRegistry(true), stsAlias);
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
+        SecurityTokenServiceService stsService = SecurityTokenServiceService.getService(context.getServiceRegistry(true), stsAlias);
         
         federationService.getEventManager().removeObserver(stsService);
         
-        context.removeService(STSConfigurationService.createServiceName(stsAlias));
+        context.removeService(SecurityTokenServiceService.createServiceName(stsAlias));
     }
 
 }

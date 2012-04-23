@@ -2,8 +2,8 @@ package org.picketlink.as.subsystem.model.event;
 
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
-public interface KeyStoreObserver extends Observer {
+public interface KeyProviderObserver extends Observer {
 
-    void onUpdateKeyStore(KeyProviderType keyProviderType);
+    void onUpdateKeyProvider(KeyProviderType keyProviderType);
     
 }

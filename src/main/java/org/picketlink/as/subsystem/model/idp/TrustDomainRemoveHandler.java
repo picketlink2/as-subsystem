@@ -30,7 +30,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.KeyValueType;
 
@@ -50,9 +50,9 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
         String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
 
-        IDPConfigurationService service = IDPConfigurationService.getService(context.getServiceRegistry(true), alias);
+        IdentityProviderService service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
         
-        KeyProviderType keyProvider = service.getIdpConfiguration().getKeyProvider();
+        KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
         
         if (keyProvider != null) {
             for (KeyValueType validatinAlias : new ArrayList<KeyValueType>(keyProvider.getValidatingAlias())) {
@@ -60,7 +60,7 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
             }
         }
         
-        service.getIdpConfiguration().removeTrustDomain(domain);
+        service.getConfiguration().removeTrustDomain(domain);
     }
     
 }

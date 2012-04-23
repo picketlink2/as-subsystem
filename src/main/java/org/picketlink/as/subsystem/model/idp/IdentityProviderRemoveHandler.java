@@ -28,9 +28,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.event.IdentityProviderURLEvent;
-import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -51,17 +49,9 @@ public class IdentityProviderRemoveHandler extends AbstractRemoveStepHandler {
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
-        String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
         String idpAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
-        IDPConfigurationService idpService = IDPConfigurationService.getService(context.getServiceRegistry(true), idpAlias);
-        
-        federationService.getEventManager().removeObserver(idpService);
-        
-        federationService.getEventManager().raise(new IdentityProviderURLEvent(null));
-        
-        context.removeService(IDPConfigurationService.createServiceName(idpAlias));
+        context.removeService(IdentityProviderService.createServiceName(idpAlias));
     }
 
 }

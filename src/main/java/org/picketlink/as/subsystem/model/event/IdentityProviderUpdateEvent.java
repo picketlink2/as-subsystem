@@ -19,48 +19,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.identity.federation.core.config.parser;
+package org.picketlink.as.subsystem.model.event;
 
-import org.picketlink.identity.federation.core.config.STSType;
+import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
+ *
  */
-public class STSTypeSubsystem extends STSType implements ProviderType {
+public class IdentityProviderUpdateEvent extends AbstractEvent<IdentityProviderObserver> {
 
-    private String securityDomain;
-    private String endpoint;
-    private String alias;
-    
+    private IDPTypeSubsystem idpType;
+
+    public IdentityProviderUpdateEvent(IDPTypeSubsystem idpType, EventManager eventManager) {
+        super(eventManager);
+        this.idpType = idpType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.event.Event#execute(org.picketlink.as.subsystem.model.event.Observer)
+     */
     @Override
-    public String getSecurityDomain() {
-        return this.securityDomain;
-    }
-
-    @Override
-    public String getIdentityURL() {
-        return null;
-    }
-    
-    public void setSecurityDomain(String securityDomain) {
-        this.securityDomain = securityDomain;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    public void execute(IdentityProviderObserver observer) {
+        observer.onUpdateIdentityProvider(this.idpType);
     }
     
-    public String getEndpoint() {
-        return this.endpoint;
-    }
-
-    @Override
-    public String getAlias() {
-        return this.alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
 }

@@ -35,6 +35,7 @@ import org.picketlink.identity.federation.core.config.TrustType;
  */
 public class IDPTypeSubsystem extends IDPType implements ProviderType {
 
+    private String alias;
     private String securityDomain;
     
     private boolean signOutgoingMessages;
@@ -44,6 +45,15 @@ public class IDPTypeSubsystem extends IDPType implements ProviderType {
         this.setTrust(new TrustType());
         this.getTrust().setDomains("");
     }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
 
     /**
      * @return the signOutgoingMessages

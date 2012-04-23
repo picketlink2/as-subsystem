@@ -9,8 +9,8 @@ import org.jboss.as.server.deployment.Phase;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistry;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
-import org.picketlink.as.subsystem.service.SPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
  * <p>A custom deployment unit processor to handle application deployments, usually WAR files, and configuring them
@@ -38,14 +38,14 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
     @Override
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         String name = phaseContext.getDeploymentUnit().getName();
-        IDPConfigurationService idpService = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
+        IdentityProviderService idpService = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
 
         if (idpService != null) {
             ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
             idpService.configure(root);
         }
 
-        SPConfigurationService spService = getServiceProviderService(phaseContext.getServiceRegistry(), name);
+        ServiceProviderService spService = getServiceProviderService(phaseContext.getServiceRegistry(), name);
 
         if (spService != null) {
             ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
@@ -68,11 +68,11 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
      * @param name
      * @return
      */
-    private IDPConfigurationService getIdentityProviderService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(IDPConfigurationService.createServiceName(name));
+    private IdentityProviderService getIdentityProviderService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(IdentityProviderService.createServiceName(name));
         
         if (container != null) {
-            return (IDPConfigurationService) container.getValue();
+            return (IdentityProviderService) container.getValue();
         }
         
         return null;
@@ -85,11 +85,11 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
      * @param name
      * @return
      */
-    private SPConfigurationService getServiceProviderService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(SPConfigurationService.createServiceName(name));
+    private ServiceProviderService getServiceProviderService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(ServiceProviderService.createServiceName(name));
         
         if (container != null) {
-            return (SPConfigurationService) container.getValue();
+            return (ServiceProviderService) container.getValue();
         }
         
         return null;

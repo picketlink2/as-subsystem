@@ -37,6 +37,7 @@ public class SPTypeSubsystem extends SPType implements ProviderType {
 
     private boolean postBinding;
     private String securityDomain;
+    private String alias;
 
     /**
      * @param url
@@ -58,6 +59,14 @@ public class SPTypeSubsystem extends SPType implements ProviderType {
 
     public void setSecurityDomain(String securityDomain) {
         this.securityDomain = securityDomain;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+    
+    public String getAlias() {
+        return alias;
     }
     
 }

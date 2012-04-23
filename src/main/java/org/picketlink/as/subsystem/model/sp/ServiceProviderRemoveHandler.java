@@ -22,40 +22,22 @@
 
 package org.picketlink.as.subsystem.model.sp;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIPTION;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OPERATION_NAME;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.REMOVE;
-
-import java.util.Locale;
-
 import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.descriptions.DescriptionProvider;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.SPConfigurationService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class ServiceProviderRemoveHandler extends AbstractRemoveStepHandler implements DescriptionProvider {
+public class ServiceProviderRemoveHandler extends AbstractRemoveStepHandler {
 
     public static final ServiceProviderRemoveHandler INSTANCE = new ServiceProviderRemoveHandler();
 
     private ServiceProviderRemoveHandler() {
-    }
-
-    @Override
-    public ModelNode getModelDescription(Locale locale) {
-        ModelNode node = new ModelNode();
-
-        node.get(OPERATION_NAME).set(REMOVE);
-        node.get(DESCRIPTION).set("Removes a Service Provider configuration");
-
-        return node;
     }
 
     /*
@@ -67,15 +49,9 @@ public class ServiceProviderRemoveHandler extends AbstractRemoveStepHandler impl
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
-        String fedAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getElement(1).getValue();
         String spAlias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), fedAlias);
-        SPConfigurationService spService = SPConfigurationService.getService(context.getServiceRegistry(true), spAlias);
-        
-        federationService.getEventManager().removeObserver(spService);
-        
-        context.removeService(SPConfigurationService.createServiceName(spAlias));
+        context.removeService(ServiceProviderService.createServiceName(spAlias));
     }
 
 }

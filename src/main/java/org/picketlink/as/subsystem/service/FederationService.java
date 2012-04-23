@@ -22,6 +22,7 @@
 
 package org.picketlink.as.subsystem.service;
 
+import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
@@ -29,8 +30,10 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.EventManager;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
 
 /**
  * <p>
@@ -45,7 +48,9 @@ public class FederationService implements Service<FederationService> {
     
     private KeyProviderType keyProvider;
 
-    private EventManager eventManager = new EventManager(); 
+    private EventManager eventManager = new EventManager();
+    
+    private IdentityProviderService identityProviderService;
 
     public FederationService(String alias) {
         this.alias = alias;
@@ -82,8 +87,8 @@ public class FederationService implements Service<FederationService> {
      * @param name
      * @return
      */
-    public static FederationService getService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(FederationService.createServiceName(name));
+    public static FederationService getService(ServiceRegistry registry, ModelNode model) {
+        ServiceController<?> container = registry.getService(FederationService.createServiceName(ModelUtils.getFederationAlias(model)));
         
         if (container != null) {
             return (FederationService) container.getValue();
@@ -116,4 +121,11 @@ public class FederationService implements Service<FederationService> {
         return this.eventManager ;
     }
     
+    public void setIdentityProviderService(IdentityProviderService identityProviderService) {
+        this.identityProviderService = identityProviderService;
+    }
+
+    public IdentityProviderService getIdentityProviderService() {
+        return this.identityProviderService;
+    }
 }

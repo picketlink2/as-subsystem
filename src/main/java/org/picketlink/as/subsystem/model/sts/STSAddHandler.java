@@ -23,9 +23,6 @@
 package org.picketlink.as.subsystem.model.sts;
 
 
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ENDPOINT;
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
-
 import java.util.List;
 
 import org.jboss.as.controller.OperationContext;
@@ -37,11 +34,9 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
-import org.picketlink.as.subsystem.model.sp.AbstractResourceAddStepHandler;
-import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.STSConfigurationService;
+import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -64,49 +59,17 @@ public class STSAddHandler extends AbstractResourceAddStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
-
-        STSConfigurationService stsService = createSTSService(pathAddress.getLastElement().getValue(), context, operation, verificationHandler, newControllers);
+        String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), pathAddress.getElement(1).getValue());
+        SecurityTokenServiceService identityProviderService = new SecurityTokenServiceService(context, operation);
         
-        // if the parent federation has a keyprovider configuration sets it in the idp service
-        stsService.getConfiguration().setKeyProvider(federationService.getKeyProvider());
-        
-        federationService.getEventManager().addObserver(KeyProviderEvent.class, stsService);
-    }
+        ServiceName name = SecurityTokenServiceService.createServiceName(alias);
 
-    /**
-     * <p>
-     * Creates a new {@link STSConfigurationService} instance for this IDP configuration.
-     * </p>
-     * 
-     * @param alias
-     * @param context
-     * @param operation
-     * @param verificationHandler
-     * @param newControllers
-     * @return
-     */
-    private STSConfigurationService createSTSService(String alias, OperationContext context, ModelNode operation,
-            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers) {
-        String endpoint = operation.get(COMMON_ENDPOINT.getName()).asString();
-        String securityDomain = operation.get(COMMON_SECURITY_DOMAIN.getName()).asString();
-
-        STSConfigurationService identityProviderService = new STSConfigurationService(alias);
-        ServiceName name = STSConfigurationService.createServiceName(alias);
-
-        ServiceController<STSConfigurationService> controller = context.getServiceTarget()
+        ServiceController<SecurityTokenServiceService> controller = context.getServiceTarget()
                 .addService(name, identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE)
                 .install();
 
-        controller.getValue().getConfiguration().setSTSName(alias);
-        controller.getValue().getConfiguration().setEndpoint(endpoint);
-        controller.getValue().getConfiguration().setSecurityDomain(securityDomain);
-
         newControllers.add(controller);
-        
-        return identityProviderService;
     }
 
 }

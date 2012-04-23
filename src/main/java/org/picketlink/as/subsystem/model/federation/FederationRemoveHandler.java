@@ -34,8 +34,8 @@ import org.jboss.dmr.Property;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.as.subsystem.service.IDPConfigurationService;
-import org.picketlink.as.subsystem.service.SPConfigurationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -86,7 +86,7 @@ public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
     private void removeServiceProviderService(OperationContext context, ModelNode model) {
         if (model.get(ModelElement.SERVICE_PROVIDER.getName()).isDefined()) {
             for (Property serviceProviders : getServiceProviders(model)) {
-                ServiceName name = SPConfigurationService.createServiceName(serviceProviders.getName());
+                ServiceName name = ServiceProviderService.createServiceName(serviceProviders.getName());
                 
                 context.removeService(name);
             }
@@ -105,7 +105,7 @@ public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
         if (hasIdentityProvider(model)) {
             String idpAlias = getIdentityProvider(model).getName();
             
-            ServiceName name = IDPConfigurationService.createServiceName(idpAlias);
+            ServiceName name = IdentityProviderService.createServiceName(idpAlias);
             
             context.removeService(name);
         }
