@@ -58,7 +58,7 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 
 		<!-- Current version of JBoss AS7 supported by this subsystem. -->
-		<version.jboss_as>7.1.0.Final</version.jboss_as>
+		<version.jboss_as>7.1.1.Final</version.jboss_as>
 
 		<!-- Current version of PicketLink supported by this subsystem. -->
 		<version.picketlink>2.1.0-SNAPSHOT</version.picketlink>

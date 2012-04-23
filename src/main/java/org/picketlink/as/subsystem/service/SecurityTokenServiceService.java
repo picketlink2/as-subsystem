@@ -36,6 +36,7 @@ import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
+import org.picketlink.identity.federation.core.config.parser.STSWsdlConfigWriter;
 
 /**
  * <p>
@@ -81,6 +82,9 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
      */
     public void configure(ResourceRoot warDeployment) {
         writeJBossWebConfig(warDeployment);
+        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/wsdl/PicketLinkSTS.wsdl");
+        
+        writeConfig(context, new STSWsdlConfigWriter(this.getConfiguration()), false);
     }
 
     /**

@@ -23,6 +23,11 @@
 package org.picketlink.as.subsystem.model.sts;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.jboss.as.controller.OperationContext;
@@ -63,13 +68,38 @@ public class STSAddHandler extends AbstractResourceAddStepHandler {
         
         SecurityTokenServiceService identityProviderService = new SecurityTokenServiceService(context, operation);
         
-        ServiceName name = SecurityTokenServiceService.createServiceName(alias);
+        ServiceName name = SecurityTokenServiceService.createServiceName(alias + ".war");
 
         ServiceController<SecurityTokenServiceService> controller = context.getServiceTarget()
                 .addService(name, identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE)
                 .install();
 
         newControllers.add(controller);
+        
+        InputStream is = getClass().getClassLoader().getResourceAsStream("deployment/picketlink-sts.war");
+        
+        try {
+            File file = new File(System.getProperty("jboss.server.base.dir") + "/deployments/" + alias + ".war");
+            
+            if (file.exists()) {
+                file.delete();
+            }
+            
+            file.createNewFile();
+            FileOutputStream out = new FileOutputStream(file);
+            byte[] buffer = new byte[1024];
+            
+            while (is.read(buffer) > 0) {
+                out.write(buffer);
+            }
+            
+            out.close();
+            is.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

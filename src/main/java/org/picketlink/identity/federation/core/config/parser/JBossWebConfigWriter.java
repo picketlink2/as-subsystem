@@ -124,15 +124,17 @@ public class JBossWebConfigWriter implements ConfigWriter {
         
         Node valvesConfiguration = getValvesConfiguration(file);
         
-        // gets the last node defined in the jboss-web.xml
-        Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes()
-                .item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
-
-        // import the new valve node into the jboss-web.xml.
-        Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
-
-        // append the imported node in the jboss-web.xml.
-        lastNode.getParentNode().appendChild(importNode);
+        if (valvesConfiguration != null) {
+            // gets the last node defined in the jboss-web.xml
+            Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes()
+                    .item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
+    
+            // import the new valve node into the jboss-web.xml.
+            Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
+    
+            // append the imported node in the jboss-web.xml.
+            lastNode.getParentNode().appendChild(importNode);
+        }
     }
 
     /**
@@ -232,6 +234,8 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 }
                 
                 writeValve(writer, valveClass, attributes);
+            } else {
+                return null;
             }
         } catch (ProcessingException e) {
             e.printStackTrace();

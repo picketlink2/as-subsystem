@@ -75,7 +75,7 @@ public class ModelUtils {
     }
     
     public static SPTypeSubsystem toSPType(ModelNode fromModel) {
-        String alias = PathAddress.pathAddress(fromModel.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
+        String alias = fromModel.get(ModelElement.COMMON_ALIAS.getName()).asString();
         String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
         String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
         boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();

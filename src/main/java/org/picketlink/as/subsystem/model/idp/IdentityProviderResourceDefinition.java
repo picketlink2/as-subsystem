@@ -74,7 +74,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
      */
     @Override
     public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(IDPReloadHandler.OPERATION_NAME, IDPReloadHandler.INSTANCE, IDPReloadHandler.INSTANCE);
+        resourceRegistration.registerOperationHandler(IdentityProviderReloadOperationHandler.OPERATION_NAME, IdentityProviderReloadOperationHandler.INSTANCE, IdentityProviderReloadOperationHandler.INSTANCE);
     }
     
     /*

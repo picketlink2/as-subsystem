@@ -39,13 +39,13 @@ import org.picketlink.identity.federation.core.config.KeyProviderType;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-public class KeyProviderReloadHandler implements OperationStepHandler, DescriptionProvider{
+public class KeyProviderReloadOperationHandler implements OperationStepHandler, DescriptionProvider{
 
     public static final String OPERATION_NAME = "reload";
     
-    public static final KeyProviderReloadHandler INSTANCE = new KeyProviderReloadHandler();
+    public static final KeyProviderReloadOperationHandler INSTANCE = new KeyProviderReloadOperationHandler();
 
-    private KeyProviderReloadHandler() {
+    private KeyProviderReloadOperationHandler() {
         
     }
     

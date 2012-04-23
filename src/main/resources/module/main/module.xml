@@ -53,6 +53,6 @@
 		<module name="org.picketbox" />
 		<module name="javax.xml.ws.api" />
 		<module name="org.apache.log4j" />
-		<module name="sun.jdk" />
+		<module name="org.apache.santuario.xmlsec" />
 	</dependencies>
 </module>

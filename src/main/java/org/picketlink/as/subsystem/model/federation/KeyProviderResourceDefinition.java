@@ -60,7 +60,7 @@ public class KeyProviderResourceDefinition extends AbstractResourceDefinition {
     
     @Override
     protected void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(KeyProviderReloadHandler.OPERATION_NAME, KeyProviderReloadHandler.INSTANCE, KeyProviderReloadHandler.INSTANCE);
+        resourceRegistration.registerOperationHandler(KeyProviderReloadOperationHandler.OPERATION_NAME, KeyProviderReloadOperationHandler.INSTANCE, KeyProviderReloadOperationHandler.INSTANCE);
     }
     
     @Override

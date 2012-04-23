@@ -10,6 +10,7 @@ import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
@@ -51,6 +52,13 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
             ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
             spService.configure(root);
         }
+        
+        SecurityTokenServiceService stsService = getSecurityTokenServiceService(phaseContext.getServiceRegistry(), name);
+        
+        if (stsService != null) {
+            ResourceRoot root = phaseContext.getDeploymentUnit().getAttachment(Attachments.DEPLOYMENT_ROOT);
+            stsService.configure(root);
+        }
 }
 
     /* (non-Javadoc)
@@ -79,7 +87,7 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
     }
     
     /**
-     * Returns a instance of the service responsible to configure applications as an IDP.
+     * Returns a instance of the service responsible to configure applications as an Service Provider.
      * 
      * @param registry
      * @param name
@@ -90,6 +98,23 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
         
         if (container != null) {
             return (ServiceProviderService) container.getValue();
+        }
+        
+        return null;
+    }
+
+    /**
+     * Returns a instance of the service responsible to configure applications as an Security Token Service.
+     * 
+     * @param registry
+     * @param name
+     * @return
+     */
+    private SecurityTokenServiceService getSecurityTokenServiceService(ServiceRegistry registry, String name) {
+        ServiceController<?> container = registry.getService(SecurityTokenServiceService.createServiceName(name));
+        
+        if (container != null) {
+            return (SecurityTokenServiceService) container.getValue();
         }
         
         return null;

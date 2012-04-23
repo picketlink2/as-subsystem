@@ -38,13 +38,13 @@ import org.picketlink.as.subsystem.service.IdentityProviderService;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-public class IDPReloadHandler implements OperationStepHandler, DescriptionProvider{
+public class IdentityProviderReloadOperationHandler implements OperationStepHandler, DescriptionProvider{
 
     public static final String OPERATION_NAME = "reload";
     
-    public static final IDPReloadHandler INSTANCE = new IDPReloadHandler();
+    public static final IdentityProviderReloadOperationHandler INSTANCE = new IdentityProviderReloadOperationHandler();
 
-    private IDPReloadHandler() {
+    private IdentityProviderReloadOperationHandler() {
         
     }
     
@@ -64,6 +64,8 @@ public class IDPReloadHandler implements OperationStepHandler, DescriptionProvid
         service.setConfiguration(ModelUtils.toIDPType(node));
         
         service.raiseUpdateEvent();
+        
+        context.completeStep();
     }
 
 }
