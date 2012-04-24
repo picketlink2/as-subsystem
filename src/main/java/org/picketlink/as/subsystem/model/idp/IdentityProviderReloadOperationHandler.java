@@ -65,6 +65,7 @@ public class IdentityProviderReloadOperationHandler implements OperationStepHand
 
         IDPConfiguration updatedIDPConfig = ModelUtils.toIDPConfig(node);
         
+        // the node has only the idp attributes, we need to get the child elements configuration and set them again
         updatedIDPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation).getKeyProvider());
         updatedIDPConfig.setTrust(service.getConfiguration().getTrust());
         
