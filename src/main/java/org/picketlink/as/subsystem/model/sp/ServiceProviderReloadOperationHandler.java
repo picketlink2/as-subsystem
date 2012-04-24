@@ -32,7 +32,9 @@ import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.SubsystemDescriber;
+import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -61,7 +63,11 @@ public class ServiceProviderReloadOperationHandler implements OperationStepHandl
         
         ServiceProviderService service = (ServiceProviderService) context.getServiceRegistry(true).getRequiredService(ServiceProviderService.createServiceName(alias)).getValue();
         
-        service.setConfiguration(ModelUtils.toSPConfig(node));
+        SPConfiguration updatedSPConfig = ModelUtils.toSPConfig(node);
+        
+        updatedSPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation).getKeyProvider());
+        
+        service.setConfiguration(updatedSPConfig);
         
         context.completeStep();
     }

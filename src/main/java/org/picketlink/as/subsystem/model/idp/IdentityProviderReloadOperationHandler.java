@@ -32,7 +32,9 @@ import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.SubsystemDescriber;
+import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -61,7 +63,12 @@ public class IdentityProviderReloadOperationHandler implements OperationStepHand
 
         IdentityProviderService service = (IdentityProviderService) context.getServiceRegistry(true).getRequiredService(IdentityProviderService.createServiceName(alias)).getValue();
 
-        service.setConfiguration(ModelUtils.toIDPConfig(node));
+        IDPConfiguration updatedIDPConfig = ModelUtils.toIDPConfig(node);
+        
+        updatedIDPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation).getKeyProvider());
+        updatedIDPConfig.setTrust(service.getConfiguration().getTrust());
+        
+        service.setConfiguration(updatedIDPConfig);
         
         service.raiseUpdateEvent();
         
