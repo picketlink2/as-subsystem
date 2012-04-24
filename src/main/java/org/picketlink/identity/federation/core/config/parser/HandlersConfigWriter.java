@@ -29,6 +29,9 @@ import java.io.FileOutputStream;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
+import org.picketlink.identity.federation.core.config.ProviderConfiguration;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
@@ -46,9 +49,9 @@ public class HandlersConfigWriter implements ConfigWriter  {
     private static final String HANDLER_ELEMENT = "Handler";
     private static final String HANDLERS_ELEMENT = "Handlers";
 
-    private ProviderType configuration;
+    private ProviderConfiguration configuration;
 
-    public HandlersConfigWriter(ProviderType idpTypeSubsystem) {
+    public HandlersConfigWriter(ProviderConfiguration idpTypeSubsystem) {
         this.configuration = idpTypeSubsystem;
     }
     
@@ -104,11 +107,11 @@ public class HandlersConfigWriter implements ConfigWriter  {
     }
 
     private boolean isSPConfiguration() {
-        return this.configuration instanceof SPTypeSubsystem;
+        return this.configuration instanceof SPConfiguration;
     }
 
     private boolean isIDPConfiguration() {
-        return this.configuration instanceof IDPTypeSubsystem;
+        return this.configuration instanceof IDPConfiguration;
     }
     
     private void writeHandler(XMLStreamWriter writer, String className) throws ProcessingException {

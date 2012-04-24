@@ -1,74 +1,54 @@
-<subsystem xmlns="urn:jboss:picketlink:1.0" >
+<subsystem xmlns="urn:jboss:picketlink:1.0">
 
-    <federation alias="my-fed" >
+	<federation alias="my-fed">
 
-        <key-store
-            passwd="changeit"
-            sign-key-alias="localhost"
-            sign-key-passwd="changeit"
-            url="/jbid_test_keystore.jks" />
-		
-        <saml token-timeout="4000" clock-skew="2000" />
-        
-        <identity-provider
-            alias="idp.war"
-            ignoreIncomingSignatures="true"
-            security-domain="idp"
-            signOutgoingMessages="false"
-            url="http://localhost:8080/idp" >
+		<key-store passwd="changeit" sign-key-alias="localhost"
+			sign-key-passwd="changeit" url="/jbid_test_keystore.jks" />
 
-            <idp-metadata wantAuthnRequestsSigned="true" >
+		<saml token-timeout="4000" clock-skew="2000"
+			disable-auth-statement="" send-roles="" roles=""
+			assertion-consumer-url="" nameid-format="" 
+			attribute-manager=""/>
 
-                <organization
-                    name="Acme"
-                    url="http://acme.com" />
+		<identity-provider alias="idp.war"
+			ignoreIncomingSignatures="true" security-domain="idp"
+			signOutgoingMessages="false" url="http://localhost:8080/idp">
 
-                <contact
-                    name="pedro"
-                    company="Red Hat Inc."
-                    email="psilva@redhat.com"
-                    phone="1122222222"
-                    surName="silva"
-                    type="technical" />
-            </idp-metadata>
+			<idp-metadata wantAuthnRequestsSigned="true">
 
-            <trust>
+				<organization name="Acme" url="http://acme.com" />
 
-                <trust-domain name="localhost" />
+				<contact name="pedro" company="Red Hat Inc." email="psilva@redhat.com"
+					phone="1122222222" surName="silva" type="technical" />
+			</idp-metadata>
 
-                <trust-domain name="mycompany.com2" />
+			<trust>
 
-                <trust-domain name="mycompany.com3" />
+				<trust-domain name="localhost" />
 
-                <trust-domain name="mycompany.com4" />
-            </trust>
-        </identity-provider>
+				<trust-domain name="mycompany.com2" />
 
-        <security-token-service
-            alias="PicketLinkSTS"
-            endpoint="http://localhost:8080/PicketLinkSTS"
-            security-domain="sp" />
+				<trust-domain name="mycompany.com3" />
 
-        <service-providers>
+				<trust-domain name="mycompany.com4" />
+			</trust>
+		</identity-provider>
 
-            <service-provider
-                alias="sales.war"
-                post-binding="true"
-                security-domain="sp"
-                url="http://localhost:8080/sales" />
+		<security-token-service alias="PicketLinkSTS"
+			endpoint="http://localhost:8080/PicketLinkSTS" security-domain="sp" />
 
-            <service-provider
-                alias="employee.war"
-                post-binding="true"
-                security-domain="sp"
-                url="http://localhost:8080/employee" />
+		<service-providers>
 
-            <service-provider
-                alias="employee2.war"
-                post-binding="true"
-                security-domain="sp"
-                url="http://localhost:8080/employee2" />
-        </service-providers>
-    </federation>
+			<service-provider alias="sales.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/sales" />
+
+			<service-provider alias="employee.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/employee" />
+
+			<service-provider alias="employee2.war"
+				post-binding="true" security-domain="sp"
+				url="http://localhost:8080/employee2" />
+		</service-providers>
+	</federation>
 
 </subsystem>

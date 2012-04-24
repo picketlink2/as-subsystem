@@ -8,11 +8,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.picketlink.identity.federation.core.config.AuthPropertyType;
+import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
-public abstract class AbstractProviderTypeConfigWriter<T extends ProviderType> implements ConfigWriter {
+public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfiguration> implements ConfigWriter {
 
     private T configuration;
     

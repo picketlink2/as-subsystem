@@ -24,6 +24,7 @@ package org.picketlink.identity.federation.core.config.parser;
 
 import javax.xml.stream.XMLStreamWriter;
 
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
@@ -36,9 +37,9 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
-public class IDPTypeConfigWriter extends AbstractProviderTypeConfigWriter<IDPTypeSubsystem> {
+public class IDPTypeConfigWriter extends AbstractProviderTypeConfigWriter<IDPConfiguration> {
 
-    public IDPTypeConfigWriter(IDPTypeSubsystem idpTypeSubsystem) {
+    public IDPTypeConfigWriter(IDPConfiguration idpTypeSubsystem) {
         super(idpTypeSubsystem);
     }
 

@@ -61,7 +61,9 @@ public class ServiceProviderReloadOperationHandler implements OperationStepHandl
         
         ServiceProviderService service = (ServiceProviderService) context.getServiceRegistry(true).getRequiredService(ServiceProviderService.createServiceName(alias)).getValue();
         
-        service.setConfiguration(ModelUtils.toSPType(node));
+        service.setConfiguration(ModelUtils.toSPConfig(node));
+        
+        context.completeStep();
     }
 
 }

@@ -19,16 +19,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.event;
+package org.picketlink.identity.federation.core.config;
 
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
+import org.picketlink.identity.federation.core.config.STSType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
  */
-public interface IdentityProviderObserver extends Observer {
+public class STSConfiguration extends STSType implements ProviderConfiguration {
 
-    void onUpdateIdentityProvider(IDPConfiguration idpType);
+    private String securityDomain;
+    private String endpoint;
+    private String alias;
     
+    @Override
+    public String getSecurityDomain() {
+        return this.securityDomain;
+    }
+
+    @Override
+    public String getIdentityURL() {
+        return null;
+    }
+    
+    public void setSecurityDomain(String securityDomain) {
+        this.securityDomain = securityDomain;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+    
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
+    @Override
+    public String getAlias() {
+        return this.alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
 }

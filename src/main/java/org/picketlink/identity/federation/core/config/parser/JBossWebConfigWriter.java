@@ -45,6 +45,9 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
+import org.picketlink.identity.federation.core.config.ProviderConfiguration;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 import org.w3c.dom.Document;
@@ -73,9 +76,9 @@ public class JBossWebConfigWriter implements ConfigWriter {
     private static final String SIGN_OUTGOING_MESSAGES_ATTRIBUTE = "signOutgoingMessages";
     private static final String VALIDATING_ALIAS_TO_TOKEN_ISSUER = "validatingAliasToTokenIssuer";
 
-    private ProviderType configuration;
+    private ProviderConfiguration configuration;
 
-    public JBossWebConfigWriter(ProviderType idpTypeSubsystem) {
+    public JBossWebConfigWriter(ProviderConfiguration idpTypeSubsystem) {
         this.configuration = idpTypeSubsystem;
     }
 
@@ -124,15 +127,17 @@ public class JBossWebConfigWriter implements ConfigWriter {
         
         Node valvesConfiguration = getValvesConfiguration(file);
         
-        // gets the last node defined in the jboss-web.xml
-        Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes()
-                .item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
-
-        // import the new valve node into the jboss-web.xml.
-        Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
-
-        // append the imported node in the jboss-web.xml.
-        lastNode.getParentNode().appendChild(importNode);
+        if (valvesConfiguration != null) {
+            // gets the last node defined in the jboss-web.xml
+            Node lastNode = jbossWebXmlDoc.getFirstChild().getChildNodes()
+                    .item(jbossWebXmlDoc.getFirstChild().getChildNodes().getLength() - 1);
+    
+            // import the new valve node into the jboss-web.xml.
+            Node importNode = jbossWebXmlDoc.importNode(valvesConfiguration.getFirstChild(), true);
+    
+            // append the imported node in the jboss-web.xml.
+            lastNode.getParentNode().appendChild(importNode);
+        }
     }
 
     /**
@@ -162,11 +167,11 @@ public class JBossWebConfigWriter implements ConfigWriter {
     }
 
     private boolean isSPConfiguration() {
-        return this.configuration instanceof SPTypeSubsystem;
+        return this.configuration instanceof SPConfiguration;
     }
 
     private boolean isIDPConfiguration() {
-        return this.configuration instanceof IDPTypeSubsystem;
+        return this.configuration instanceof IDPConfiguration;
     }
 
     private Document getJBossWebXMLDocument(File file) {
@@ -211,7 +216,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
             if (isIDPConfiguration()) {
                 writeIDPValves(writer);
             } else if (isSPConfiguration()) {
-                SPTypeSubsystem spConfiguration = (SPTypeSubsystem) this.configuration;
+                SPConfiguration spConfiguration = (SPConfiguration) this.configuration;
                 String valveClass = null;
                 Map<String, String> attributes = null;
                 
@@ -232,6 +237,8 @@ public class JBossWebConfigWriter implements ConfigWriter {
                 }
                 
                 writeValve(writer, valveClass, attributes);
+            } else {
+                return null;
             }
         } catch (ProcessingException e) {
             e.printStackTrace();
@@ -252,7 +259,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
     }
 
     private void writeIDPValves(XMLStreamWriter writer) throws ProcessingException {
-        IDPTypeSubsystem idpConfiguration = (IDPTypeSubsystem) this.configuration;
+        IDPConfiguration idpConfiguration = (IDPConfiguration) this.configuration;
 
         Map<String, String> attributes = new HashMap<String, String>();
 
@@ -267,7 +274,7 @@ public class JBossWebConfigWriter implements ConfigWriter {
         writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve", attributes);
     }
 
-    private Map<String, String> getSPSignatureAttributes(SPTypeSubsystem spConfiguration) throws MalformedURLException {
+    private Map<String, String> getSPSignatureAttributes(SPConfiguration spConfiguration) throws MalformedURLException {
         Map<String, String> attributes = new HashMap<String, String>();
 
         attributes.put(SP_SIGNATURE_IDP_ADDRESS, new URL(spConfiguration.getIdentityURL()).getHost());

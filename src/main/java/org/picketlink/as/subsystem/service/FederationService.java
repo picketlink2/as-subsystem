@@ -33,7 +33,8 @@ import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.EventManager;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
+import org.picketlink.identity.federation.core.config.STSConfiguration;
 
 /**
  * <p>
@@ -47,6 +48,7 @@ public class FederationService implements Service<FederationService> {
     private String alias;
     
     private KeyProviderType keyProvider;
+    private STSConfiguration samlConfig;
 
     private EventManager eventManager = new EventManager();
     
@@ -106,6 +108,14 @@ public class FederationService implements Service<FederationService> {
     
     public void setKeyProvider(KeyProviderType keyProviderType) {
         this.keyProvider = keyProviderType;
+    }
+    
+    public STSConfiguration getSamlConfig() {
+        return this.samlConfig;
+    }
+    
+    public void setSamlConfig(STSConfiguration samlConfig) {
+        this.samlConfig = samlConfig;
     }
 
     /**

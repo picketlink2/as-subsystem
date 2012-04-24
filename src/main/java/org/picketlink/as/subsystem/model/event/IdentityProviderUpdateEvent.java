@@ -21,7 +21,7 @@
  */
 package org.picketlink.as.subsystem.model.event;
 
-import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -29,9 +29,9 @@ import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
  */
 public class IdentityProviderUpdateEvent extends AbstractEvent<IdentityProviderObserver> {
 
-    private IDPTypeSubsystem idpType;
+    private IDPConfiguration idpType;
 
-    public IdentityProviderUpdateEvent(IDPTypeSubsystem idpType, EventManager eventManager) {
+    public IdentityProviderUpdateEvent(IDPConfiguration idpType, EventManager eventManager) {
         super(eventManager);
         this.idpType = idpType;
     }

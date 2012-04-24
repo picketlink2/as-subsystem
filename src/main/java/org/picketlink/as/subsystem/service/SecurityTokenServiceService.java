@@ -33,9 +33,10 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.identity.federation.core.config.STSConfiguration;
 import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
+import org.picketlink.identity.federation.core.config.parser.STSWsdlConfigWriter;
 
 /**
  * <p>
@@ -44,7 +45,7 @@ import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class SecurityTokenServiceService extends AbstractEntityProviderService<SecurityTokenServiceService, STSTypeSubsystem> {
+public class SecurityTokenServiceService extends AbstractEntityProviderService<SecurityTokenServiceService, STSConfiguration> {
 
     private static final String SERVICE_NAME = "STSConfigurationService";
 
@@ -53,8 +54,8 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
     }
 
     @Override
-    protected STSTypeSubsystem toProviderType(ModelNode fromModel) {
-        return ModelUtils.toSTSType(fromModel);
+    protected STSConfiguration toProviderType(ModelNode fromModel) {
+        return ModelUtils.toSTSConfig(fromModel);
     }
     
     /* (non-Javadoc)
@@ -70,7 +71,7 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
      */
     @Override
     public void stop(StopContext context) {
-        this.setConfiguration(new STSTypeSubsystem());
+        this.setConfiguration(new STSConfiguration());
         super.stop(context);
     }
 
@@ -81,6 +82,9 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
      */
     public void configure(ResourceRoot warDeployment) {
         writeJBossWebConfig(warDeployment);
+        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/wsdl/PicketLinkSTS.wsdl");
+        
+        writeConfig(context, new STSWsdlConfigWriter(this.getConfiguration()), false);
     }
 
     /**

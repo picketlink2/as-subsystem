@@ -41,13 +41,9 @@ public class SAMLResourceDefinition extends AbstractResourceDefinition {
     public static final SimpleAttributeDefinition TOKEN_TIMEOUT = new SimpleAttributeDefinitionBuilder(
             ModelElement.TOKEN_TIMEOUT.getName(), ModelType.INT, false).setDefaultValue(new ModelNode().set(10000))
             .setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition CLOCK_SKEW = new SimpleAttributeDefinitionBuilder(
-            ModelElement.CLOCK_SKEW.getName(), ModelType.INT, false).setDefaultValue(new ModelNode().set(10000))
-            .setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(TOKEN_TIMEOUT);
-        INSTANCE.addAttribute(CLOCK_SKEW);
     }
     
     private SAMLResourceDefinition() {

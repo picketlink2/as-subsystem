@@ -38,12 +38,12 @@ import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
 
 /**
  * <p>
@@ -53,7 +53,7 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 
-public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPTypeSubsystem> implements IdentityProviderObserver {
+public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPConfiguration> implements IdentityProviderObserver {
 
     public ServiceProviderService(OperationContext context, ModelNode modelNode) {
         super(context, modelNode);
@@ -64,8 +64,8 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
      */
     @Override
-    protected SPTypeSubsystem toProviderType(ModelNode operation) {
-        return ModelUtils.toSPType(operation);
+    protected SPConfiguration toProviderType(ModelNode operation) {
+        return ModelUtils.toSPConfig(operation);
     }
 
     /* (non-Javadoc)
@@ -141,7 +141,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
     }
 
     @Override
-    public void setConfiguration(SPTypeSubsystem configuration) {
+    public void setConfiguration(SPConfiguration configuration) {
         super.setConfiguration(configuration);
         updateIdentityURL();
     }
@@ -158,7 +158,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
     }
 
     @Override
-    public void onUpdateIdentityProvider(IDPTypeSubsystem idpType) {
+    public void onUpdateIdentityProvider(IDPConfiguration idpType) {
         getConfiguration().setIdentityURL(idpType.getIdentityURL());
     }
 }

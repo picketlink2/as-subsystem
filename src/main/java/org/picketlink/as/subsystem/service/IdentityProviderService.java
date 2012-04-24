@@ -36,11 +36,11 @@ import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 
 /**
@@ -50,7 +50,7 @@ import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWrite
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class IdentityProviderService extends AbstractEntityProviderService<IdentityProviderService, IDPTypeSubsystem> {
+public class IdentityProviderService extends AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> {
 
     private static final String SERVICE_NAME = "IDPConfigurationService";
 
@@ -59,8 +59,8 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
     }
     
     @Override
-    protected IDPTypeSubsystem toProviderType(ModelNode operation) {
-        return ModelUtils.toIDPType(operation);
+    protected IDPConfiguration toProviderType(ModelNode operation) {
+        return ModelUtils.toIDPConfig(operation);
     }
 
     /* (non-Javadoc)
@@ -79,7 +79,7 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
     @Override
     public void stop(StopContext context) {
         super.stop(context);
-        this.setConfiguration(new IDPTypeSubsystem());
+        this.setConfiguration(new IDPConfiguration());
         this.getFederationService().setIdentityProviderService(null);
         this.raiseUpdateEvent();
     }

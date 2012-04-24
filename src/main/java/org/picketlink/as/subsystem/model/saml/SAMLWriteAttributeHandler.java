@@ -35,7 +35,7 @@ public class SAMLWriteAttributeHandler extends AbstractWriteAttributeHandler<Voi
     public static final SAMLWriteAttributeHandler INSTANCE = new SAMLWriteAttributeHandler();
     
     private SAMLWriteAttributeHandler() {
-        super(SAMLResourceDefinition.CLOCK_SKEW, SAMLResourceDefinition.TOKEN_TIMEOUT);
+        super(SAMLResourceDefinition.TOKEN_TIMEOUT);
     }
 
     @Override

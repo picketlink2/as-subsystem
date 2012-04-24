@@ -33,10 +33,10 @@ import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.identity.federation.core.config.AuthPropertyType;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeSubsystem;
-import org.picketlink.identity.federation.core.config.parser.SPTypeSubsystem;
-import org.picketlink.identity.federation.core.config.parser.STSTypeSubsystem;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
+import org.picketlink.identity.federation.core.config.STSConfiguration;
 
 /**
  * <p>
@@ -60,12 +60,12 @@ public class ModelUtils {
         return fromModel.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
     }
     
-    public static final STSTypeSubsystem toSTSType(ModelNode fromModel) {
+    public static final STSConfiguration toSTSConfig(ModelNode fromModel) {
         String alias = PathAddress.pathAddress(fromModel.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         String endpoint = fromModel.get(COMMON_ENDPOINT.getName()).asString();
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
 
-        STSTypeSubsystem stsType = new STSTypeSubsystem();
+        STSConfiguration stsType = new STSConfiguration();
         
         stsType.setAlias(alias);
         stsType.setEndpoint(endpoint);
@@ -74,13 +74,13 @@ public class ModelUtils {
         return stsType;
     }
     
-    public static SPTypeSubsystem toSPType(ModelNode fromModel) {
-        String alias = PathAddress.pathAddress(fromModel.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
+    public static SPConfiguration toSPConfig(ModelNode fromModel) {
+        String alias = fromModel.get(ModelElement.COMMON_ALIAS.getName()).asString();
         String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
         String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
         boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         
-        SPTypeSubsystem spType = new SPTypeSubsystem();
+        SPConfiguration spType = new SPConfiguration();
 
         spType.setAlias(alias);
         spType.setPostBinding(postBinding);
@@ -98,8 +98,8 @@ public class ModelUtils {
      * @param model
      * @return
      */
-    public static IDPTypeSubsystem toIDPType(ModelNode fromModel) {
-        IDPTypeSubsystem idpType = new IDPTypeSubsystem();
+    public static IDPConfiguration toIDPConfig(ModelNode fromModel) {
+        IDPConfiguration idpType = new IDPConfiguration();
         
         String alias = fromModel.get(COMMON_ALIAS.getName()).asString();
         String url = fromModel.get(COMMON_URL.getName()).asString();
@@ -107,6 +107,7 @@ public class ModelUtils {
         boolean ignoreIncomingSignatures = fromModel.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
         
+        idpType.setAlias(alias);
         idpType.setIdentityURL(url);
         idpType.setSignOutgoingMessages(signOutgoingMessages);
         idpType.setIgnoreIncomingSignatures(ignoreIncomingSignatures);

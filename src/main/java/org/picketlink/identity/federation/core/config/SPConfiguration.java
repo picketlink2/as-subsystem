@@ -19,16 +19,54 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.event;
 
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
+package org.picketlink.identity.federation.core.config;
+
+import org.picketlink.identity.federation.core.config.SPType;
 
 /**
+ * <p>
+ * This class is responsible to store all informations about a given Service Provider deployment. The state is
+ * populated with values from the subsystem configuration. 
+ * </p>
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
+ * @since Mar 12, 2012
  */
-public interface IdentityProviderObserver extends Observer {
+public class SPConfiguration extends SPType implements ProviderConfiguration {
 
-    void onUpdateIdentityProvider(IDPConfiguration idpType);
+    private boolean postBinding;
+    private String securityDomain;
+    private String alias;
+
+    /**
+     * @param url
+     */
+    public void setPostBinding(boolean url) {
+        this.postBinding = url;
+    }
+    
+    /**
+     * @return the postBinding
+     */
+    public boolean isPostBinding() {
+        return this.postBinding;
+    }
+
+    public String getSecurityDomain() {
+        return securityDomain;
+    }
+
+    public void setSecurityDomain(String securityDomain) {
+        this.securityDomain = securityDomain;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+    
+    public String getAlias() {
+        return alias;
+    }
     
 }

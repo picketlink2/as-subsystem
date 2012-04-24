@@ -9,9 +9,9 @@ import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.event.KeyProviderObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.parser.ProviderType;
+import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 
-public abstract class AbstractEntityProviderService<T, C extends ProviderType> implements Service<T>, KeyProviderObserver {
+public abstract class AbstractEntityProviderService<T, C extends ProviderConfiguration> implements Service<T>, KeyProviderObserver {
 
     private C configuration;
     private FederationService federationService;
