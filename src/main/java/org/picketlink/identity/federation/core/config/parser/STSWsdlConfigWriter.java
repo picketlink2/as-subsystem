@@ -22,6 +22,7 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -74,13 +75,6 @@ public class STSWsdlConfigWriter implements ConfigWriter {
         writeXmlFile(wsdl, file);
     }
 
-    /**
-     * <p>
-     * Writes the endpoint location.
-     * </p>
-     * 
-     * @param wsdl
-     */
     private void writeEndpointURL(Document wsdl) {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
@@ -93,16 +87,9 @@ public class STSWsdlConfigWriter implements ConfigWriter {
             result.getAttributeNode("location").setTextContent(this.configuration.getEndpoint());
         } catch (XPathExpressionException e) {
             e.printStackTrace();
-            //TODO: Exception Handling
         }
     }
 
-    /**
-     * Returns an DOM representation fo the WSDL file. 
-     * 
-     * @param file
-     * @return
-     */
     private Document getWSDL(File file) {
         DocumentBuilder newDocumentBuilder = null;
         Document existingDocument = null;
@@ -118,15 +105,8 @@ public class STSWsdlConfigWriter implements ConfigWriter {
         return existingDocument;
     }
 
-    /**
-     * Write the changes to a new WSDL file.
-     * 
-     * @param doc
-     * @param file
-     */
     private static void writeXmlFile(Node doc, File file) {
         try {
-            // always remove a file before writing changes, if it already exists
             if (file.exists()) {
                 file.delete();
             }
@@ -150,6 +130,7 @@ public class STSWsdlConfigWriter implements ConfigWriter {
         } catch (IOException e) {
             e.printStackTrace();
           //TODO: Exception Handling
+            e.printStackTrace();
         }
     }
 
