@@ -61,7 +61,7 @@
 		<version.jboss_as>7.1.1.Final</version.jboss_as>
 
 		<!-- Current version of PicketLink supported by this subsystem. -->
-		<version.picketlink>2.1.0-SNAPSHOT</version.picketlink>
+		<version.picketlink>2.1.2-SNAPSHOT</version.picketlink>
 
 		<!-- Test dependencies version. -->
 		<version.arquillian>1.0.0.CR7</version.arquillian>
@@ -83,19 +83,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.picketlink</groupId>
-				<artifactId>picketlink-fed-core</artifactId>
+				<artifactId>picketlink-core</artifactId>
 				<version>${version.picketlink}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.picketlink</groupId>
-				<artifactId>picketlink-bindings-jboss</artifactId>
-				<version>${version.picketlink}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.picketlink</groupId>
-				<artifactId>picketlink-bindings</artifactId>
+				<groupId>org.picketlink.distribution</groupId>
+				<artifactId>picketlink-jbas7</artifactId>
 				<version>${version.picketlink}</version>
 				<scope>provided</scope>
 			</dependency>
@@ -152,15 +146,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>
-			<artifactId>picketlink-fed-core</artifactId>
+			<artifactId>picketlink-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.picketlink</groupId>
-			<artifactId>picketlink-bindings-jboss</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.picketlink</groupId>
-			<artifactId>picketlink-bindings</artifactId>
+			<groupId>org.picketlink.distribution</groupId>
+			<artifactId>picketlink-jbas7</artifactId>
 		</dependency>
 
 		<!-- TestDependencies -->
