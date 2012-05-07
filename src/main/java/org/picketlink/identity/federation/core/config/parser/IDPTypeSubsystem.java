@@ -83,34 +83,6 @@ public class IDPTypeSubsystem extends IDPType implements ProviderType {
         this.ignoreIncomingSignatures = ignoreIncomingSignatures;
     }
 
-    /**
-     * Adds a new trust domain
-     * 
-     * @param domain
-     */
-    public void addTrustDomain(String domain) {
-        if (this.getTrust().getDomains() != null 
-                && this.getTrust().getDomains().indexOf(domain) == -1) {
-            this.getTrust().setDomains(this.getTrust().getDomains() + domain);
-        }
-    }
-
-    public void removeTrustDomain(String domain) {
-        if (this.getTrust().getDomains() != null && !this.getTrust().getDomains().isEmpty()) {
-            this.getTrust().setDomains("");
-            
-            String[] domains = this.getTrust().getDomains().split(",");
-
-            for (String currentDomain : domains) {
-                if (!domain.equals(currentDomain)) {
-                    this.getTrust().setDomains(currentDomain + ",");
-                }
-            }
-        } else if (this.getTrust().getDomains() == null){
-            this.getTrust().setDomains("");
-        }
-    }
-
     public String getSecurityDomain() {
         return this.securityDomain;
     }

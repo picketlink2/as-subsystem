@@ -41,7 +41,6 @@ import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
-import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
 
@@ -93,19 +92,10 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     public void configure(ResourceRoot warDeployment) {
         VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
         VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
 
         try {
             new JBossWebConfigWriter(getConfiguration()).write(context.getPhysicalFile());
-            
-            if (handlers.exists()) {
-                handlers.delete();
-            }
-            
-            if (handlers.getPhysicalFile().createNewFile()) {
-                new HandlersConfigWriter(getConfiguration()).write(handlers.getPhysicalFile());
-            }
             
             if (config.exists()) {
                 config.delete();

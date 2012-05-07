@@ -22,11 +22,6 @@
 
 package org.picketlink.identity.federation.core.config.parser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
@@ -43,7 +38,7 @@ import org.picketlink.identity.federation.core.util.StaxUtil;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 12, 2012
  */
-public class HandlersConfigWriter implements ConfigWriter  {
+public class HandlersConfigWriter {
 
     private static final String CLASS_NAME_ATTRIBUTE = "class";
     private static final String HANDLER_ELEMENT = "Handler";
@@ -55,12 +50,8 @@ public class HandlersConfigWriter implements ConfigWriter  {
         this.configuration = idpTypeSubsystem;
     }
     
-    public void write(File file) {
-        XMLStreamWriter writer = null;
-        
+    public void write(XMLStreamWriter writer) {
         try {
-            writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
-            
             StaxUtil.writeStartElement(writer, "", HANDLERS_ELEMENT, "urn:picketlink:identity-federation:handler:config:1.0");
             
             if (isIDPConfiguration()) {
@@ -76,17 +67,6 @@ public class HandlersConfigWriter implements ConfigWriter  {
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
             e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                } catch (XMLStreamException e) {
-                    e.printStackTrace();
-                }
-            }
         }        
     }
 

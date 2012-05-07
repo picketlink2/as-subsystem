@@ -216,33 +216,11 @@ public class JBossWebConfigWriter implements ConfigWriter {
             if (isIDPConfiguration()) {
                 writeIDPValves(writer);
             } else if (isSPConfiguration()) {
-                SPConfiguration spConfiguration = (SPConfiguration) this.configuration;
-                String valveClass = null;
-                Map<String, String> attributes = null;
-                
-                if (spConfiguration.isPostBinding()) {
-                    if (spConfiguration.getKeyProvider() != null) {
-                        valveClass =  "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostSignatureFormAuthenticator";
-                        attributes = getSPSignatureAttributes(spConfiguration);
-                    } else {
-                        valveClass =  "org.picketlink.identity.federation.bindings.tomcat.sp.SPPostFormAuthenticator";
-                    }
-                } else {
-                    if (spConfiguration.getKeyProvider() != null) {
-                        valveClass = "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectSignatureFormAuthenticator";
-                        attributes = getSPSignatureAttributes(spConfiguration); 
-                    } else {
-                        valveClass = "org.picketlink.identity.federation.bindings.tomcat.sp.SPRedirectFormAuthenticator";
-                    }
-                }
-                
-                writeValve(writer, valveClass, attributes);
+                writeValve(writer, "org.picketlink.identity.federation.bindings.tomcat.sp.ServiceProviderAuthenticator", null);
             } else {
                 return null;
             }
         } catch (ProcessingException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
             e.printStackTrace();
         } finally {
             if (writer != null) {
