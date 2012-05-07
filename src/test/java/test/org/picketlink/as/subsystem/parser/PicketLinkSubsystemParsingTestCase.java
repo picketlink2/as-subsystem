@@ -57,6 +57,15 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
 
     @Before
     public void onSetup() {
+        configureFakeAS7Installation();
+    }
+
+    /**
+     * <p>
+     * Creates a directory at FAKE_AS7_INSTALLATION_DIR to be used as a fake as7 installation.
+     * </p>
+     */
+    private void configureFakeAS7Installation() {
         File fakeAsInstallation = new File(FAKE_AS7_INSTALLATION_DIR);
         
         if (fakeAsInstallation.exists()) {
