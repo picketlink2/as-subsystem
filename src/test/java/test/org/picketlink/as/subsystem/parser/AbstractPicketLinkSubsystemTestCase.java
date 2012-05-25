@@ -31,6 +31,7 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.as.subsystem.test.AbstractSubsystemTest;
 import org.jboss.as.subsystem.test.KernelServices;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.Property;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.junit.Before;
@@ -129,9 +130,11 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
      * @param model
      * @return
      */
-    protected ModelNode getFederationModel() {
-        return getResultingModelNode().get(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME,
+    protected Property getFederationModel() {
+        ModelNode federationNode = getResultingModelNode().get(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME,
                 ModelElement.FEDERATION.getName());
+        
+        return federationNode.asPropertyList().get(0);
     }
     
     protected IdentityProviderService getIdentityProviderService() {
@@ -141,7 +144,7 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
     }
 
     protected FederationService getFederationService() {
-        ServiceName serviceName = FederationService.createServiceName(getFederationModel().asProperty().getName());
+        ServiceName serviceName = FederationService.createServiceName(getFederationModel().getName());
 
         return (FederationService) getInstalledService(serviceName).getValue();
     }
@@ -154,9 +157,7 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
      * @return
      */
     protected ModelNode getIdentityProvider() {
-        ModelNode federation = getFederationModel();
-
-        return federation.get(federation.asProperty().getName(), ModelElement.IDENTITY_PROVIDER.getName());
+        return getFederationModel().getValue().get(ModelElement.IDENTITY_PROVIDER.getName());
     }
 
 

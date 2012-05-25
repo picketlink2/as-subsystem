@@ -6,6 +6,7 @@ import java.net.URL;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
+import org.jboss.as.web.deployment.WarMetaData;
 import org.jboss.as.web.ext.WebContextFactory;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.Service;
@@ -76,6 +77,10 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     public void configure(DeploymentUnit deploymentUnit) {
         installPicketLinkWebContextFactory(deploymentUnit);
+        WarMetaData warMetaData = deploymentUnit.getAttachment(WarMetaData.ATTACHMENT_KEY);
+        
+        warMetaData.getMergedJBossWebMetaData().setSecurityDomain(this.getConfiguration().getSecurityDomain());
+        
         doConfigureDeployment(deploymentUnit);
     }
 
