@@ -38,6 +38,7 @@ import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
+import org.picketlink.identity.federation.web.constants.GeneralConstants;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
@@ -84,6 +85,11 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment.DeploymentUnit)
      */
     public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+        if (getConfiguration().isPostBinding()) {
+            getConfiguration().setBindingType("POST");
+        } else {
+            getConfiguration().setBindingType("REDIRECT");
+        }
     }
     
     protected void configureCommonHandlers() {

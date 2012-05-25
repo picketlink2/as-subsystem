@@ -26,7 +26,6 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
 
-import java.io.File;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -67,9 +66,6 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractPicketLinkSubsys
         
         Assert.assertNotNull("Expected a populated model.", model);
         Assert.assertNotNull("ModelNode instance is not defined.", model.isDefined());
-
-//        Assert.assertTrue("PicketLinkSTS.war was not generated.",
-//                new File(FAKE_AS7_DEPLOYMENTS + "/PicketLinkSTS.war").exists());
     }
 
     /**

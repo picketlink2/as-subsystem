@@ -1,5 +1,9 @@
 package org.picketlink.as.subsystem.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.web.ext.WebContextFactory;
@@ -14,9 +18,13 @@ import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.config.ProviderType;
+import org.picketlink.identity.federation.core.config.STSType;
 import org.picketlink.identity.federation.core.handler.config.Handler;
 import org.picketlink.identity.federation.core.handler.config.Handlers;
+import org.picketlink.identity.federation.core.parsers.sts.STSConfigParser;
 import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
+import org.picketlink.identity.federation.core.wstrust.PicketLinkSTSConfiguration;
+import org.picketlink.identity.federation.core.wstrust.STSConfiguration;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
@@ -139,11 +147,47 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
     public PicketLinkType getPicketLinkType() {
         if (this.picketLinkType == null) {
             this.picketLinkType = new PicketLinkType();
+            this.picketLinkType.setStsType(createSTSType());
             this.picketLinkType.setHandlers(new Handlers());
             configureCommonHandlers();
         }
+        
+        if (getFederationService().getSamlConfig() != null) {
+            this.picketLinkType.getStsType().setTokenTimeout(getFederationService().getSamlConfig().getTokenTimeout());
+            this.picketLinkType.getStsType().setClockSkew(getFederationService().getSamlConfig().getClockSkew());
+        }
 
         return this.picketLinkType;
+    }
+
+    private STSType createSTSType() {
+        STSType stsType = null;
+        
+        InputStream stream = null;
+        
+        try {
+            ClassLoader clazzLoader = getClass().getClassLoader();
+            
+            URL url = clazzLoader.getResource("core-sts.xml");
+
+            if (url == null) {
+                clazzLoader = Thread.currentThread().getContextClassLoader();
+                url = clazzLoader.getResource("core-sts");
+            }
+
+            stream = url.openStream();
+            stsType = (STSType) new STSConfigParser().parse(stream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return stsType;
     }
 
     protected void configureCommonHandlers() {
