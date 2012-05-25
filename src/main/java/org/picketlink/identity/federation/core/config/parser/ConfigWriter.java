@@ -33,6 +33,6 @@ public interface ConfigWriter {
     /**
      * @param stream
      */
-    void write(File stream);
+    void write(File file);
     
 }

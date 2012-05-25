@@ -12,7 +12,7 @@
 
 		<identity-provider alias="idp.war"
 			ignoreIncomingSignatures="true" security-domain="idp"
-			signOutgoingMessages="false" url="http://localhost:8080/idp">
+			signOutgoingMessages="false" url="http://localhost:8080/idp/">
 
 			<idp-metadata wantAuthnRequestsSigned="true">
 
@@ -39,15 +39,15 @@
 
 		<service-providers>
 
-			<service-provider alias="sales.war" post-binding="true"
-				security-domain="sp" url="http://localhost:8080/sales" />
+			<service-provider alias="sales.war" post-binding="false"
+				security-domain="sp" url="http://localhost:8080/sales/" />
 
 			<service-provider alias="employee.war" post-binding="true"
-				security-domain="sp" url="http://localhost:8080/employee" />
+				security-domain="sp" url="http://localhost:8080/employee/" />
 
 			<service-provider alias="employee2.war"
-				post-binding="true" security-domain="sp"
-				url="http://localhost:8080/employee2" />
+				post-binding="false" security-domain="sp"
+				url="http://localhost:8080/employee2/" />
 		</service-providers>
 	</federation>
 

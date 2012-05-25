@@ -132,6 +132,35 @@
 				<version>${version.junit}</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.9.0</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4</artifactId>
+				<version>1.4.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>1.4.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-module-junit4-rule</artifactId>
+				<version>1.4.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-classloading-xstream</artifactId>
+				<version>1.4.12</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -202,6 +231,31 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4-rule</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-classloading-xstream</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -383,7 +437,8 @@
 									</target>
 								</configuration>
 							</execution>
-							<!-- Update the JBoss AS 7 installation with the necessary files for testing. -->
+							<!-- Update the JBoss AS 7 installation with the necessary files for 
+								testing. -->
 							<execution>
 								<id>update-jboss-as-module</id>
 								<goals>
@@ -405,7 +460,8 @@
 
 										<copy file="${module.dir}/module.xml" todir="${jboss.as.module.dir}" />
 
-										<echo>JBoss AS7 Integration Test Server configurations update for testing.</echo>
+										<echo>JBoss AS7 Integration Test Server configurations update
+											for testing.</echo>
 									</target>
 								</configuration>
 							</execution>
