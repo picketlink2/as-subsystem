@@ -22,10 +22,8 @@
 
 package org.picketlink.as.subsystem.service;
 
-import java.io.IOException;
-
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.server.deployment.module.ResourceRoot;
+import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
@@ -33,18 +31,12 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 
-/**
- * <p>
- * Service implementation to enable a deployed applications as a Identity Provider.
+/** ty Provider.
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -57,11 +49,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
         super(context, modelNode);
     }
     
-    @Override
-    protected IDPConfiguration toProviderType(ModelNode operation) {
-        return ModelUtils.toIDPConfig(operation);
-    }
-
     /* (non-Javadoc)
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
@@ -83,61 +70,10 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
         this.raiseUpdateEvent();
     }
 
-    /**
-     * Configures a WAR as a Identity Provider.
-     * 
-     * @param warDeployment
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment.DeploymentUnit)
      */
-    public void configure(ResourceRoot warDeployment) {
-        writeJBossWebConfig(warDeployment);
-        writePicketLinkConfig(warDeployment);
-    }
-
-    /**
-     * <p>
-     * Writes the picketlink-idfed.xml config file.
-     * </p>
-     * 
-     * @param warDeployment
-     */
-    private void writePicketLinkConfig(ResourceRoot warDeployment) {
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink.xml");
-        writeConfig(config, new IDPTypeConfigWriter(this.getConfiguration()), true);
-    }
-
-    /**
-     * <p>
-     * Writes the jboss-web.xml config file.
-     * </p>
-     * 
-     * @param warDeployment
-     */
-    private void writeJBossWebConfig(ResourceRoot warDeployment) {
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        
-        writeConfig(context, new JBossWebConfigWriter(this.getConfiguration()), false);
-    }
-    
-    /**
-     * <p>
-     * Writes the contents to a file given the {@link ConfigWriter} instance.
-     * </p>
-     * 
-     * @param file File to be created or to have the configurations added.
-     * @param writer {@link ConfigWriter} instance specific to a given configuration file.
-     * @param recreate Indicates if the file has to be recreated. 
-     */
-    private void writeConfig(VirtualFile file, ConfigWriter writer, boolean recreate) {
-        try {
-            if (recreate) {
-                file.delete();
-                file.getPhysicalFile().createNewFile();
-            }
-
-            writer.write(file.getPhysicalFile());
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+    protected void doConfigureDeployment(DeploymentUnit deploymentUnit) {
     }
 
     /**
@@ -167,11 +103,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
     @Override
     public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
         super.onUpdateKeyProvider(keyProviderType);
-        
-        if (keyProviderType == null) {
-            this.getConfiguration().setSignOutgoingMessages(false);
-            this.getConfiguration().setIgnoreIncomingSignatures(true);
-        }
     }
 
     /**
@@ -181,6 +112,14 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      */
     public void raiseUpdateEvent() {
         new IdentityProviderUpdateEvent(this.getConfiguration(), this.getFederationService().getEventManager()).raise();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
+     */
+    @Override
+    protected IDPConfiguration toProviderType(ModelNode operation) {
+        return ModelUtils.toIDPConfig(operation);
     }
 
 }

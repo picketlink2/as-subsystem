@@ -48,12 +48,16 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
             ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition POST_BINDING = new SimpleAttributeDefinitionBuilder(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName(),
             ModelType.STRING, true).setAllowExpression(false).setDefaultValue(new ModelNode().set(true)).build();
+    public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
+            ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
+            .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(ALIAS);
         INSTANCE.addAttribute(SECURITY_DOMAIN);
         INSTANCE.addAttribute(URL);
         INSTANCE.addAttribute(POST_BINDING);
+        INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
     }
 
     private ServiceProviderResourceDefinition() {

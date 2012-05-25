@@ -3,7 +3,7 @@
 	XSLT file to add the a the PicketLink Extension to the standalone.xml of the JBoss AS7 installation.
  -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:as="urn:jboss:domain:1.2"
+	xmlns:as="urn:jboss:domain:1.3"
 	version="1.0">
 
 	<xsl:output method="xml" indent="yes" />

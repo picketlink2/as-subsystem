@@ -76,7 +76,7 @@ public class STSAddHandler extends AbstractResourceAddStepHandler {
 
         newControllers.add(controller);
         
-        deployTemplate(alias);
+//        deployTemplate(alias);
     }
 
     private void deployTemplate(String alias) {

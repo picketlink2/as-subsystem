@@ -24,8 +24,6 @@
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>manager</role-name>
-			<role-name>Sales</role-name>
-			<role-name>Employee</role-name>
 		</auth-constraint>
 	</security-constraint>
 
@@ -42,11 +40,5 @@
 	<!-- Security roles referenced by this web application -->
 	<security-role>
 		<role-name>manager</role-name>
-	</security-role>
-	<security-role>
-		<role-name>Sales</role-name>
-	</security-role>
-	<security-role>
-		<role-name>Employee</role-name>
 	</security-role>
 </web-app>

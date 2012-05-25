@@ -23,9 +23,9 @@
 package org.picketlink.as.subsystem.service;
 
 
-import java.io.IOException;
-
 import org.jboss.as.controller.OperationContext;
+import org.jboss.as.server.deployment.Attachments;
+import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
@@ -35,9 +35,6 @@ import org.jboss.msc.service.StopContext;
 import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
-import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.STSWsdlConfigWriter;
 
 /**
  * <p>
@@ -54,11 +51,6 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
         super(context, operation);
     }
 
-    @Override
-    protected STSConfiguration toProviderType(ModelNode fromModel) {
-        return ModelUtils.toSTSConfig(fromModel);
-    }
-    
     /* (non-Javadoc)
      * @see org.jboss.msc.value.Value#getValue()
      */
@@ -76,16 +68,14 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
         super.stop(context);
     }
 
-    /**
-     * Configures a WAR as a Identity Provider.
-     * 
-     * @param warDeployment
-     */
-    public void configure(ResourceRoot warDeployment) {
+    @Override
+    protected void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+        ResourceRoot warDeployment = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
+        
         writeJBossWebConfig(warDeployment);
         VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/wsdl/PicketLinkSTS.wsdl");
         
-        writeConfig(context, new STSWsdlConfigWriter(this.getConfiguration()), false);
+//        writeConfig(context, new STSWsdlConfigWriter(this.getConfiguration()), false);
     }
 
     /**
@@ -98,7 +88,7 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
     private void writeJBossWebConfig(ResourceRoot warDeployment) {
         VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
         
-        writeConfig(context, new JBossWebConfigWriter(this.getConfiguration()), false);
+//        writeConfig(context, new JBossWebConfigWriter(this.getConfiguration()), false);
     }
     
     /**
@@ -110,18 +100,18 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
      * @param writer {@link ConfigWriter} instance specific to a given configuration file.
      * @param recreate Indicates if the file has to be recreated. 
      */
-    private void writeConfig(VirtualFile file, ConfigWriter writer, boolean recreate) {
-        try {
-            if (recreate) {
-                file.delete();
-                file.getPhysicalFile().createNewFile();
-            }
-
-            writer.write(file.getPhysicalFile());
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
+//    private void writeConfig(VirtualFile file, ConfigWriter writer, boolean recreate) {
+//        try {
+//            if (recreate) {
+//                file.delete();
+//                file.getPhysicalFile().createNewFile();
+//            }
+//
+//            writer.write(file.getPhysicalFile());
+//        } catch (IOException ioe) {
+//            ioe.printStackTrace();
+//        }
+//    }
 
     /**
      * Returns a instance of the service associated with the given name.
@@ -140,13 +130,16 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
         return null;
     }
     
-    /**
-     * @param fedAlias
-     * @param alias2
-     * @return
-     */
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
+    }
+
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
+     */
+    @Override
+    protected STSConfiguration toProviderType(ModelNode fromModel) {
+        return ModelUtils.toSTSConfig(fromModel);
     }
 
 }

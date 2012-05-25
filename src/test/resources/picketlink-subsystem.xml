@@ -7,12 +7,11 @@
 
 		<saml token-timeout="4000" clock-skew="2000"
 			disable-auth-statement="" send-roles="" roles=""
-			assertion-consumer-url="" nameid-format="" 
-			attribute-manager=""/>
+			assertion-consumer-url="" nameid-format="" attribute-manager="" />
 
 		<identity-provider alias="idp.war"
-			ignoreIncomingSignatures="true" security-domain="idp"
-			signOutgoingMessages="false" url="http://localhost:8080/idp/">
+			security-domain="idp"
+			supportsSignatures="false" url="http://localhost:8080/idp/">
 
 			<idp-metadata wantAuthnRequestsSigned="true">
 
@@ -39,15 +38,15 @@
 
 		<service-providers>
 
-			<service-provider alias="sales.war" post-binding="false"
-				security-domain="sp" url="http://localhost:8080/sales/" />
+			<service-provider alias="sales.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/sales/" supportsSignatures="false" />
 
 			<service-provider alias="employee.war" post-binding="true"
-				security-domain="sp" url="http://localhost:8080/employee/" />
+				security-domain="sp" url="http://localhost:8080/employee/" supportsSignatures="true" />
 
 			<service-provider alias="employee2.war"
 				post-binding="false" security-domain="sp"
-				url="http://localhost:8080/employee2/" />
+				url="http://localhost:8080/employee2/" supportsSignatures="false"/>
 		</service-providers>
 	</federation>
 

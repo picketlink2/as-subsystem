@@ -36,7 +36,7 @@ public class SPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void>
     
     private SPWriteAttributeHandler() {
         super(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.POST_BINDING,
-                ServiceProviderResourceDefinition.SECURITY_DOMAIN, ServiceProviderResourceDefinition.URL);
+                ServiceProviderResourceDefinition.SECURITY_DOMAIN,ServiceProviderResourceDefinition.SUPPORTS_SIGNATURES, ServiceProviderResourceDefinition.URL);
     }
 
     @Override
