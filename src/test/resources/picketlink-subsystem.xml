@@ -5,21 +5,10 @@
 		<key-store passwd="changeit" sign-key-alias="localhost"
 			sign-key-passwd="changeit" url="/jbid_test_keystore.jks" />
 
-		<saml token-timeout="4000" clock-skew="2000"
-			disable-auth-statement="" send-roles="" roles=""
-			assertion-consumer-url="" nameid-format="" attribute-manager="" />
+		<saml token-timeout="4000" clock-skew="0" />
 
-		<identity-provider alias="idp.war"
-			security-domain="idp"
+		<identity-provider alias="idp.war" security-domain="idp"
 			supportsSignatures="false" url="http://localhost:8080/idp/">
-
-			<idp-metadata wantAuthnRequestsSigned="true">
-
-				<organization name="Acme" url="http://acme.com" />
-
-				<contact name="pedro" company="Red Hat Inc." email="psilva@redhat.com"
-					phone="1122222222" surName="silva" type="technical" />
-			</idp-metadata>
 
 			<trust>
 
@@ -33,20 +22,16 @@
 			</trust>
 		</identity-provider>
 
-		<security-token-service alias="PicketLinkSTS"
-			endpoint="http://localhost:8080/PicketLinkSTS" security-domain="sp" />
-
 		<service-providers>
 
-			<service-provider alias="sales.war" post-binding="true"
-				security-domain="sp" url="http://localhost:8080/sales/" supportsSignatures="false" />
+			<service-provider alias="sales-redirect.war" post-binding="false"
+				security-domain="sp" url="http://localhost:8080/sales-redirect/"
+				supportsSignatures="false" />
 
-			<service-provider alias="employee.war" post-binding="true"
-				security-domain="sp" url="http://localhost:8080/employee/" supportsSignatures="true" />
+			<service-provider alias="sales-post.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/sales-post/"
+				supportsSignatures="false" />
 
-			<service-provider alias="employee2.war"
-				post-binding="false" security-domain="sp"
-				url="http://localhost:8080/employee2/" supportsSignatures="false"/>
 		</service-providers>
 	</federation>
 

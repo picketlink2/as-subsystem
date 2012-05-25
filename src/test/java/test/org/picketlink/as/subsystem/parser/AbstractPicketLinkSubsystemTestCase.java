@@ -36,6 +36,8 @@ import org.jboss.msc.service.ServiceName;
 import org.junit.Before;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -131,6 +133,32 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
         return getResultingModelNode().get(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME,
                 ModelElement.FEDERATION.getName());
     }
+    
+    protected IdentityProviderService getIdentityProviderService() {
+        ServiceName serviceName = IdentityProviderService.createServiceName(getIdentityProvider().asProperty().getName());
+
+        return (IdentityProviderService) getInstalledService(serviceName).getValue();
+    }
+
+    protected FederationService getFederationService() {
+        ServiceName serviceName = FederationService.createServiceName(getFederationModel().asProperty().getName());
+
+        return (FederationService) getInstalledService(serviceName).getValue();
+    }
+
+    /**
+     * <p>
+     * Returns a {@link ModelNode} instance for the configured Identity Provider.
+     * </p>
+     * 
+     * @return
+     */
+    protected ModelNode getIdentityProvider() {
+        ModelNode federation = getFederationModel();
+
+        return federation.get(federation.asProperty().getName(), ModelElement.IDENTITY_PROVIDER.getName());
+    }
+
 
     /**
      * <p>

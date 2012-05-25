@@ -59,6 +59,15 @@ public class ModelUtils {
         return fromModel.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(1).getValue().asString();
     }
     
+    /**
+     * <p>
+     *  Converts a {@ModelNode} instance to a {@link STSConfiguration} instance.
+     *  This method should be used to extract attributes from the <code>ModelElement.SECURITY_TOKEN_SERVICE</code> model. 
+     * </p>
+     * 
+     * @param model
+     * @return
+     */
     public static final STSConfiguration toSTSConfig(ModelNode fromModel) {
         String alias = PathAddress.pathAddress(fromModel.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
         String endpoint = fromModel.get(COMMON_ENDPOINT.getName()).asString();
@@ -72,7 +81,36 @@ public class ModelUtils {
         
         return stsType;
     }
-    
+
+    /**
+     * <p>
+     *  Converts a {@ModelNode} instance to a {@link STSConfiguration} instance. 
+     *  This method only extract the attributes defined in the <code>ModelElement.SAML</code> model.
+     * </p>
+     * 
+     * @param model
+     * @return
+     */
+    public static final STSConfiguration toSAMLConfig(ModelNode fromModel) {
+        int tokenTimeout = fromModel.get(ModelElement.SAML_TOKEN_TIMEOUT.getName()).asInt();
+        int clockSkew = fromModel.get(ModelElement.SAML_CLOCK_SKEW.getName()).asInt();
+
+        STSConfiguration stsType = new STSConfiguration();
+        
+        stsType.setTokenTimeout(tokenTimeout);
+        stsType.setClockSkew(clockSkew);
+        
+        return stsType;
+    }
+
+    /**
+     * <p>
+     *  Converts a {@ModelNode} instance to a {@link SPConfiguration} instance. 
+     * </p>
+     * 
+     * @param model
+     * @return
+     */
     public static SPConfiguration toSPConfig(ModelNode fromModel) {
         SPConfiguration spType = new SPConfiguration();
         
@@ -97,7 +135,7 @@ public class ModelUtils {
     
     /**
      * <p>
-     *  Converts a {@ModelNode} instance to a {@IDPTypeSubsystem} instance. 
+     *  Converts a {@ModelNode} instance to a {@link IDPConfiguration} instance. 
      * </p>
      * 
      * @param model

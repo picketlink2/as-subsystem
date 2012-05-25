@@ -56,7 +56,8 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
                 .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/classes/roles.properties", "WEB-INF/classes/roles.properties")
                 .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jbid_test_keystore.jks", "WEB-INF/classes/jbid_test_keystore.jks")
                 .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/jsp/login.jsp", "jsp/login.jsp")
-                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/jsp/error.jsp", "jsp/error.jsp");
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/jsp/error.jsp", "jsp/error.jsp")
+                .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/index.jsp", "index.jsp");
     }
 
     /**
@@ -64,22 +65,48 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
      * 
      * @return
      */
-    @Deployment(name = "sales", testable = false)
+    @Deployment(name = "sales-redirect", testable = false)
     @TargetsContainer("jboss-as7")
-    public static WebArchive createSalesDeployment() {
+    public static WebArchive createSalesRedirectDeployment() {
+        return createServiceProviderWebArchive("sales-redirect.war");
+    }
+
+    /**
+     * Configures an IDP deployment.
+     * 
+     * @return
+     */
+    @Deployment(name = "sales-post", testable = false)
+    @TargetsContainer("jboss-as7")
+    public static WebArchive createSalesPostDeployment() {
+        return createServiceProviderWebArchive("sales-post.war");
+    }
+
+    private static WebArchive createServiceProviderWebArchive(String warName) {
         return ShrinkWrap
-                .create(WebArchive.class, "sales.war")
+                .create(WebArchive.class, warName)
                 .addAsManifestResource(SP_DEPLOYMENT_ROOT_DIR + "/META-INF/jboss-deployment-structure.xml",
                         "jboss-deployment-structure.xml")
                  .setWebXML(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/web.xml")
                 .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/jboss-web.xml", "WEB-INF/jboss-web.xml")
                 .addAsWebResource(DEPLOYMENT_ROOT_DIR + "/jbid_test_keystore.jks", "WEB-INF/classes/jbid_test_keystore.jks")
-                .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/index.jsp", "index.jsp");
+                .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/index.jsp", "index.jsp")
+                .addAsWebResource(SP_DEPLOYMENT_ROOT_DIR + "/logout.jsp", "logout.jsp");
     }
 
     @Test
-    @OperateOnDeployment("sales")
-    public void testDeploy() throws InterruptedException {
+    @OperateOnDeployment("sales-post")
+    public void testSalesPost() throws InterruptedException {
+        assertLoginAndLogout();
+    }
+
+    @Test
+    @OperateOnDeployment("sales-redirect")
+    public void testSalesRedirect() throws InterruptedException {
+        assertLoginAndLogout();
+    }
+
+    private void assertLoginAndLogout() throws InterruptedException {
         browser.open(deploymentURL.toString());
         
         Thread.sleep(5000l);
@@ -95,6 +122,10 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
 
         Assert.assertTrue("Service Provider welcomePage page should be presented",
                 browser.isElementPresent("xpath=//h1[@id='welcomePage']"));
+        
+        browser.click("id=logoutLink");
+        
+        Thread.sleep(5000l);
     }
 
 }
