@@ -21,8 +21,6 @@
  */
 package org.picketlink.identity.federation.core.config;
 
-import org.picketlink.identity.federation.core.config.IDPType;
-import org.picketlink.identity.federation.core.config.TrustType;
 
 /**
  * <p>
@@ -52,35 +50,6 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
 
     public void setAlias(String alias) {
         this.alias = alias;
-    }
-
-
-    /**
-     * @return the signOutgoingMessages
-     */
-    public boolean isSignOutgoingMessages() {
-        return signOutgoingMessages;
-    }
-
-    /**
-     * @param signOutgoingMessages the signOutgoingMessages to set
-     */
-    public void setSignOutgoingMessages(boolean signOutgoingMessages) {
-        this.signOutgoingMessages = signOutgoingMessages;
-    }
-
-    /**
-     * @return the ignoreIncomingSignatures
-     */
-    public boolean isIgnoreIncomingSignatures() {
-        return ignoreIncomingSignatures;
-    }
-
-    /**
-     * @param ignoreIncomingSignatures the ignoreIncomingSignatures to set
-     */
-    public void setIgnoreIncomingSignatures(boolean ignoreIncomingSignatures) {
-        this.ignoreIncomingSignatures = ignoreIncomingSignatures;
     }
 
     /**

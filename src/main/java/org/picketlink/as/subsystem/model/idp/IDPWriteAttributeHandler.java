@@ -36,8 +36,7 @@ public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
     
     private IDPWriteAttributeHandler() {
         super(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.EXTERNAL,
-                IdentityProviderResourceDefinition.IGNORE_INCOMING_SIGNATURES, IdentityProviderResourceDefinition.SECURITY_DOMAIN,
-                IdentityProviderResourceDefinition.SIGN_OUTGOING_MESSAGES, IdentityProviderResourceDefinition.URL);
+                IdentityProviderResourceDefinition.SUPPORTS_SIGNATURES, IdentityProviderResourceDefinition.SECURITY_DOMAIN, IdentityProviderResourceDefinition.URL);
     }
 
     @Override

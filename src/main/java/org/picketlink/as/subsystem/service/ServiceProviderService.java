@@ -23,10 +23,8 @@
 package org.picketlink.as.subsystem.service;
 
 
-import java.io.IOException;
-
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.server.deployment.module.ResourceRoot;
+import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
@@ -34,15 +32,18 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.vfs.VirtualFile;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
-import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
+import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValidationHandler;
 
 /**
  * <p>
@@ -54,19 +55,13 @@ import org.picketlink.identity.federation.core.config.parser.SPTypeConfigWriter;
 
 public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPConfiguration> implements IdentityProviderObserver {
 
+    private static final String SERVICE_NAME = "SPConfigurationService";
+
     public ServiceProviderService(OperationContext context, ModelNode modelNode) {
         super(context, modelNode);
         updateIdentityURL();
     }
     
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
-     */
-    @Override
-    protected SPConfiguration toProviderType(ModelNode operation) {
-        return ModelUtils.toSPConfig(operation);
-    }
-
     /* (non-Javadoc)
      * @see org.jboss.msc.service.Service#start(org.jboss.msc.service.StartContext)
      */
@@ -85,32 +80,23 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         this.setConfiguration(null);
     }
 
-    /**
-     * Configures a WAR as a Identity Provider.
-     * 
-     * @param warDeployment
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment.DeploymentUnit)
      */
-    public void configure(ResourceRoot warDeployment) {
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink.xml");
-
-        try {
-            new JBossWebConfigWriter(getConfiguration()).write(context.getPhysicalFile());
-            
-            if (config.exists()) {
-                config.delete();
-            }
-            
-            if (config.getPhysicalFile().createNewFile()) {
-                new SPTypeConfigWriter(getConfiguration()).write(config.getPhysicalFile());                    
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+    }
+    
+    protected void configureCommonHandlers() {
+        addHandler(SAML2LogOutHandler.class);
+        addHandler(SAML2AuthenticationHandler.class);
+        addHandler(RolesGenerationHandler.class);
+        addHandler(SAML2SignatureGenerationHandler.class);
+        addHandler(SAML2SignatureValidationHandler.class);
     }
 
+    
     public static ServiceName createServiceName(String alias) {
-        return ServiceName.JBOSS.append("SPConfigurationService", alias);
+        return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
 
     /**
@@ -130,25 +116,49 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#setConfiguration(org.picketlink.identity.federation.core.config.ProviderConfiguration)
+     */
     @Override
     public void setConfiguration(SPConfiguration configuration) {
         super.setConfiguration(configuration);
         updateIdentityURL();
     }
     
+    /**
+     * <p>
+     * Updates the Identity Provider URL for this Service Provider.
+     * 
+     * TODO: check if this method is really needed.
+     * </p>
+     */
     private void updateIdentityURL() {
         if (getFederationService().getIdentityProviderService() != null) {
             getConfiguration().setIdentityURL(getFederationService().getIdentityProviderService().getConfiguration().getIdentityURL());            
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#onUpdateKeyProvider(org.picketlink.identity.federation.core.config.KeyProviderType)
+     */
     @Override
     public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
         getConfiguration().setKeyProvider(keyProviderType);
     }
 
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.event.IdentityProviderObserver#onUpdateIdentityProvider(org.picketlink.identity.federation.core.config.IDPConfiguration)
+     */
     @Override
     public void onUpdateIdentityProvider(IDPConfiguration idpType) {
         getConfiguration().setIdentityURL(idpType.getIdentityURL());
+    }
+    
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
+     */
+    @Override
+    protected SPConfiguration toProviderType(ModelNode operation) {
+        return ModelUtils.toSPConfig(operation);
     }
 }
