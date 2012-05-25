@@ -34,5 +34,36 @@
 
 		</service-providers>
 	</federation>
+	
+	<federation alias="my-fed-sig">
+
+		<key-store passwd="changeit" sign-key-alias="localhost"
+			sign-key-passwd="changeit" url="/jbid_test_keystore.jks" />
+
+		<saml token-timeout="4000" clock-skew="0" />
+
+		<identity-provider alias="idp-sig.war" security-domain="idp"
+			supportsSignatures="true" url="http://localhost:8080/idp-sig/">
+
+			<trust>
+
+				<trust-domain name="localhost" />
+				<trust-domain name="127.0.0.1" />
+
+			</trust>
+		</identity-provider>
+
+		<service-providers>
+
+			<service-provider alias="sales-post-sig.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/sales-post-sig/"
+				supportsSignatures="true" />
+
+			<service-provider alias="sales-redirect-sig.war" post-binding="false"
+				security-domain="sp" url="http://localhost:8080/sales-redirect-sig/"
+				supportsSignatures="true" />
+
+		</service-providers>
+	</federation>
 
 </subsystem>
