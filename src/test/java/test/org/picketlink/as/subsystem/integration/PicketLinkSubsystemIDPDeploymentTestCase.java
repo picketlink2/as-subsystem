@@ -13,7 +13,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 
@@ -47,8 +46,23 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
     @Deployment(name = "idp", testable = false)
     @TargetsContainer("jboss-as7")
     public static WebArchive createIDPDeployment() {
+        return createIdentityProviderWebArchive("idp.war");
+    }
+
+    /**
+     * Configures an IDP deployment.
+     * 
+     * @return
+     */
+    @Deployment(name = "idp-sig", testable = false)
+    @TargetsContainer("jboss-as7")
+    public static WebArchive createIDPSigDeployment() {
+        return createIdentityProviderWebArchive("idp-sig.war");
+    }
+
+    private static WebArchive createIdentityProviderWebArchive(String warName) {
         return ShrinkWrap
-                .create(WebArchive.class, "idp.war")
+                .create(WebArchive.class, warName)
                 .addAsManifestResource(IDP_DEPLOYMENT_ROOT_DIR + "/META-INF/jboss-deployment-structure.xml",
                         "jboss-deployment-structure.xml").setWebXML(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/web.xml")
                 .addAsWebResource(IDP_DEPLOYMENT_ROOT_DIR + "/WEB-INF/jboss-web.xml", "WEB-INF/jboss-web.xml")
@@ -81,6 +95,18 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
     public static WebArchive createSalesPostDeployment() {
         return createServiceProviderWebArchive("sales-post.war");
     }
+    
+    @Deployment(name = "sales-post-sig", testable = false)
+    @TargetsContainer("jboss-as7")
+    public static WebArchive createSalesPostSigDeployment() {
+        return createServiceProviderWebArchive("sales-post-sig.war");
+    }
+
+    @Deployment(name = "sales-redirect-sig", testable = false)
+    @TargetsContainer("jboss-as7")
+    public static WebArchive createSalesRedirectSigDeployment() {
+        return createServiceProviderWebArchive("sales-redirect-sig.war");
+    }
 
     private static WebArchive createServiceProviderWebArchive(String warName) {
         return ShrinkWrap
@@ -101,6 +127,18 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
     }
 
     @Test
+    @OperateOnDeployment("sales-post-sig")
+    public void testSalesPostSig() throws InterruptedException {
+        assertLoginAndLogout();
+    }
+
+    @Test
+    @OperateOnDeployment("sales-redirect-sig")
+    public void testSalesRedirectSig() throws InterruptedException {
+        assertLoginAndLogout();
+    }
+
+    @Test
     @OperateOnDeployment("sales-redirect")
     public void testSalesRedirect() throws InterruptedException {
         assertLoginAndLogout();
@@ -109,7 +147,7 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
     private void assertLoginAndLogout() throws InterruptedException {
         browser.open(deploymentURL.toString());
         
-        Thread.sleep(5000l);
+        Thread.sleep(2000l);
         
         Assert.assertTrue("IDP login page should be presented",
                 browser.isElementPresent("xpath=//input[@type='submit' and @value='login']"));
@@ -118,14 +156,14 @@ public class PicketLinkSubsystemIDPDeploymentTestCase {
         browser.type("id=passwordText", "tomcat");
         browser.click("id=loginButton");
         
-        Thread.sleep(5000l);
+        Thread.sleep(2000l);
 
         Assert.assertTrue("Service Provider welcomePage page should be presented",
                 browser.isElementPresent("xpath=//h1[@id='welcomePage']"));
         
         browser.click("id=logoutLink");
         
-        Thread.sleep(5000l);
+        Thread.sleep(2000l);
     }
 
 }
