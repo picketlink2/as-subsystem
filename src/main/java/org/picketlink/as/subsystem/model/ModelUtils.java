@@ -26,8 +26,7 @@ import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ENDPOINT;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
-import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES;
-import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES;
+import static org.picketlink.as.subsystem.model.ModelElement.SUPPORTS_SIGNATURES;
 
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
@@ -75,13 +74,19 @@ public class ModelUtils {
     }
     
     public static SPConfiguration toSPConfig(ModelNode fromModel) {
+        SPConfiguration spType = new SPConfiguration();
+        
         String alias = fromModel.get(ModelElement.COMMON_ALIAS.getName()).asString();
         String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
         String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
         boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         
-        SPConfiguration spType = new SPConfiguration();
-
+        ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
+        
+        if (supportsSignatures.isDefined()) {
+            spType.setSupportsSignature(supportsSignatures.asBoolean());
+        }
+        
         spType.setAlias(alias);
         spType.setPostBinding(postBinding);
         spType.setSecurityDomain(securityDomain);
@@ -103,14 +108,18 @@ public class ModelUtils {
         
         String alias = fromModel.get(COMMON_ALIAS.getName()).asString();
         String url = fromModel.get(COMMON_URL.getName()).asString();
-        boolean signOutgoingMessages = fromModel.get(IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName()).asBoolean();
-        boolean ignoreIncomingSignatures = fromModel.get(IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName()).asBoolean();
+        
+        ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
+        
+        if (supportsSignatures.isDefined()) {
+            idpType.setSupportsSignature(supportsSignatures.asBoolean());
+        }
+        
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
         
         idpType.setAlias(alias);
         idpType.setIdentityURL(url);
-        idpType.setSignOutgoingMessages(signOutgoingMessages);
-        idpType.setIgnoreIncomingSignatures(ignoreIncomingSignatures);
+        
         idpType.setSecurityDomain(securityDomain);
         
         return idpType;

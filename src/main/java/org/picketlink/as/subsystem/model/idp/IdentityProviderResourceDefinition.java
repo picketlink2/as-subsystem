@@ -49,20 +49,16 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     public static final SimpleAttributeDefinition EXTERNAL = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_EXTERNAL.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition SIGN_OUTGOING_MESSAGES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.IDENTITY_PROVIDER_SIGN_OUTGOING_MESSAGES.getName(), ModelType.BOOLEAN, false)
+    public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
+            ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition IGNORE_INCOMING_SIGNATURES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.IDENTITY_PROVIDER_IGNORE_INCOMING_SIGNATURES.getName(), ModelType.BOOLEAN, false)
-            .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     
     static {
         INSTANCE.addAttribute(URL);
         INSTANCE.addAttribute(ALIAS);
         INSTANCE.addAttribute(SECURITY_DOMAIN);
         INSTANCE.addAttribute(EXTERNAL);
-        INSTANCE.addAttribute(SIGN_OUTGOING_MESSAGES);
-        INSTANCE.addAttribute(IGNORE_INCOMING_SIGNATURES);
+        INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
     }
     
     private IdentityProviderResourceDefinition() {

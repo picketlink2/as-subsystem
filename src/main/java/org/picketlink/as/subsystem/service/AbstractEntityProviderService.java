@@ -1,6 +1,8 @@
 package org.picketlink.as.subsystem.service;
 
 import org.jboss.as.controller.OperationContext;
+import org.jboss.as.server.deployment.DeploymentUnit;
+import org.jboss.as.web.ext.WebContextFactory;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
@@ -9,10 +11,22 @@ import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.event.KeyProviderObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
+import org.picketlink.identity.federation.core.config.ProviderType;
+import org.picketlink.identity.federation.core.handler.config.Handler;
+import org.picketlink.identity.federation.core.handler.config.Handlers;
+import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
+import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValidationHandler;
 
 public abstract class AbstractEntityProviderService<T, C extends ProviderConfiguration> implements Service<T>, KeyProviderObserver {
-
+    
+    private PicketLinkType picketLinkType;
     private C configuration;
     private FederationService federationService;
     
@@ -22,6 +36,14 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         this.configuration.setKeyProvider(this.federationService.getKeyProvider());
     }
 
+    /**
+     * <p>
+     * Converts a {@link ModelNode} to a {@link ProviderConfiguration} instance.
+     * </p>
+     * 
+     * @param operation
+     * @return
+     */
     protected abstract C toProviderType(ModelNode operation);
 
     @Override
@@ -37,6 +59,52 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         this.federationService.getEventManager().removeObserver(this);
     }
     
+    /**
+     * <p>
+     * Configures a {@link DeploymentUnit} as a PicketLink Provider.
+     * </p>
+     * 
+     * @param deploymentUnit
+     */
+    public void configure(DeploymentUnit deploymentUnit) {
+        installPicketLinkWebContextFactory(deploymentUnit);
+        doConfigureDeployment(deploymentUnit);
+    }
+
+    /**
+     * <p>
+     * Add a instance of {@link PicketLinkWebContextFactory} to the attachment list for this {@link DeploymentUnit} instance.
+     * This methods allows to pass to the JBoss Web subsystem a custom {@link WebContextFactory} implementation that will be used
+     * to configure the deployment unit.
+     * </p>
+     * 
+     * @param deploymentUnit
+     */
+    private void installPicketLinkWebContextFactory(DeploymentUnit deploymentUnit) {
+        deploymentUnit.putAttachment(WebContextFactory.ATTACHMENT, createPicketLinkWebContextFactory());
+    }
+
+    /**
+     * <p>
+     * Creates a instance of {@link PicketLinkWebContextFactory}.
+     * </p>
+     * 
+     * @return
+     */
+    private PicketLinkWebContextFactory createPicketLinkWebContextFactory() {
+        getPicketLinkType().setIdpOrSP((ProviderType) getConfiguration());
+        return new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()));
+    }
+    
+    /**
+     * <p>
+     * Subclasses should implement this method to configure a specific PicketLink Provider type. Eg.: Identity Provider or Service Provider. 
+     * </p>
+     * 
+     * @param deploymentUnit
+     */
+    protected abstract void doConfigureDeployment(DeploymentUnit deploymentUnit);
+
     @SuppressWarnings("unchecked")
     @Override
     public T getValue() throws IllegalStateException, IllegalArgumentException {
@@ -66,5 +134,32 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
     @Override
     public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
         this.configuration.setKeyProvider(keyProviderType);
+    }
+    
+    public PicketLinkType getPicketLinkType() {
+        if (this.picketLinkType == null) {
+            this.picketLinkType = new PicketLinkType();
+            this.picketLinkType.setHandlers(new Handlers());
+            configureCommonHandlers();
+        }
+
+        return this.picketLinkType;
+    }
+
+    protected void configureCommonHandlers() {
+        addHandler(SAML2IssuerTrustHandler.class);
+        addHandler(SAML2LogOutHandler.class);
+        addHandler(SAML2AuthenticationHandler.class);
+        addHandler(RolesGenerationHandler.class);
+        addHandler(SAML2SignatureGenerationHandler.class);
+        addHandler(SAML2SignatureValidationHandler.class);
+    }
+    
+    protected void addHandler(Class<? extends SAML2Handler> handlerClassName) {
+        Handler handler = new Handler();
+        
+        handler.setClazz(handlerClassName.getName());
+        
+        getPicketLinkType().getHandlers().add(handler);
     }
 }

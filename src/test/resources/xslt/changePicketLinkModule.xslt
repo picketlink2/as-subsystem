@@ -13,7 +13,7 @@
 			<resources>
 				<resource-root path="picketlink-jbas7-2.1.2-SNAPSHOT.jar" />
 				<resource-root path="picketlink-core-2.1.2-SNAPSHOT.jar" />
-				<resource-root path="jboss-as-security-picketlink-1.0-SNAPSHOT.jar" />
+				<resource-root path="jboss-as-security-picketlink-1.1.0-SNAPSHOT.jar" />
 			</resources>
 
 			<dependencies>
