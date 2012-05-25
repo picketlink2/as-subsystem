@@ -27,18 +27,14 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.commons.io.FileUtils;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.PathElement;
-import org.jboss.as.subsystem.test.AbstractSubsystemTest;
 import org.jboss.as.subsystem.test.KernelServices;
 import org.jboss.dmr.ModelNode;
-import org.junit.Before;
 import org.junit.Test;
 import org.picketlink.as.subsystem.PicketLinkExtension;
 
@@ -50,67 +46,14 @@ import org.picketlink.as.subsystem.PicketLinkExtension;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 9, 2012
  */
-public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
-
-    private static final String FAKE_AS7_INSTALLATION_DIR = "target/jboss-as7-fake";
-    private static final String FAKE_AS7_DEPLOYMENTS = FAKE_AS7_INSTALLATION_DIR + "/deployments";
-
-    @Before
-    public void onSetup() {
-        configureFakeAS7Installation();
-    }
-
-    /**
-     * <p>
-     * Creates a directory at FAKE_AS7_INSTALLATION_DIR to be used as a fake as7 installation.
-     * </p>
-     */
-    private void configureFakeAS7Installation() {
-        File fakeAsInstallation = new File(FAKE_AS7_INSTALLATION_DIR);
-        
-        if (fakeAsInstallation.exists()) {
-            fakeAsInstallation.delete();
-        }
-        
-        fakeAsInstallation.mkdir();
-        
-        File deploymentsDir = new File(FAKE_AS7_DEPLOYMENTS);
-        
-        deploymentsDir.mkdir();
-        
-        System.setProperty("jboss.server.base.dir", fakeAsInstallation.getAbsolutePath());
-    }
-    
-    public PicketLinkSubsystemParsingTestCase() {
-        super(PicketLinkExtension.SUBSYSTEM_NAME, new PicketLinkExtension());
-    }
-
-    /**
-     * Returns a valid XML for the subsystem.
-     * 
-     * @return
-     */
-    private String getValidSubsystemXML() {
-        String content = null;
-        
-        try {
-            content = FileUtils.readFileToString(new File(Thread.currentThread().getContextClassLoader()
-                    .getResource("picketlink-subsystem.xml").getFile()));
-        } catch (IOException e) {
-            Assert.fail("Error while reading the subsystem configuration file.");
-        }
-
-        return content;
-    }
+public class PicketLinkSubsystemParsingTestCase extends AbstractPicketLinkSubsystemTestCase {
 
     /**
      * Tests that the xml is parsed into the correct operations.
      */
     @Test
     public void testParseSubsystem() throws Exception {
-        List<ModelNode> operations = super.parse(getValidSubsystemXML());
-
-        Assert.assertNotNull("No operations found. Check if the XML used is valid.", operations);
+        Assert.assertNotNull("No operations found. Check if the XML used is valid.", super.parse(getValidSubsystemXML()));
     }
 
     /**
@@ -120,14 +63,13 @@ public class PicketLinkSubsystemParsingTestCase extends AbstractSubsystemTest {
      */
     @Test
     public void testInstallIntoController() throws Exception {
-        KernelServices services = super.installInController(getValidSubsystemXML());
-
-        ModelNode model = services.readWholeModel();
+        ModelNode model = getResultingModelNode();
         
         Assert.assertNotNull("Expected a populated model.", model);
         Assert.assertNotNull("ModelNode instance is not defined.", model.isDefined());
-        
-        Assert.assertTrue("PicketLinkSTS.war was not generated.", new File(FAKE_AS7_DEPLOYMENTS + "/PicketLinkSTS.war").exists());
+
+        Assert.assertTrue("PicketLinkSTS.war was not generated.",
+                new File(FAKE_AS7_DEPLOYMENTS + "/PicketLinkSTS.war").exists());
     }
 
     /**

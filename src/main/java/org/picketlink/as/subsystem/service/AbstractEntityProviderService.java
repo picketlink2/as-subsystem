@@ -44,6 +44,11 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
     }
     
     public C getConfiguration() {
+        // the subsystem does not support changing the keystoremanager class name.
+        if (this.configuration.getKeyProvider() != null) {
+            this.configuration.getKeyProvider().setClassName("org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
+        }
+        
         return configuration;
     }
     

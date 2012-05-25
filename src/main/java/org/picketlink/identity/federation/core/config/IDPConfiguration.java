@@ -91,6 +91,10 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
     public void addTrustDomain(String domain) {
         if (this.getTrust().getDomains() != null 
                 && this.getTrust().getDomains().indexOf(domain) == -1) {
+            if (!this.getTrust().getDomains().isEmpty()) {
+                this.getTrust().setDomains(this.getTrust().getDomains() + ",");
+            }
+            
             this.getTrust().setDomains(this.getTrust().getDomains() + domain);
         }
     }

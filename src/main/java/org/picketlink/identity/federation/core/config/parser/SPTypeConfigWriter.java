@@ -48,6 +48,20 @@ public class SPTypeConfigWriter extends AbstractProviderTypeConfigWriter<SPConfi
     }
     
     /* (non-Javadoc)
+     * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#doWriteProviderElementAttributes(javax.xml.stream.XMLStreamWriter)
+     */
+    @Override
+    protected void doWriteProviderElementAttributes(XMLStreamWriter writer) throws ProcessingException {
+        String bindingType = "REDIRECT";
+        
+        if (this.getConfiguration().isPostBinding()) {
+            bindingType = "POST";
+        }
+        
+        StaxUtil.writeAttribute(writer, "BindingType", bindingType);
+    }
+    
+    /* (non-Javadoc)
      * @see org.picketlink.identity.federation.core.config.parser.AbstractProviderTypeConfigWriter#doWrite(javax.xml.stream.XMLStreamWriter)
      */
     @Override
@@ -101,7 +115,7 @@ public class SPTypeConfigWriter extends AbstractProviderTypeConfigWriter<SPConfi
      */
     private void writeServiceURLConfig(XMLStreamWriter writer) throws ProcessingException {
         StaxUtil.writeStartElement(writer, "", SAMLConfigParser.SERVICE_URL, "");
-        StaxUtil.writeCharacters(writer, getConfiguration().getServiceURL() + "/");
+        StaxUtil.writeCharacters(writer, getConfiguration().getServiceURL());
         StaxUtil.writeEndElement(writer);
     }
     

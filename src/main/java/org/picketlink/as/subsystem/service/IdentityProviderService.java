@@ -39,7 +39,6 @@ import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.parser.ConfigWriter;
-import org.picketlink.identity.federation.core.config.parser.HandlersConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.IDPTypeConfigWriter;
 import org.picketlink.identity.federation.core.config.parser.JBossWebConfigWriter;
 
@@ -91,7 +90,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      */
     public void configure(ResourceRoot warDeployment) {
         writeJBossWebConfig(warDeployment);
-        writeHandlersConfig(warDeployment);
         writePicketLinkConfig(warDeployment);
     }
 
@@ -103,22 +101,8 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      * @param warDeployment
      */
     private void writePicketLinkConfig(ResourceRoot warDeployment) {
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
-        
+        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink.xml");
         writeConfig(config, new IDPTypeConfigWriter(this.getConfiguration()), true);
-    }
-
-    /**
-     * <p>
-     * Writes the picketlink-handlers.xml config file.
-     * </p>
-     * 
-     * @param warDeployment
-     */
-    private void writeHandlersConfig(ResourceRoot warDeployment) {
-        VirtualFile handlers = warDeployment.getRoot().getChild("WEB-INF/picketlink-handlers.xml");
-        
-        writeConfig(handlers, new HandlersConfigWriter(this.getConfiguration()), true);
     }
 
     /**

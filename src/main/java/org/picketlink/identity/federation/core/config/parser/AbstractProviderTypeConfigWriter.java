@@ -10,15 +10,21 @@ import javax.xml.stream.XMLStreamWriter;
 import org.picketlink.identity.federation.core.config.AuthPropertyType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
+import org.picketlink.identity.federation.core.parsers.config.PicketLinkConfigParser;
 import org.picketlink.identity.federation.core.parsers.config.SAMLConfigParser;
 import org.picketlink.identity.federation.core.util.StaxUtil;
 
 public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfiguration> implements ConfigWriter {
 
+    private static final String NAMESPACE_PICKETLINK = "urn:picketlink:identity-federation:config:2.1";
+    
     private T configuration;
+    
+    private final HandlersConfigWriter handlersConfigWriter;
     
     public AbstractProviderTypeConfigWriter(T configuration) {
         this.configuration = configuration;
+        this.handlersConfigWriter = new HandlersConfigWriter(configuration);
     }
     
     /* (non-Javadoc)
@@ -31,13 +37,21 @@ public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfigu
         try {
             writer = StaxUtil.getXMLStreamWriter(new FileOutputStream(file));
             
-            StaxUtil.writeStartElement(writer, "", getProviderElementName(), "urn:picketlink:identity-federation:config:1.0");
+            StaxUtil.writeStartElement(writer, "", PicketLinkConfigParser.PICKETLINK, NAMESPACE_PICKETLINK);
+            
+            StaxUtil.writeStartElement(writer, "", getProviderElementName(), NAMESPACE_PICKETLINK);
+            
+            doWriteProviderElementAttributes(writer);
             
             writeIdentityURLConfig(writer);
 
             writeKeyProviderConfig(writer);
             
             doWrite(writer);
+            
+            StaxUtil.writeEndElement(writer);
+            
+            this.handlersConfigWriter.write(writer);
             
             StaxUtil.writeEndElement(writer);
         } catch (ProcessingException e) {
@@ -56,6 +70,18 @@ public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfigu
         }
     }
 
+    /**
+     * <p>
+     * Subclasses can override this method to add attributes at the Provider element.
+     * </p>
+     * 
+     * @param writer
+     * @throws ProcessingException 
+     */
+    protected void doWriteProviderElementAttributes(XMLStreamWriter writer) throws ProcessingException {
+        
+    }
+
     protected abstract String getProviderElementName();
     
     protected abstract void doWrite(XMLStreamWriter writer) throws ProcessingException;
@@ -71,7 +97,7 @@ public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfigu
     protected void writeKeyProviderConfig(XMLStreamWriter writer) throws ProcessingException {
         if (getConfiguration().getKeyProvider() != null) {
             StaxUtil.writeStartElement(writer, "", SAMLConfigParser.KEY_PROVIDER, "");
-            StaxUtil.writeAttribute(writer, "ClassName", "org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
+            StaxUtil.writeAttribute(writer, "ClassName", getConfiguration().getKeyProvider().getClassName());
             
             for (AuthPropertyType authProperty : getConfiguration().getKeyProvider().getAuth()) {
                 StaxUtil.writeStartElement(writer, "", SAMLConfigParser.AUTH, "");
@@ -99,7 +125,7 @@ public abstract class AbstractProviderTypeConfigWriter<T extends ProviderConfigu
      */
     protected void writeIdentityURLConfig(XMLStreamWriter writer) throws ProcessingException {
         StaxUtil.writeStartElement(writer, "", SAMLConfigParser.IDENTITY_URL, "");
-        StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL() + "/");
+        StaxUtil.writeCharacters(writer, this.configuration.getIdentityURL());
         StaxUtil.writeEndElement(writer);
     }
 
