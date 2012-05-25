@@ -32,6 +32,8 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.service.FederationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -54,6 +56,9 @@ public class SAMLAddHandler extends AbstractResourceAddStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
+        
+        federationService.setSamlConfig(ModelUtils.toSAMLConfig(model));
     }
 
 }

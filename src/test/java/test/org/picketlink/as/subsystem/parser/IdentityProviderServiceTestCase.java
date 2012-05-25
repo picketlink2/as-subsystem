@@ -21,14 +21,16 @@
  */
 package test.org.picketlink.as.subsystem.parser;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import junit.framework.Assert;
 
-import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.ServiceName;
 import org.junit.Test;
-import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
+import org.picketlink.identity.federation.core.config.TrustType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -61,26 +63,23 @@ public class IdentityProviderServiceTestCase extends AbstractPicketLinkSubsystem
 
         IDPConfiguration idpSubsystemConfig = identityProviderService.getConfiguration();
         
-        //TODO: update test case
+        assertEquals("idp.war", idpSubsystemConfig.getAlias());
+        assertEquals("http://localhost:8080/idp/", idpSubsystemConfig.getIdentityURL());
+        assertEquals("idp", idpSubsystemConfig.getSecurityDomain());
+        assertFalse(idpSubsystemConfig.isSupportsSignature());
+        assertTrue(idpSubsystemConfig.isStrictPostBinding());
+        
+        TrustType trustType = idpSubsystemConfig.getTrust();
+        
+        assertNotNull(trustType);
+        assertNotNull(trustType.getDomains());
+        Assert.assertEquals("localhost,mycompany.com2,mycompany.com3,mycompany.com4", trustType.getDomains());
+        
+        assertNotNull(identityProviderService.getPicketLinkType());
+        assertNotNull(identityProviderService.getPicketLinkType().getStsType());
+        
+        assertEquals(identityProviderService.getPicketLinkType().getStsType().getTokenTimeout(), getFederationService().getSamlConfig().getTokenTimeout());
+        assertEquals(identityProviderService.getPicketLinkType().getStsType().getClockSkew(), getFederationService().getSamlConfig().getClockSkew());
     }
     
-    private IdentityProviderService getIdentityProviderService() {
-        ServiceName serviceName = IdentityProviderService.createServiceName(getIdentityProvider().asProperty().getName());
-
-        return (IdentityProviderService) getInstalledService(serviceName).getValue();
-    }
-
-    /**
-     * <p>
-     * Returns a {@link ModelNode} instance for the configured Identity Provider.
-     * </p>
-     * 
-     * @return
-     */
-    private ModelNode getIdentityProvider() {
-        ModelNode federation = getFederationModel();
-
-        return federation.get(federation.asProperty().getName(), ModelElement.IDENTITY_PROVIDER.getName());
-    }
-
 }

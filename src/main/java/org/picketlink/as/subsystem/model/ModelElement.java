@@ -65,8 +65,8 @@ public enum ModelElement {
     SERVICE_PROVIDER_POST_BINDING ("post-binding"),
     
     SECURITY_TOKEN_SERVICE ("security-token-service"),
-    TOKEN_TIMEOUT ("token-timeout"),
-    CLOCK_SKEW ("clock-skew"),
+    SAML_TOKEN_TIMEOUT ("token-timeout"),
+    SAML_CLOCK_SKEW ("clock-skew"),
     SAML ("saml");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();

@@ -21,6 +21,8 @@
  */
 package test.org.picketlink.as.subsystem.parser;
 
+import static junit.framework.Assert.assertEquals;
+
 import java.util.List;
 
 import junit.framework.Assert;
@@ -77,7 +79,13 @@ public class ServiceProviderServiceTestCase extends AbstractPicketLinkSubsystemT
             ServiceProviderService serviceProviderService = (ServiceProviderService) getInstalledService(ServiceProviderService.createServiceName(property.getName())).getValue();
             SPConfiguration spSubsystemConfig = serviceProviderService.getConfiguration();
             
-            //TODO: update test case.
+            assertEquals(getIdentityProviderService().getConfiguration().getIdentityURL(), spSubsystemConfig.getIdentityURL());
+            
+            assertEquals(property.getValue().get(ModelElement.COMMON_ALIAS.getName()).asString(), spSubsystemConfig.getAlias());
+            assertEquals(property.getValue().get(ModelElement.COMMON_URL.getName()).asString(), spSubsystemConfig.getServiceURL());
+            assertEquals(property.getValue().get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString(), spSubsystemConfig.getSecurityDomain());
+            assertEquals(property.getValue().get(ModelElement.SUPPORTS_SIGNATURES.getName()).asBoolean(), spSubsystemConfig.isSupportsSignature());
+            assertEquals(property.getValue().get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean(), spSubsystemConfig.isPostBinding());
         }
     }
 
