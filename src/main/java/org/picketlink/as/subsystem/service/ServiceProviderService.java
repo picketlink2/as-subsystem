@@ -92,7 +92,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     public void configure(ResourceRoot warDeployment) {
         VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink-idfed.xml");
+        VirtualFile config = warDeployment.getRoot().getChild("WEB-INF/picketlink.xml");
 
         try {
             new JBossWebConfigWriter(getConfiguration()).write(context.getPhysicalFile());

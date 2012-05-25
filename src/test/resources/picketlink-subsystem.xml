@@ -39,7 +39,7 @@
 
 		<service-providers>
 
-			<service-provider alias="sales.war" post-binding="false"
+			<service-provider alias="sales.war" post-binding="true"
 				security-domain="sp" url="http://localhost:8080/sales/" />
 
 			<service-provider alias="employee.war" post-binding="true"
