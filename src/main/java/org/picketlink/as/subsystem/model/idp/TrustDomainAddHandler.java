@@ -32,7 +32,9 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.KeyValueType;
 
@@ -57,7 +59,7 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
         String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
 
-        IdentityProviderService service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
+        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
         
         KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
         
