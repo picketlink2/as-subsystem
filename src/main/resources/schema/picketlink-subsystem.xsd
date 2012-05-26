@@ -31,6 +31,10 @@
 	<xsd:complexType name="federationType">
 		<xsd:sequence>
 			<xsd:attribute name="alias" type="xsd:string" nillable="false" />
+			<xsd:element name="saml" type="samlType"
+				minOccurs="0" maxOccurs="1" />
+			<xsd:element name="key-store" type="keyStoreType"
+				minOccurs="0" maxOccurs="1" />
 			<xsd:element name="identity-provider" type="identityProviderType"
 				minOccurs="0" maxOccurs="1" />
 			<xsd:element name="service-providers" type="serviceProvidersType"
@@ -38,14 +42,35 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="samlType">
+		<xsd:sequence>
+			<xsd:attribute name="token-timeout" type="xsd:int" nillable="false" />
+			<xsd:attribute name="clock-skew" type="xsd:int" nillable="false" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="keyStoreType">
+		<xsd:sequence>
+			<xsd:attribute name="changeit" type="xsd:string" nillable="false" />
+			<xsd:attribute name="sign-key-alias" type="xsd:string" nillable="false" />
+			<xsd:attribute name="sign-key-passwd" type="xsd:string" nillable="false" />
+			<xsd:attribute name="url" type="xsd:string" nillable="false" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="identityProviderType">
 		<xsd:sequence>
-			<xsd:attribute name="deploy-name" type="xsd:string"
-				nillable="false" />
+			<xsd:attribute name="alias" type="xsd:string" nillable="false" />
 			<xsd:attribute name="url" type="xsd:string" minOccurs="1"
 				maxOccurs="1" nillable="false" />
 			<xsd:element name="trust" type="trustType" minOccurs="1"
 				maxOccurs="1" nillable="true" />
+			<xsd:attribute name="supportsSignatures" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="security-domain" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="strict-post-binding" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -62,6 +87,14 @@
 			<xsd:attribute name="url" type="xsd:string" minOccurs="1"
 				nillable="false" />
 			<xsd:attribute name="post-binding" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="supportsSignatures" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="security-domain" type="xsd:string"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="strict-post-binding" type="xsd:boolean"
+				minOccurs="1" nillable="true" default="false" />
+			<xsd:attribute name="error-page" type="xsd:string"
 				minOccurs="1" nillable="true" default="false" />
 		</xsd:sequence>
 	</xsd:complexType>

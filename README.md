@@ -65,7 +65,7 @@ Open both files (idp.war and sales.war) and remove the following configuration f
 	- WEB-INF/jboss-web.xml: Remove the valve definitions and the security domain. The subsystem will automatically configure this for you.
 	- WEB-INF/picketlink-handlers.xml
 	- WEB-INF/picketlink-idfed.xml
-        - WEB-INF/picketlink.xml
+	- WEB-INF/picketlink-idfed.xml
 
 These files must be removed since they will be generated at runtime by the subsystem.
 
