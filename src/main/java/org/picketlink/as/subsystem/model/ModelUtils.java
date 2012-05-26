@@ -26,6 +26,8 @@ import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ENDPOINT;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
+import static org.picketlink.as.subsystem.model.ModelElement.ERROR_PAGE;
+import static org.picketlink.as.subsystem.model.ModelElement.STRICT_POST_BINDING;
 import static org.picketlink.as.subsystem.model.ModelElement.SUPPORTS_SIGNATURES;
 
 import org.jboss.as.controller.PathAddress;
@@ -125,6 +127,18 @@ public class ModelUtils {
             spType.setSupportsSignature(supportsSignatures.asBoolean());
         }
         
+        ModelNode strictPostBinding = fromModel.get(STRICT_POST_BINDING.getName());
+        
+        if (strictPostBinding.isDefined()) {
+            spType.setIdpUsesPostBinding(strictPostBinding.asBoolean());
+        }
+
+        ModelNode errorPage = fromModel.get(ERROR_PAGE.getName());
+        
+        if (errorPage.isDefined()) {
+            spType.setErrorPage(errorPage.asString());
+        }
+
         spType.setAlias(alias);
         spType.setPostBinding(postBinding);
         spType.setSecurityDomain(securityDomain);
@@ -152,7 +166,13 @@ public class ModelUtils {
         if (supportsSignatures.isDefined()) {
             idpType.setSupportsSignature(supportsSignatures.asBoolean());
         }
+
+        ModelNode strictPostBinding = fromModel.get(STRICT_POST_BINDING.getName());
         
+        if (strictPostBinding.isDefined()) {
+            idpType.setStrictPostBinding(strictPostBinding.asBoolean());
+        }
+
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
         
         idpType.setAlias(alias);

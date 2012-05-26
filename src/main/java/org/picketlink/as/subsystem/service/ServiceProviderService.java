@@ -85,6 +85,27 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment.DeploymentUnit)
      */
     public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+        configureBindingType();
+        configureStrictPostBinding();
+    }
+ 
+    /**
+     * <p> 
+     * Configures the Strict Post Binding behaviuor. If the IDP configured for the federation instance is configure with a different value
+     * than the SP, uses the IDP configuration.
+     * </p>
+     */
+    private void configureStrictPostBinding() {
+        IdentityProviderService identityProviderService = getFederationService().getIdentityProviderService();
+        
+        if (identityProviderService != null) {
+            if ((identityProviderService.getConfiguration().isStrictPostBinding() != getConfiguration().isIdpUsesPostBinding()) && !getConfiguration().isPostBinding()) {
+                getConfiguration().setIdpUsesPostBinding(identityProviderService.getConfiguration().isStrictPostBinding());
+            }
+        }
+    }
+
+    private void configureBindingType() {
         if (getConfiguration().isPostBinding()) {
             getConfiguration().setBindingType("POST");
         } else {
@@ -122,13 +143,15 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#setConfiguration(org.picketlink.identity.federation.core.config.ProviderConfiguration)
-     */
     @Override
-    public void setConfiguration(SPConfiguration configuration) {
-        super.setConfiguration(configuration);
-        updateIdentityURL();
+    public SPConfiguration getConfiguration() {
+        SPConfiguration configuration = super.getConfiguration();
+        
+        if (getFederationService().getIdentityProviderService() != null) {
+            configuration.setIdentityURL(getFederationService().getIdentityProviderService().getConfiguration().getIdentityURL());            
+        }
+        
+        return configuration;
     }
     
     /**

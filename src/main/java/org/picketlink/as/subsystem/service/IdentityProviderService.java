@@ -105,11 +105,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
         super.onUpdateKeyProvider(keyProviderType);
     }
 
-    /**
-     * <p>
-     * Raises a {@IdentityProviderUpdateEvent}.
-     * </p>
-     */
     public void raiseUpdateEvent() {
         new IdentityProviderUpdateEvent(this.getConfiguration(), this.getFederationService().getEventManager()).raise();
     }

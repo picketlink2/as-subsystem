@@ -81,7 +81,7 @@ public class FederationServiceTestCase extends AbstractPicketLinkSubsystemTestCa
      */
     @Test
     public void testKeyProviderConfigurations() throws Exception {
-        ModelNode keyStoreNode = getFederationModel().getValue().get(ModelElement.KEY_STORE.getName()).asProperty().getValue();
+        ModelNode keyStoreNode = getFederationModel().get(ModelElement.KEY_STORE.getName()).asProperty().getValue();
         
         assertTrue(keyStoreNode.isDefined());
         
@@ -100,7 +100,7 @@ public class FederationServiceTestCase extends AbstractPicketLinkSubsystemTestCa
      */
     @Test
     public void testSAMLConfigurations() throws Exception {
-        ModelNode keyStoreNode = getFederationModel().getValue().get(ModelElement.SAML.getName()).asProperty().getValue();
+        ModelNode keyStoreNode = getFederationModel().get(ModelElement.SAML.getName()).asProperty().getValue();
         
         assertTrue(keyStoreNode.isDefined());
         

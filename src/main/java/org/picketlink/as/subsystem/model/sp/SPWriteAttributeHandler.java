@@ -28,15 +28,17 @@ import org.jboss.dmr.ModelNode;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
+ * 
  */
 public class SPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
 
     public static final SPWriteAttributeHandler INSTANCE = new SPWriteAttributeHandler();
-    
+
     private SPWriteAttributeHandler() {
         super(ServiceProviderResourceDefinition.ALIAS, ServiceProviderResourceDefinition.POST_BINDING,
-                ServiceProviderResourceDefinition.SECURITY_DOMAIN,ServiceProviderResourceDefinition.SUPPORTS_SIGNATURES, ServiceProviderResourceDefinition.URL);
+                ServiceProviderResourceDefinition.SECURITY_DOMAIN, ServiceProviderResourceDefinition.SUPPORTS_SIGNATURES,
+                ServiceProviderResourceDefinition.URL, ServiceProviderResourceDefinition.STRICT_POST_BINDING,
+                ServiceProviderResourceDefinition.ERROR_PAGE);
     }
 
     @Override

@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.picketlink.as.subsystem.model.sp;
 
 import org.jboss.as.controller.OperationStepHandler;
@@ -51,13 +50,20 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
             ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
-
+    public static final SimpleAttributeDefinition STRICT_POST_BINDING = new SimpleAttributeDefinitionBuilder(
+            ModelElement.STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
+            .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ERROR_PAGE = new SimpleAttributeDefinitionBuilder(
+            ModelElement.ERROR_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
+ 
     static {
         INSTANCE.addAttribute(ALIAS);
         INSTANCE.addAttribute(SECURITY_DOMAIN);
         INSTANCE.addAttribute(URL);
         INSTANCE.addAttribute(POST_BINDING);
         INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
+        INSTANCE.addAttribute(STRICT_POST_BINDING);
+        INSTANCE.addAttribute(ERROR_PAGE);
     }
 
     private ServiceProviderResourceDefinition() {
