@@ -2,7 +2,7 @@
 <!-- XSLT file to add the a test configuration for the PicketLink Subsystem 
 	to the standalone.xml of the JBoss AS7 installation. -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:as="urn:jboss:domain:1.3" 
+	xmlns:as="urn:jboss:domain:1.2" 
 	xmlns:pl="urn:jboss:picketlink:1.0"
 	version="1.0">
 
