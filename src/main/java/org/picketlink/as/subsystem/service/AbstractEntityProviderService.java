@@ -38,6 +38,7 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
     private PicketLinkType picketLinkType;
     private C configuration;
     private FederationService federationService;
+    private PicketLinkMetricsService metricsService;
     
     public AbstractEntityProviderService(OperationContext context, ModelNode operation) {
         this.federationService = FederationService.getService(context.getServiceRegistry(true), operation);
@@ -106,7 +107,13 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     private PicketLinkWebContextFactory createPicketLinkWebContextFactory() {
         getPicketLinkType().setIdpOrSP((ProviderType) getConfiguration());
-        return new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()));
+        PicketLinkWebContextFactory webContextFactory = new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()));
+        
+        if (this.getMetricsService() != null) {
+            webContextFactory.setAuditHelper(this.getMetricsService().getValue());
+        }
+        
+        return webContextFactory;
     }
     
     /**
@@ -154,6 +161,7 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.picketLinkType = new PicketLinkType();
             this.picketLinkType.setStsType(createSTSType());
             this.picketLinkType.setHandlers(new Handlers());
+            this.picketLinkType.setEnableAudit(true);
             configureCommonHandlers();
         }
         
@@ -210,5 +218,13 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         handler.setClazz(handlerClassName.getName());
         
         getPicketLinkType().getHandlers().add(handler);
+    }
+
+    public PicketLinkMetricsService getMetricsService() {
+        return this.metricsService;
+    }
+
+    public void setMetricsService(PicketLinkMetricsService metricsService) {
+        this.metricsService = metricsService;
     }
 }

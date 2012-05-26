@@ -89,6 +89,15 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     }
     
     @Override
+    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
+        super.registerAttributes(resourceRegistration);
+        
+        for (final SimpleAttributeDefinition def : IdentityProviderMetricsOperationHandler.ATTRIBUTES) {
+            resourceRegistration.registerMetric(def, IdentityProviderMetricsOperationHandler.INSTANCE);
+        }
+    }
+    
+    @Override
     protected OperationStepHandler doGetAttributeWriterHandler() {
         return IDPWriteAttributeHandler.INSTANCE;
     }

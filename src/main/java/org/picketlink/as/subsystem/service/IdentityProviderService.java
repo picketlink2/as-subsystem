@@ -44,7 +44,6 @@ import org.picketlink.identity.federation.core.config.KeyProviderType;
 public class IdentityProviderService extends AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> {
 
     private static final String SERVICE_NAME = "IDPConfigurationService";
-
     public IdentityProviderService(OperationContext context, ModelNode modelNode) {
         super(context, modelNode);
     }
@@ -83,16 +82,16 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      * @param name
      * @return
      */
-    public static IdentityProviderService getService(ServiceRegistry registry, String name) {
+    public static AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getService(ServiceRegistry registry, String name) {
         ServiceController<?> container = registry.getService(IdentityProviderService.createServiceName(name));
         
         if (container != null) {
-            return (IdentityProviderService) container.getValue();
+            return (AbstractEntityProviderService<IdentityProviderService, IDPConfiguration>) container.getValue();
         }
         
         return null;
     }
-    
+
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
