@@ -51,6 +51,7 @@ public enum ModelElement {
     IDENTITY_PROVIDER_SAML_METADATA_WANT_AUTHN_REQUESTS_SIGNED ("wantAuthnRequestsSigned"),
     IDENTITY_PROVIDER_SAML_METADATA_ORGANIZATION ("organization"),
     IDENTITY_PROVIDER_EXTERNAL ("external"),
+    STRICT_POST_BINDING ("strict-post-binding"),
     KEY_STORE_PASSWD ("passwd"), 
     KEY_STORE_SIGN_KEY_ALIAS ("sign-key-alias"), 
     KEY_STORE_SIGN_KEY_PASSWD ("sign-key-passwd"),
@@ -63,6 +64,7 @@ public enum ModelElement {
     
     SERVICE_PROVIDER("service-provider"), 
     SERVICE_PROVIDER_POST_BINDING ("post-binding"),
+    ERROR_PAGE ("error-page"),
     
     SECURITY_TOKEN_SERVICE ("security-token-service"),
     SAML_TOKEN_TIMEOUT ("token-timeout"),

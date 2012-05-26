@@ -28,15 +28,16 @@ import org.jboss.dmr.ModelNode;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
+ * 
  */
 public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
 
     public static final IDPWriteAttributeHandler INSTANCE = new IDPWriteAttributeHandler();
-    
+
     private IDPWriteAttributeHandler() {
         super(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.EXTERNAL,
-                IdentityProviderResourceDefinition.SUPPORTS_SIGNATURES, IdentityProviderResourceDefinition.SECURITY_DOMAIN, IdentityProviderResourceDefinition.URL);
+                IdentityProviderResourceDefinition.SUPPORTS_SIGNATURES, IdentityProviderResourceDefinition.SECURITY_DOMAIN,
+                IdentityProviderResourceDefinition.URL,IdentityProviderResourceDefinition.STRICT_POST_BINDING);
     }
 
     @Override

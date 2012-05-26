@@ -49,7 +49,7 @@ public class ServiceProviderServiceTestCase extends AbstractPicketLinkSubsystemT
      */
     @Test
     public void testServiceProviderServiceInstallation() throws Exception {
-        ModelNode serviceProviders = getFederationModel().getValue().get(ModelElement.SERVICE_PROVIDER.getName());
+        ModelNode serviceProviders = getFederationModel().get(ModelElement.SERVICE_PROVIDER.getName());
 
         List<Property> serviceProvidersList = serviceProviders.asPropertyList();
 
@@ -67,7 +67,7 @@ public class ServiceProviderServiceTestCase extends AbstractPicketLinkSubsystemT
      */
     @Test
     public void testConfigureServiceProvider() throws Exception {
-        ModelNode serviceProviders = getFederationModel().getValue().get(ModelElement.SERVICE_PROVIDER.getName());
+        ModelNode serviceProviders = getFederationModel().get(ModelElement.SERVICE_PROVIDER.getName());
 
         List<Property> serviceProvidersList = serviceProviders.asPropertyList();
 

@@ -48,7 +48,9 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
 
     protected static final String FAKE_AS7_INSTALLATION_DIR = "target/jboss-as7-fake";
     protected static final String FAKE_AS7_DEPLOYMENTS = FAKE_AS7_INSTALLATION_DIR + "/deployments";
-
+    
+    private String federationAliasToTest = "federation-with-signatures";
+    
     private ModelNode resultingModelNode;
     private KernelServices kernelServices;
 
@@ -130,13 +132,13 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
      * @param model
      * @return
      */
-    protected Property getFederationModel() {
+    protected ModelNode getFederationModel() {
         ModelNode federationNode = getResultingModelNode().get(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME,
-                ModelElement.FEDERATION.getName());
+                ModelElement.FEDERATION.getName(), this.federationAliasToTest);
         
-        return federationNode.asPropertyList().get(0);
+        return federationNode;
     }
-    
+
     protected IdentityProviderService getIdentityProviderService() {
         ServiceName serviceName = IdentityProviderService.createServiceName(getIdentityProvider().asProperty().getName());
 
@@ -144,7 +146,7 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
     }
 
     protected FederationService getFederationService() {
-        ServiceName serviceName = FederationService.createServiceName(getFederationModel().getName());
+        ServiceName serviceName = FederationService.createServiceName(getFederationModel().get(ModelElement.COMMON_ALIAS.getName()).asString());
 
         return (FederationService) getInstalledService(serviceName).getValue();
     }
@@ -157,7 +159,7 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
      * @return
      */
     protected ModelNode getIdentityProvider() {
-        return getFederationModel().getValue().get(ModelElement.IDENTITY_PROVIDER.getName());
+        return getFederationModel().get(ModelElement.IDENTITY_PROVIDER.getName());
     }
 
 
