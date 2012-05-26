@@ -20,7 +20,7 @@ Download and install [JBoss AS 7.1.1.Final](http://www.jboss.org/jbossas/downloa
 
 *Make sure you have your environment configured with Apache Maven 3.*
 
-Use **mvn clean package** to build the project.
+Use **mvn -Pintegration-tests clean package** to build the project.
 
 Copy the contents of **target/module/org/picketlink/main** to **${jboss.home.dir}/modules/org/picketlink/main**.
 
@@ -31,7 +31,7 @@ Change your standalone.xml to add an extension for the PicketLink module:
                   <extension module="org.picketlink"/>
           </extensions>
 
-Open the standalone.xml and add the following configuration for the PicketLink subsystem:
+Open the standalone.xml and add the following configuration for the PicketLink subsystem: 
 
 <federation alias="federation-without-signatures">
 		<saml token-timeout="4000" clock-skew="0" />
