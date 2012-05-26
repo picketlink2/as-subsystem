@@ -52,6 +52,9 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
             ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition STRICT_POST_BINDING = new SimpleAttributeDefinitionBuilder(
+            ModelElement.STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
+            .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     
     static {
         INSTANCE.addAttribute(URL);
@@ -59,6 +62,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         INSTANCE.addAttribute(SECURITY_DOMAIN);
         INSTANCE.addAttribute(EXTERNAL);
         INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
+        INSTANCE.addAttribute(STRICT_POST_BINDING);
     }
     
     private IdentityProviderResourceDefinition() {

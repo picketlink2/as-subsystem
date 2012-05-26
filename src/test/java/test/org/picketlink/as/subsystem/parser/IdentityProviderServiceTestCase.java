@@ -28,6 +28,7 @@ import static junit.framework.Assert.assertTrue;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.TrustType;
@@ -63,17 +64,17 @@ public class IdentityProviderServiceTestCase extends AbstractPicketLinkSubsystem
 
         IDPConfiguration idpSubsystemConfig = identityProviderService.getConfiguration();
         
-        assertEquals("idp.war", idpSubsystemConfig.getAlias());
-        assertEquals("http://localhost:8080/idp/", idpSubsystemConfig.getIdentityURL());
-        assertEquals("idp", idpSubsystemConfig.getSecurityDomain());
-        assertFalse(idpSubsystemConfig.isSupportsSignature());
-        assertTrue(idpSubsystemConfig.isStrictPostBinding());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_ALIAS.getName()).asString(), idpSubsystemConfig.getAlias());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_URL.getName()).asString(), idpSubsystemConfig.getIdentityURL());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString(), idpSubsystemConfig.getSecurityDomain());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.SUPPORTS_SIGNATURES.getName()).asBoolean(), idpSubsystemConfig.isSupportsSignature());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.STRICT_POST_BINDING.getName()).asBoolean(), idpSubsystemConfig.isStrictPostBinding());
         
         TrustType trustType = idpSubsystemConfig.getTrust();
         
         assertNotNull(trustType);
         assertNotNull(trustType.getDomains());
-        Assert.assertEquals("localhost,mycompany.com2,mycompany.com3,mycompany.com4", trustType.getDomains());
+        Assert.assertFalse(trustType.getDomains().isEmpty());
         
         assertNotNull(identityProviderService.getPicketLinkType());
         assertNotNull(identityProviderService.getPicketLinkType().getStsType());
