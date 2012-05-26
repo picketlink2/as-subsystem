@@ -30,9 +30,6 @@ Change your standalone.xml to add an extension for the PicketLink module:
                     ...
                   <extension module="org.picketlink"/>
           </extensions>
-
-Open the standalone.xml and add the following configuration for the PicketLink subsystem: 
-
 <federation alias="federation-without-signatures">
 		<saml token-timeout="4000" clock-skew="0" />
 		<identity-provider alias="idp.war" security-domain="idp" supportsSignatures="false" url="http://localhost:8080/idp/">
@@ -47,6 +44,7 @@ Open the standalone.xml and add the following configuration for the PicketLink s
 		</service-providers>
 </federation>
 
+Open the standalone.xml and add the following configuration for the PicketLink subsystem: 
 The XML above is just a sample generated from the supported schema. You can access it from [here](https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd).
 
 ## How to use ##
