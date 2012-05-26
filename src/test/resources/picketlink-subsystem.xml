@@ -2,9 +2,6 @@
 
 	<federation alias="federation-without-signatures">
 
-		<key-store passwd="changeit" sign-key-alias="localhost"
-			sign-key-passwd="changeit" url="/jbid_test_keystore.jks" />
-
 		<saml token-timeout="4000" clock-skew="0" />
 
 		<identity-provider alias="idp.war" security-domain="idp"
