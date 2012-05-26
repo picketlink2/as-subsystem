@@ -69,7 +69,9 @@ public enum ModelElement {
     SECURITY_TOKEN_SERVICE ("security-token-service"),
     SAML_TOKEN_TIMEOUT ("token-timeout"),
     SAML_CLOCK_SKEW ("clock-skew"),
-    SAML ("saml");
+    SAML ("saml"), 
+    METRICS_CREATED_ASSERTIONS_COUNT ("created-assertions-count"),
+    METRICS_RESPONSE_TO_SP_COUNT ("response-to-sp-count");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     

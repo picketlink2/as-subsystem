@@ -22,9 +22,7 @@
 package test.org.picketlink.as.subsystem.parser;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -49,6 +47,7 @@ public class IdentityProviderServiceTestCase extends AbstractPicketLinkSubsystem
     @Test
     public void testIdentityProviderServiceInstallation() throws Exception {
         Assert.assertNotNull(getIdentityProviderService());
+        Assert.assertNotNull(getIdentityProviderService().getMetricsService());
     }
 
     /**

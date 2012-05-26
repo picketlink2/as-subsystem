@@ -96,7 +96,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      * </p>
      */
     private void configureStrictPostBinding() {
-        IdentityProviderService identityProviderService = getFederationService().getIdentityProviderService();
+        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> identityProviderService = getFederationService().getIdentityProviderService();
         
         if (identityProviderService != null) {
             if ((identityProviderService.getConfiguration().isStrictPostBinding() != getConfiguration().isIdpUsesPostBinding()) && !getConfiguration().isPostBinding()) {

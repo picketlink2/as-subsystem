@@ -29,10 +29,12 @@ import org.jboss.as.server.deployment.Phase;
 import org.jboss.as.web.ext.WebContextFactory;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistry;
+import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.as.subsystem.service.PicketLinkWebContextFactory;
 import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
  * <p>
@@ -89,7 +91,7 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
     }
 
     private void deployIdentityProvider(DeploymentPhaseContext phaseContext, String name) {
-        IdentityProviderService idpService = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
+        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> idpService = getIdentityProviderService(phaseContext.getServiceRegistry(), name);
 
         if (idpService != null) {
             idpService.configure(phaseContext.getDeploymentUnit());
@@ -113,11 +115,11 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
      * @param name
      * @return
      */
-    private IdentityProviderService getIdentityProviderService(ServiceRegistry registry, String name) {
+    private AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getIdentityProviderService(ServiceRegistry registry, String name) {
         ServiceController<?> container = registry.getService(IdentityProviderService.createServiceName(name));
 
         if (container != null) {
-            return (IdentityProviderService) container.getValue();
+            return (AbstractEntityProviderService<IdentityProviderService, IDPConfiguration>) container.getValue();
         }
 
         return null;

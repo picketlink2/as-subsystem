@@ -388,6 +388,14 @@
 											<includes>
 												<include>standalone.xml</include>
 											</includes>
+											<stylesheet>src/test/resources/xslt/addPicketLinkLogging.xslt</stylesheet>
+										</transformationSet>
+										<transformationSet>
+											<dir>${jboss.as.home}/standalone/configuration/</dir>
+											<outputDir>${jboss.as.home}/standalone/configuration</outputDir>
+											<includes>
+												<include>standalone.xml</include>
+											</includes>
 											<stylesheet>src/test/resources/xslt/addSubsystem.xslt</stylesheet>
 										</transformationSet>
 										<transformationSet>

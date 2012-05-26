@@ -10,6 +10,7 @@ import org.picketlink.identity.federation.bindings.tomcat.sp.ServiceProviderAuth
 public class PicketLinkWebContextFactory implements WebContextFactory {
 
     private final DomainModelConfigProvider configProvider;
+    private PicketLinkSubsystemMetrics auditHelper;
 
     public PicketLinkWebContextFactory(DomainModelConfigProvider picketLinkSubsysteConfigProvider) {
         this.configProvider = picketLinkSubsysteConfigProvider;
@@ -32,6 +33,7 @@ public class PicketLinkWebContextFactory implements WebContextFactory {
             IDPWebBrowserSSOValve valve = new IDPWebBrowserSSOValve();
             
             valve.setConfigProvider(this.configProvider);
+            valve.setAuditHelper(this.auditHelper);
             
             webContext.addValve(valve);
         } else {
@@ -41,6 +43,10 @@ public class PicketLinkWebContextFactory implements WebContextFactory {
             
             webContext.addValve(valve);
         }
+    }
+
+    public void setAuditHelper(PicketLinkSubsystemMetrics value) {
+        this.auditHelper = value;
     }
 
 }
