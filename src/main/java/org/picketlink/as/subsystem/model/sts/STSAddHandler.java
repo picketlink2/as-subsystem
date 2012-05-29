@@ -22,12 +22,6 @@
 
 package org.picketlink.as.subsystem.model.sts;
 
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.jboss.as.controller.OperationContext;
@@ -35,10 +29,20 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.as.security.plugins.SecurityDomainContext;
+import org.jboss.as.security.service.SecurityDomainService;
+import org.jboss.as.web.VirtualHost;
+import org.jboss.as.web.WebSubsystemServices;
+import org.jboss.as.webservices.util.WSServices;
 import org.jboss.dmr.ModelNode;
+import org.jboss.metadata.web.jboss.JBossWebMetaData;
+import org.jboss.msc.service.ServiceBuilder.DependencyType;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
+import org.jboss.security.SecurityConstants;
+import org.jboss.security.SecurityUtil;
+import org.jboss.wsf.spi.deployment.Endpoint;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
@@ -65,45 +69,29 @@ public class STSAddHandler extends AbstractResourceAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        
-        SecurityTokenServiceService identityProviderService = new SecurityTokenServiceService(context, operation);
-        
+
+        SecurityTokenServiceService securityTokenService = new SecurityTokenServiceService(context, operation);
+
         ServiceName name = SecurityTokenServiceService.createServiceName(alias + ".war");
 
-        ServiceController<SecurityTokenServiceService> controller = context.getServiceTarget()
-                .addService(name, identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE)
-                .install();
+        ServiceController<SecurityTokenServiceService> controller = context
+                .getServiceTarget()
+                .addService(name, securityTokenService)
+                .addDependency(DependencyType.REQUIRED, WSServices.CONFIG_SERVICE)
+                .addDependency(DependencyType.REQUIRED, WSServices.REGISTRY_SERVICE)
+                .addDependency(WebSubsystemServices.JBOSS_WEB_HOST.append("default-host"), VirtualHost.class,
+                        securityTokenService.getHostInjector())
+                .addDependency(DependencyType.REQUIRED,
+                        SecurityDomainService.SERVICE_NAME.append(getDeploymentSecurityDomainName(securityTokenService.getConfiguration().getSecurityDomain())),
+                        SecurityDomainContext.class, securityTokenService.getSecurityDomainContextInjector())
+                .addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
 
         newControllers.add(controller);
-        
-//        deployTemplate(alias);
     }
 
-    private void deployTemplate(String alias) {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("deployment/picketlink-sts.war");
-        
-        try {
-            File file = new File(System.getProperty("jboss.server.base.dir") + "/deployments/" + alias + ".war");
-            
-            if (file.exists()) {
-                file.delete();
-            }
-            
-            file.createNewFile();
-            FileOutputStream out = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            
-            while (is.read(buffer) > 0) {
-                out.write(buffer);
-            }
-            
-            out.close();
-            is.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static String getDeploymentSecurityDomainName(String securityDomain) {
+        return securityDomain == null ? SecurityConstants.DEFAULT_APPLICATION_POLICY : SecurityUtil
+                .unprefixSecurityDomain(securityDomain.trim());
     }
 
 }

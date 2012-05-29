@@ -53,7 +53,7 @@ public class FederationService implements Service<FederationService> {
 
     private EventManager eventManager = new EventManager();
     
-    private AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> identityProviderService;
+    private IdentityProviderService identityProviderService;
 
     public FederationService(String alias) {
         this.alias = alias;
@@ -132,11 +132,15 @@ public class FederationService implements Service<FederationService> {
         return this.eventManager ;
     }
     
-    public void setIdentityProviderService(AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> identityProviderService) {
+    public void setIdentityProviderService(IdentityProviderService identityProviderService) {
         this.identityProviderService = identityProviderService;
     }
 
     public AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getIdentityProviderService() {
         return this.identityProviderService;
+    }
+    
+    public String getAlias() {
+        return this.alias;
     }
 }

@@ -41,14 +41,11 @@ public class STSResourceDefinition extends AbstractResourceDefinition {
     public static final SimpleAttributeDefinition ALIAS = new SimpleAttributeDefinitionBuilder(
             ModelElement.COMMON_ALIAS.getName(), ModelType.STRING, false).setDefaultValue(new ModelNode().set("sts"))
             .setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition ENDPOINT = new SimpleAttributeDefinitionBuilder(ModelElement.COMMON_ENDPOINT.getName(),
-            ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition SECURITY_DOMAIN = new SimpleAttributeDefinitionBuilder(
-            ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+            ModelElement.COMMON_SECURITY_DOMAIN.getName(), ModelType.STRING, true).setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(ALIAS);
-        INSTANCE.addAttribute(ENDPOINT);
         INSTANCE.addAttribute(SECURITY_DOMAIN);
     }
     

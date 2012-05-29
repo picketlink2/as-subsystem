@@ -32,32 +32,34 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
+import org.jboss.msc.value.InjectedValue;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.FederationService;
 
-
-
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class FederationAddHandler extends AbstractResourceAddStepHandler  {
+public class FederationAddHandler extends AbstractResourceAddStepHandler {
 
     public static final FederationAddHandler INSTANCE = new FederationAddHandler();
 
     private FederationAddHandler() {
         super(ModelElement.FEDERATION);
     }
-    
-    /* (non-Javadoc)
-     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext,
+     * org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
      */
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
-        
+
         createFederationService(pathAddress.getLastElement().getValue(), context, verificationHandler, newControllers);
     }
 
@@ -71,13 +73,13 @@ public class FederationAddHandler extends AbstractResourceAddStepHandler  {
      * @param verificationHandler
      * @param newControllers
      */
-    private void createFederationService(String alias, OperationContext context, ServiceVerificationHandler verificationHandler,
-            List<ServiceController<?>> newControllers) {
+    private void createFederationService(String alias, OperationContext context,
+            ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers) {
         FederationService service = new FederationService(alias);
         ServiceName name = FederationService.createServiceName(alias);
         ServiceController<FederationService> controller = context.getServiceTarget().addService(name, service)
                 .addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
-        
+
         newControllers.add(controller);
     }
 

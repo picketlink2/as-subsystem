@@ -26,12 +26,10 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.server.deployment.Phase;
-import org.jboss.as.web.ext.WebContextFactory;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
-import org.picketlink.as.subsystem.service.PicketLinkWebContextFactory;
 import org.picketlink.as.subsystem.service.SecurityTokenServiceService;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
@@ -42,9 +40,12 @@ import org.picketlink.identity.federation.core.config.IDPConfiguration;
  * configuration defined for the PicketLink subsystem.
  * </p>
  * 
+ * @deprecated This class is depracted. Now each provider (IDP and SP) has its own DU.
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 9, 2012
  */
+@Deprecated
 public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
 
     /**
@@ -115,11 +116,11 @@ public class PicketlinkDeploymentProcessor implements DeploymentUnitProcessor {
      * @param name
      * @return
      */
-    private AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getIdentityProviderService(ServiceRegistry registry, String name) {
+    private IdentityProviderService getIdentityProviderService(ServiceRegistry registry, String name) {
         ServiceController<?> container = registry.getService(IdentityProviderService.createServiceName(name));
 
         if (container != null) {
-            return (AbstractEntityProviderService<IdentityProviderService, IDPConfiguration>) container.getValue();
+            return (IdentityProviderService) container.getValue();
         }
 
         return null;

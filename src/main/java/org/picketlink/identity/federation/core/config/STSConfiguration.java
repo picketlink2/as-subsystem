@@ -21,16 +21,19 @@
  */
 package org.picketlink.identity.federation.core.config;
 
-import org.picketlink.identity.federation.core.config.STSType;
-
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 public class STSConfiguration extends STSType implements ProviderConfiguration {
 
-    private String securityDomain;
-    private String endpoint;
+    private String securityDomain = "picketlink-sts";
+    private String endpoint = "http://localhost:8080/picketlink-sts/PicketLinkSTS";
     private String alias;
+    private String contextRoot = "picketlink-sts";
+    private String urlPattern = "/*";
+    private String wsdlLocation;
+    private String portName = "PicketLinkSTSPort";
+    private String namespace = "urn:picketlink:identity-federation:sts";
     
     @Override
     public String getSecurityDomain() {
@@ -61,6 +64,60 @@ public class STSConfiguration extends STSType implements ProviderConfiguration {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public String getContextRoot() {
+        return this.contextRoot;
+    }
+    
+    public void setContextRoot(String contextRoot) {
+        this.contextRoot = contextRoot;
+    }
+
+    public String getUrlPattern() {
+        return this.urlPattern;
+    }
+    
+    public void setUrlPattern(String urlPattern) {
+        this.urlPattern = urlPattern;
+    }
+
+    public String getWsdlLocation() {
+        if (this.wsdlLocation == null) {
+            this.wsdlLocation = this.getClass().getClassLoader().getResource("/sts/PicketLinkSTS.wsdl").toString();
+        }
+        return this.wsdlLocation;
+    }
+    
+    public void setWsdlLocation(String wsdlLocation) {
+        this.wsdlLocation = wsdlLocation;
+    }
+
+    public String getPortName() {
+        return this.portName;
+    }
+    
+    public void setPortName(String portName) {
+        this.portName = portName;
+    }
+
+    public String getNamespace() {
+        return this.namespace;
+    }
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
+    @Override
+    public String getSTSName() {
+        String stsName = super.getSTSName();
+        
+        if (stsName == null) {
+            super.setSTSName("PicketLinkSTS");
+        }
+        
+        return stsName;
     }
 
 }

@@ -21,48 +21,38 @@
  */
 package org.picketlink.as.subsystem.model.idp;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.NAME;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
-import static org.jboss.as.web.WebMessages.MESSAGES;
-
-import org.apache.catalina.connector.Connector;
-import org.apache.coyote.RequestGroupInfo;
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.OperationStepHandler;
-import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.SimpleAttributeDefinition;
-import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.web.Constants;
-import org.jboss.as.web.WebSubsystemServices;
 import org.jboss.dmr.ModelNode;
-import org.jboss.dmr.ModelType;
 import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.metrics.AbstractPicketLinkMetricsOperationHandler;
+import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.service.PicketLinkMetricsService;
-import org.picketlink.as.subsystem.service.PicketLinkSubsystemMetrics;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.PicketLinkService;
 
 /**
+ * <p>
+ * Provide access to the metrics collected from a specific Identity Provider deployment. 
+ * </p>
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-public class IdentityProviderMetricsOperationHandler implements OperationStepHandler {
+public class IdentityProviderMetricsOperationHandler extends AbstractPicketLinkMetricsOperationHandler {
 
     public static final IdentityProviderMetricsOperationHandler INSTANCE = new IdentityProviderMetricsOperationHandler();
     
-    protected static final SimpleAttributeDefinition CREATED_ASSERTIONS_COUNT =
-            new SimpleAttributeDefinitionBuilder(ModelElement.METRICS_CREATED_ASSERTIONS_COUNT.getName(), ModelType.INT, true)
-                    .setStorageRuntime()
-                    .build();
-
-    protected static final SimpleAttributeDefinition RESPONSE_TO_SP_COUNT =
-            new SimpleAttributeDefinitionBuilder(ModelElement.METRICS_RESPONSE_TO_SP_COUNT.getName(), ModelType.INT, true)
-                    .setStorageRuntime()
-                    .build();
-    
     static final SimpleAttributeDefinition[] ATTRIBUTES = {
         CREATED_ASSERTIONS_COUNT,
-        RESPONSE_TO_SP_COUNT
+        RESPONSE_TO_SP_COUNT,
+        ERROR_RESPONSE_TO_SP_COUNT,
+        ERROR_SIGN_VALIDATION_COUNT,
+        ERROR_TRUSTED_DOMAIN_COUNT,
+        EXPIRED_ASSERTIONS_COUNT,
+        LOGIN_COMPLETE_COUNT,
+        LOGIN_INIT_COUNT
     };
     
     private IdentityProviderMetricsOperationHandler() {
@@ -70,42 +60,32 @@ public class IdentityProviderMetricsOperationHandler implements OperationStepHan
     }
     
     /* (non-Javadoc)
-     * @see org.jboss.as.controller.OperationStepHandler#execute(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode)
+     * @see org.picketlink.as.subsystem.metrics.AbstractPicketLinkMetricsOperationHandler#doPopulateResult(org.jboss.as.controller.OperationContext, java.lang.String, org.jboss.msc.service.ServiceController)
      */
     @Override
-    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-        if (context.isNormalServer()) {
-            context.addStep(new OperationStepHandler() {
-                @Override
-                public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
-                    final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
-                    final String name = address.getLastElement().getValue();
-                    final String attributeName = operation.require(NAME).asString();
-
-                    final ServiceController<?> controller = context.getServiceRegistry(false)
-                            .getService(PicketLinkMetricsService.createServiceName(name));
-                    if (controller != null) {
-                        try {
-                            final PicketLinkSubsystemMetrics metrics = (PicketLinkSubsystemMetrics) controller.getValue();
-                            final ModelNode result = context.getResult();
-                            if (ModelElement.METRICS_CREATED_ASSERTIONS_COUNT.getName().equals(attributeName)) {
-                                result.set("" + metrics.getCreatedAssertionsCount());
-                            } else if (ModelElement.METRICS_RESPONSE_TO_SP_COUNT.getName().equals(attributeName)) {
-                                result.set("" + metrics.getResponseToSPCount());
-                            }
-                        } catch (Exception e) {
-                            throw new OperationFailedException(new ModelNode().set(MESSAGES.failedToGetMetrics(e.getMessage())));
-                        }
-                    } else {
-                        context.getResult().set(MESSAGES.noMetricsAvailable());
-                    }
-                    context.completeStep(OperationContext.RollbackHandler.NOOP_ROLLBACK_HANDLER);
-                }
-            }, OperationContext.Stage.RUNTIME);
-        } else {
-            context.getResult().set(MESSAGES.noMetricsAvailable());
+    protected void doPopulateResult(PicketLinkSubsystemMetrics metrics, ModelNode result, String attributeName) {
+        if (ModelElement.METRICS_CREATED_ASSERTIONS_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getCreatedAssertionsCount());
+        } else if (ModelElement.METRICS_RESPONSE_TO_SP_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getResponseToSPCount());
+        } else if (ModelElement.METRICS_ERROR_RESPONSE_TO_SP_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getErrorResponseToSPCount());
+        } else if (ModelElement.METRICS_ERROR_SIGN_VALIDATION_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getErrorSignValidationCount());
+        } else if (ModelElement.METRICS_ERROR_TRUSTED_DOMAIN_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getErrorTrustedDomainCount());
+        } else if (ModelElement.METRICS_EXPIRED_ASSERTIONS_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getExpiredAssertionsCount());
+        } else if (ModelElement.METRICS_LOGIN_COMPLETE_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getLoginCompleteCount());
+        } else if (ModelElement.METRICS_LOGIN_INIT_COUNT.getName().equals(attributeName)) {
+            result.set("" + metrics.getLoginInitCount());
         }
-        context.completeStep(OperationContext.RollbackHandler.NOOP_ROLLBACK_HANDLER);
+    }
+    
+    @Override
+    protected ServiceName createServiceName(String name) {
+        return IdentityProviderService.createServiceName(name);
     }
 
 }

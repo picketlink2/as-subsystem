@@ -22,18 +22,34 @@
 
 package org.picketlink.as.subsystem.service;
 
+import java.util.HashMap;
+import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import org.jboss.as.controller.OperationContext;
-import org.jboss.as.server.deployment.Attachments;
+import org.jboss.as.security.plugins.SecurityDomainContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
-import org.jboss.as.server.deployment.module.ResourceRoot;
+import org.jboss.as.web.VirtualHost;
+import org.jboss.as.webservices.publish.EndpointPublisherImpl;
+import org.jboss.as.webservices.publish.WSEndpointDeploymentUnit;
 import org.jboss.dmr.ModelNode;
+import org.jboss.msc.inject.Injector;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceRegistry;
+import org.jboss.msc.service.StartContext;
+import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.vfs.VirtualFile;
+import org.jboss.msc.value.InjectedValue;
+import org.jboss.wsf.spi.deployment.Endpoint;
+import org.jboss.wsf.spi.deployment.Reference;
+import org.jboss.wsf.spi.metadata.webservices.PortComponentMetaData;
+import org.jboss.wsf.spi.metadata.webservices.WebserviceDescriptionMetaData;
+import org.jboss.wsf.spi.metadata.webservices.WebservicesMetaData;
+import org.jboss.wsf.spi.publish.Context;
 import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.model.sts.endpoint.PicketLinkSTService;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
 
 /**
@@ -46,12 +62,54 @@ import org.picketlink.identity.federation.core.config.STSConfiguration;
 public class SecurityTokenServiceService extends AbstractEntityProviderService<SecurityTokenServiceService, STSConfiguration> {
 
     private static final String SERVICE_NAME = "STSConfigurationService";
+    private List<Endpoint> publishedEndpoints;
+
+    private final InjectedValue<VirtualHost> hostInjector = new InjectedValue<VirtualHost>();
+    private final InjectedValue<SecurityDomainContext> securityDomainContextValue = new InjectedValue<SecurityDomainContext>();
 
     public SecurityTokenServiceService(OperationContext context, ModelNode operation) {
         super(context, operation);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#start(org.jboss.msc.service.StartContext)
+     */
+    @Override
+    public void start(final StartContext ctx) throws StartException {
+        publishEndpoint();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#stop(org.jboss.msc.service.StopContext)
+     */
+    @Override
+    public void stop(final StopContext ctx) {
+        try {
+            EndpointPublisherImpl publisher = new EndpointPublisherImpl(hostInjector.getValue().getHost());
+            publisher.destroy(new Context(getConfiguration().getContextRoot(), publishedEndpoints));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment
+     * .DeploymentUnit)
+     */
+    @Override
+    protected void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.jboss.msc.value.Value#getValue()
      */
     @Override
@@ -59,59 +117,62 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see org.jboss.msc.service.Service#stop(org.jboss.msc.service.StopContext)
-     */
-    @Override
-    public void stop(StopContext context) {
-        this.setConfiguration(new STSConfiguration());
-        super.stop(context);
-    }
-
-    @Override
-    protected void doConfigureDeployment(DeploymentUnit deploymentUnit) {
-        ResourceRoot warDeployment = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
-        
-        writeJBossWebConfig(warDeployment);
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/wsdl/PicketLinkSTS.wsdl");
-        
-//        writeConfig(context, new STSWsdlConfigWriter(this.getConfiguration()), false);
-    }
-
     /**
      * <p>
-     * Writes the jboss-web.xml config file.
+     * Publish the Security Token Service as a WS endpoint.
      * </p>
      * 
-     * @param warDeployment
+     * @throws StartException
      */
-    private void writeJBossWebConfig(ResourceRoot warDeployment) {
-        VirtualFile context = warDeployment.getRoot().getChild("WEB-INF/jboss-web.xml");
-        
-//        writeConfig(context, new JBossWebConfigWriter(this.getConfiguration()), false);
+    private void publishEndpoint() throws StartException {
+        try {
+            EndpointPublisherImpl publisher = new EndpointPublisherImpl(getHostInjector().getValue().getHost(),
+                    this.securityDomainContextValue.getValue());
+
+            HashMap<String, String> urlPatternToClassName = new HashMap<String, String>();
+
+            urlPatternToClassName.put(getConfiguration().getUrlPattern(), getEndpointImplementorClass().getName());
+
+            WSEndpointDeploymentUnit unit = new WSEndpointDeploymentUnit(getEndpointImplementorClass().getClassLoader(),
+                    getConfiguration().getContextRoot(), urlPatternToClassName, createWebServiceMetadata());
+
+            publishedEndpoints = publisher.publish(null, unit);
+
+            Endpoint endpoint = this.publishedEndpoints.get(0);
+
+            Reference reference = endpoint.getInstanceProvider().getInstance(getEndpointImplementorClass().getName());
+
+            PicketLinkSTService stsService = (PicketLinkSTService) reference.getValue();
+
+            stsService.setConfigToMerge(getConfiguration());
+        } catch (Exception e) {
+            throw new StartException(e);
+        }
     }
-    
-    /**
-     * <p>
-     * Writes the contents to a file given the {@link ConfigWriter} instance.
-     * </p>
-     * 
-     * @param file File to be created or to have the configurations added.
-     * @param writer {@link ConfigWriter} instance specific to a given configuration file.
-     * @param recreate Indicates if the file has to be recreated. 
-     */
-//    private void writeConfig(VirtualFile file, ConfigWriter writer, boolean recreate) {
-//        try {
-//            if (recreate) {
-//                file.delete();
-//                file.getPhysicalFile().createNewFile();
-//            }
-//
-//            writer.write(file.getPhysicalFile());
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//    }
+
+    private Class<PicketLinkSTService> getEndpointImplementorClass() {
+        return PicketLinkSTService.class;
+    }
+
+    private WebservicesMetaData createWebServiceMetadata() {
+        WebservicesMetaData webservicesMetaData = new WebservicesMetaData();
+
+        WebserviceDescriptionMetaData webserviceDescription = new WebserviceDescriptionMetaData(webservicesMetaData);
+
+        webserviceDescription.setWsdlFile(getConfiguration().getWsdlLocation());
+
+        PortComponentMetaData portMetadata = new PortComponentMetaData(webserviceDescription);
+
+        portMetadata.setPortComponentName(getConfiguration().getPortName());
+        portMetadata.setWsdlPort(new QName(getConfiguration().getNamespace(), getConfiguration().getPortName()));
+        portMetadata.setWsdlService(new QName(getConfiguration().getNamespace(), getConfiguration().getSTSName()));
+
+        webserviceDescription.addPortComponent(portMetadata);
+
+        webservicesMetaData.addWebserviceDescription(webserviceDescription);
+
+        return webservicesMetaData;
+    }
 
     /**
      * Returns a instance of the service associated with the given name.
@@ -122,24 +183,34 @@ public class SecurityTokenServiceService extends AbstractEntityProviderService<S
      */
     public static SecurityTokenServiceService getService(ServiceRegistry registry, String name) {
         ServiceController<?> container = registry.getService(SecurityTokenServiceService.createServiceName(name));
-        
+
         if (container != null) {
             return (SecurityTokenServiceService) container.getValue();
         }
-        
+
         return null;
     }
-    
+
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
      */
     @Override
     protected STSConfiguration toProviderType(ModelNode fromModel) {
         return ModelUtils.toSTSConfig(fromModel);
+    }
+
+    public InjectedValue<VirtualHost> getHostInjector() {
+        return hostInjector;
+    }
+
+    public Injector<SecurityDomainContext> getSecurityDomainContextInjector() {
+        return securityDomainContextValue;
     }
 
 }

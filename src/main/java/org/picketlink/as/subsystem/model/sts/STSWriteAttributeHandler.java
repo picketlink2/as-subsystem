@@ -35,7 +35,7 @@ public class STSWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
     public static final STSWriteAttributeHandler INSTANCE = new STSWriteAttributeHandler();
     
     private STSWriteAttributeHandler() {
-        super(STSResourceDefinition.ENDPOINT, STSResourceDefinition.ENDPOINT, STSResourceDefinition.SECURITY_DOMAIN);
+        super(STSResourceDefinition.ALIAS, STSResourceDefinition.SECURITY_DOMAIN);
     }
     
     @Override

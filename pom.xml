@@ -83,6 +83,16 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.as</groupId>
+				<artifactId>jboss-as-webservices-server-integration</artifactId>
+				<version>7.1.1.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.ws.cxf</groupId>
+				<artifactId>jbossws-cxf-server</artifactId>
+				<version>4.0.2.GA</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.as</groupId>
 				<artifactId>jboss-as-server</artifactId>
 				<version>${version.jboss_as}</version>
 			</dependency>
@@ -97,6 +107,15 @@
 				<artifactId>picketlink-jbas7</artifactId>
 				<version>${version.picketlink}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.logging</groupId>
+				<artifactId>jboss-logging-processor</artifactId>
+				<version>1.0.0.Final</version>
+				<!-- This is a compile-time dependency of this project, but is not needed 
+					at compile or runtime by other projects that depend on this project. -->
+				<scope>provided</scope>
+				<optional>true</optional>
 			</dependency>
 
 			<!-- Test dependencies -->
@@ -154,12 +173,29 @@
 			<artifactId>jboss-as-web</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.jboss.as</groupId>
+			<artifactId>jboss-as-webservices-server-integration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.ws.cxf</groupId>
+			<artifactId>jbossws-cxf-server</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink.distribution</groupId>
 			<artifactId>picketlink-jbas7</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging-processor</artifactId>
+			<!-- This is a compile-time dependency of this project, but is not needed 
+				at compile or runtime by other projects that depend on this project. -->
+			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- TestDependencies -->
@@ -354,6 +390,16 @@
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDirectory>
+										</artifactItem>
+										<!-- This should be removed when AS7 is updated with the patch 
+											in the ws subsystem -->
+										<artifactItem>
+											<groupId>org.jboss.as</groupId>
+											<artifactId>jboss-as-webservices-server-integration</artifactId>
+											<version>${version.jboss_as}</version>
+											<type>jar</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>${jboss.as.home}/modules/org/jboss/as/webservices/main</outputDirectory>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
