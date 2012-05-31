@@ -1,10 +1,18 @@
 package org.picketlink.as.subsystem.service;
 
+import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.msc.service.Service;
-import org.jboss.msc.service.ServiceName;
+import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
+import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 
 public interface PicketLinkService<T> extends Service<T> {
 
-    ServiceName getName();
+    FederationService getFederationService();
+    
+    ProviderConfiguration getConfiguration();
+    
+    void configure(DeploymentUnit deploymentUnit);
+
+    PicketLinkSubsystemMetrics getMetrics();
     
 }

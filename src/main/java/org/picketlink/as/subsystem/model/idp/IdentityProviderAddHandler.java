@@ -29,22 +29,12 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.ServiceVerificationHandler;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
-import org.jboss.as.naming.deployment.JndiNamingDependencyProcessor;
-import org.jboss.as.naming.service.NamingService;
-import org.jboss.as.security.SecuritySubsystemRootResourceDefinition;
-import org.jboss.as.security.service.SecurityBootstrapService;
-import org.jboss.as.security.service.SecurityDomainService;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
-import org.jboss.security.jacc.SecurityService;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
-import org.picketlink.as.subsystem.service.PicketLinkMetricsService;
-import org.picketlink.as.subsystem.service.PicketLinkSubsystemMetrics;
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -52,7 +42,7 @@ import org.picketlink.identity.federation.core.config.IDPConfiguration;
 public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
 
     public static final IdentityProviderAddHandler INSTANCE = new IdentityProviderAddHandler();
-
+    
     private IdentityProviderAddHandler() {
         super(ModelElement.IDENTITY_PROVIDER);
     }
@@ -69,7 +59,7 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         PathAddress pathAddress = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.ADDRESS));
 
-        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> identityProviderService = new IdentityProviderService(
+        IdentityProviderService identityProviderService = new IdentityProviderService(
                 context, operation);
 
         ServiceController<IdentityProviderService> controller = context
@@ -77,17 +67,7 @@ public class IdentityProviderAddHandler extends AbstractResourceAddStepHandler {
                 .addService(IdentityProviderService.createServiceName(pathAddress.getLastElement().getValue()),
                         identityProviderService).addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
 
-        PicketLinkMetricsService metricsService = new PicketLinkMetricsService(identityProviderService.getConfiguration());
-
-        ServiceController<PicketLinkSubsystemMetrics> controllerMetrics = context
-                .getServiceTarget()
-                .addService(PicketLinkMetricsService.createServiceName(pathAddress.getLastElement().getValue()), metricsService)
-                .addDependencies(NamingService.SERVICE_NAME).addDependencies(SecurityBootstrapService.SERVICE_NAME).addListener(verificationHandler).setInitialMode(Mode.ACTIVE).install();
-
-        identityProviderService.setMetricsService(metricsService);
-
         newControllers.add(controller);
-        newControllers.add(controllerMetrics);
     }
 
 }

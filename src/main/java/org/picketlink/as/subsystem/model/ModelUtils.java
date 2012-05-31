@@ -23,7 +23,6 @@
 package org.picketlink.as.subsystem.model;
 
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
-import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ENDPOINT;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
 import static org.picketlink.as.subsystem.model.ModelElement.ERROR_PAGE;
@@ -72,13 +71,11 @@ public class ModelUtils {
      */
     public static final STSConfiguration toSTSConfig(ModelNode fromModel) {
         String alias = PathAddress.pathAddress(fromModel.get(ModelDescriptionConstants.ADDRESS)).getLastElement().getValue();
-        String endpoint = fromModel.get(COMMON_ENDPOINT.getName()).asString();
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
 
         STSConfiguration stsType = new STSConfiguration();
         
         stsType.setAlias(alias);
-        stsType.setEndpoint(endpoint);
         stsType.setSecurityDomain(securityDomain);
         
         return stsType;

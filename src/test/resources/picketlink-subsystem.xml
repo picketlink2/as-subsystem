@@ -1,7 +1,11 @@
 <subsystem xmlns="urn:jboss:picketlink:1.0">
-
+	
+	<federation alias="federation-ws-trust-enabled">
+		<security-token-service alias="PicketLinkSTS" endpoint="http://localhost:8080/picketlink-sts2" security-domain="picketlink-sts" />
+	</federation>
+	
 	<federation alias="federation-without-signatures">
-
+		
 		<saml token-timeout="4000" clock-skew="0" />
 
 		<identity-provider alias="idp.war" security-domain="idp"

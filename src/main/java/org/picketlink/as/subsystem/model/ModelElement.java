@@ -36,7 +36,6 @@ public enum ModelElement {
 
     COMMON_ALIAS ("alias"),
     COMMON_URL ("url"),
-    COMMON_ENDPOINT ("endpoint"),
     COMMON_NAME ("name"),
     COMMON_SECURITY_DOMAIN ("security-domain"),
     
@@ -71,7 +70,16 @@ public enum ModelElement {
     SAML_CLOCK_SKEW ("clock-skew"),
     SAML ("saml"), 
     METRICS_CREATED_ASSERTIONS_COUNT ("created-assertions-count"),
-    METRICS_RESPONSE_TO_SP_COUNT ("response-to-sp-count");
+    METRICS_RESPONSE_TO_SP_COUNT ("response-to-sp-count"), 
+    METRICS_ERROR_RESPONSE_TO_SP_COUNT ("error-response-to-sp-count"), 
+    METRICS_ERROR_SIGN_VALIDATION_COUNT ("error-sign-validation-count"), 
+    METRICS_ERROR_TRUSTED_DOMAIN_COUNT ("error-trusted-domain-count"), 
+    METRICS_EXPIRED_ASSERTIONS_COUNT ("expired-assertions-count"), 
+    METRICS_LOGIN_INIT_COUNT ("login-init-count"), 
+    METRICS_LOGIN_COMPLETE_COUNT ("login-complete-count"), 
+    METRICS_REQUEST_FROM_IDP_COUNT ("request-from-idp-count"), 
+    METRICS_RESPONSE_FROM_IDP_COUNT ("response-from-idp-count"), 
+    METRICS_REQUEST_TO_IDP_COUNT ("request-to-idp-count");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     

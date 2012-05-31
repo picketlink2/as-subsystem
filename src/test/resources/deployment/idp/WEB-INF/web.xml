@@ -38,7 +38,4 @@
 	</login-config>
 
 	<!-- Security roles referenced by this web application -->
-	<security-role>
-		<role-name>manager</role-name>
-	</security-role>
 </web-app>

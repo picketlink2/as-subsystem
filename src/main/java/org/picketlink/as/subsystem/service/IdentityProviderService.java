@@ -31,6 +31,7 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
@@ -44,6 +45,7 @@ import org.picketlink.identity.federation.core.config.KeyProviderType;
 public class IdentityProviderService extends AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> {
 
     private static final String SERVICE_NAME = "IDPConfigurationService";
+    
     public IdentityProviderService(OperationContext context, ModelNode modelNode) {
         super(context, modelNode);
     }
@@ -115,5 +117,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
     protected IDPConfiguration toProviderType(ModelNode operation) {
         return ModelUtils.toIDPConfig(operation);
     }
+
 
 }

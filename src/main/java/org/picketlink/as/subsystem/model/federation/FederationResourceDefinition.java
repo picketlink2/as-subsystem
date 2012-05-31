@@ -35,7 +35,6 @@ import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.saml.SAMLResourceDefinition;
 import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
-import org.picketlink.as.subsystem.model.sts.STSResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -67,8 +66,8 @@ public class FederationResourceDefinition extends AbstractResourceDefinition {
         addChildResourceDefinition(KeyProviderResourceDefinition.INSTANCE, resourceRegistration);
         addChildResourceDefinition(IdentityProviderResourceDefinition.INSTANCE, resourceRegistration);
         addChildResourceDefinition(ServiceProviderResourceDefinition.INSTANCE, resourceRegistration);
-        addChildResourceDefinition(STSResourceDefinition.INSTANCE, resourceRegistration);
         addChildResourceDefinition(SAMLResourceDefinition.INSTANCE, resourceRegistration);
+//        addChildResourceDefinition(STSResourceDefinition.INSTANCE, resourceRegistration);
     }
 
     /* (non-Javadoc)

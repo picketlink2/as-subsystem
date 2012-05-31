@@ -9,10 +9,11 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.web.deployment.WarMetaData;
 import org.jboss.as.web.ext.WebContextFactory;
 import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
+import org.picketlink.as.subsystem.PicketLinkLogger;
+import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.event.KeyProviderObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
@@ -20,12 +21,11 @@ import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.config.STSType;
+import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.handler.config.Handler;
 import org.picketlink.identity.federation.core.handler.config.Handlers;
 import org.picketlink.identity.federation.core.parsers.sts.STSConfigParser;
 import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
-import org.picketlink.identity.federation.core.wstrust.PicketLinkSTSConfiguration;
-import org.picketlink.identity.federation.core.wstrust.STSConfiguration;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
@@ -33,13 +33,13 @@ import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValidationHandler;
 
-public abstract class AbstractEntityProviderService<T, C extends ProviderConfiguration> implements Service<T>, KeyProviderObserver {
+public abstract class AbstractEntityProviderService<T, C extends ProviderConfiguration> implements PicketLinkService<T>, KeyProviderObserver {
     
     private PicketLinkType picketLinkType;
     private C configuration;
     private FederationService federationService;
-    private PicketLinkMetricsService metricsService;
-    
+    private PicketLinkSubsystemMetrics metrics;
+
     public AbstractEntityProviderService(OperationContext context, ModelNode operation) {
         this.federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         this.configuration = toProviderType(operation);
@@ -78,6 +78,7 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     public void configure(DeploymentUnit deploymentUnit) {
         installPicketLinkWebContextFactory(deploymentUnit);
+        
         WarMetaData warMetaData = deploymentUnit.getAttachment(WarMetaData.ATTACHMENT_KEY);
         
         warMetaData.getMergedJBossWebMetaData().setSecurityDomain(this.getConfiguration().getSecurityDomain());
@@ -106,14 +107,23 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      * @return
      */
     private PicketLinkWebContextFactory createPicketLinkWebContextFactory() {
-        getPicketLinkType().setIdpOrSP((ProviderType) getConfiguration());
         PicketLinkWebContextFactory webContextFactory = new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()));
         
-        if (this.getMetricsService() != null) {
-            webContextFactory.setAuditHelper(this.getMetricsService().getValue());
-        }
+        webContextFactory.setAuditHelper(getMetrics());
         
         return webContextFactory;
+    }
+
+    public PicketLinkSubsystemMetrics getMetrics() {
+        if (this.metrics == null) {
+            try {
+                this.metrics = new PicketLinkSubsystemMetrics(configuration.getSecurityDomain());
+            } catch (ConfigurationException e) {
+                PicketLinkLogger.ROOT_LOGGER.error("Error while configuring the metrics collector. Metrics will not be collected.", e);
+            }
+        }
+        
+        return this.metrics;
     }
     
     /**
@@ -144,7 +154,7 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         this.configuration = configuration;
     }
     
-    protected FederationService getFederationService() {
+    public FederationService getFederationService() {
         return this.federationService;
     }
     
@@ -169,6 +179,8 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.picketLinkType.getStsType().setTokenTimeout(getFederationService().getSamlConfig().getTokenTimeout());
             this.picketLinkType.getStsType().setClockSkew(getFederationService().getSamlConfig().getClockSkew());
         }
+        
+        this.picketLinkType.setIdpOrSP((ProviderType) getConfiguration());
 
         return this.picketLinkType;
     }
@@ -218,13 +230,5 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         handler.setClazz(handlerClassName.getName());
         
         getPicketLinkType().getHandlers().add(handler);
-    }
-
-    public PicketLinkMetricsService getMetricsService() {
-        return this.metricsService;
-    }
-
-    public void setMetricsService(PicketLinkMetricsService metricsService) {
-        this.metricsService = metricsService;
     }
 }
