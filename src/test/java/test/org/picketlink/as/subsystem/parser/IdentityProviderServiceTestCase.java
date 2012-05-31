@@ -47,7 +47,6 @@ public class IdentityProviderServiceTestCase extends AbstractPicketLinkSubsystem
     @Test
     public void testIdentityProviderServiceInstallation() throws Exception {
         Assert.assertNotNull(getIdentityProviderService());
-        Assert.assertNotNull(getIdentityProviderService().getMetrics());
     }
 
     /**
