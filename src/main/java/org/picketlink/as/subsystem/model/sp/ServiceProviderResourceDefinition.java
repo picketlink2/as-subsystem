@@ -29,6 +29,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.idp.IdentityProviderMetricsOperationHandler;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -77,6 +78,16 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
         resourceRegistration.registerOperationHandler(ServiceProviderReloadOperationHandler.OPERATION_NAME, ServiceProviderReloadOperationHandler.INSTANCE, ServiceProviderReloadOperationHandler.INSTANCE);
     }
+    
+    @Override
+    public void registerAttributes(ManagementResourceRegistration resourceRegistration) {
+        super.registerAttributes(resourceRegistration);
+        
+        for (final SimpleAttributeDefinition def : ServiceProviderMetricsOperationHandler.ATTRIBUTES) {
+            resourceRegistration.registerMetric(def, ServiceProviderMetricsOperationHandler.INSTANCE);
+        }
+    }
+
 
     @Override
     protected OperationStepHandler doGetAttributeWriterHandler() {

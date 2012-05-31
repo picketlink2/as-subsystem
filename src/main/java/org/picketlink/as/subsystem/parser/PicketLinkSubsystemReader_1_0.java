@@ -51,7 +51,6 @@ import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
 import org.picketlink.as.subsystem.model.saml.SAMLResourceDefinition;
 import org.picketlink.as.subsystem.model.sp.ServiceProviderResourceDefinition;
-import org.picketlink.as.subsystem.model.sts.STSResourceDefinition;
 
 /**
  * <p>
@@ -135,9 +134,6 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                 case SERVICE_PROVIDER:
                     parseServiceProviderConfig(reader, list, federationNode);
                     break;
-                case SECURITY_TOKEN_SERVICE:
-                    parseSecurityTokenServiceConfig(reader, list, federationNode);
-                    break;
                 case SAML:
                     parseSAMLConfig(reader, list, federationNode);
                     break;
@@ -163,12 +159,6 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             throws XMLStreamException {
         parseConfig(reader, SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list, federationNode,
                 ServiceProviderResourceDefinition.INSTANCE.getAttributes());
-    }
-
-    private void parseSecurityTokenServiceConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
-            throws XMLStreamException {
-        parseConfig(reader, ModelElement.SECURITY_TOKEN_SERVICE, STSResourceDefinition.ALIAS.getName(), list, federationNode,
-                STSResourceDefinition.INSTANCE.getAttributes());
     }
 
     private void parseSAMLConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)

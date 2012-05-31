@@ -4,6 +4,7 @@ import org.apache.catalina.core.StandardContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.web.ext.WebContextFactory;
+import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.identity.federation.bindings.tomcat.idp.IDPWebBrowserSSOValve;
 import org.picketlink.identity.federation.bindings.tomcat.sp.ServiceProviderAuthenticator;
 
@@ -40,6 +41,7 @@ public class PicketLinkWebContextFactory implements WebContextFactory {
             ServiceProviderAuthenticator valve = new ServiceProviderAuthenticator();
             
             valve.setConfigProvider(this.configProvider);
+            valve.setAuditHelper(this.auditHelper);
             
             webContext.addValve(valve);
         }

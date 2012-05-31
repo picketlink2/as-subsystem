@@ -26,6 +26,18 @@
 						code="org.picketlink.identity.federation.core.audit.PicketLinkAuditProvider" />
 				</audit>
 			</security-domain>
+			<security-domain name="picketlink-sts" cache-type="default">
+				<authentication>
+					<login-module code="UsersRoles" flag="required">
+						<module-option name="usersProperties" value="sts/users.properties" />
+						<module-option name="rolesProperties" value="sts/roles.properties" />
+					</login-module>
+				</authentication>
+				<audit>
+					<provider-module
+						code="org.picketlink.identity.federation.core.audit.PicketLinkAuditProvider" />
+				</audit>
+			</security-domain>
 			<security-domain name="sp" cache-type="default">
 				<authentication>
 					<login-module
