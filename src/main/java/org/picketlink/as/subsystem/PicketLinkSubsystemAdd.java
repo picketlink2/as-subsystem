@@ -11,11 +11,13 @@ import org.jboss.as.server.DeploymentProcessorTarget;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.deployment.IdentityProviderDeploymentProcessor;
-import org.picketlink.as.subsystem.deployment.PicketlinkDeploymentProcessor;
+import org.picketlink.as.subsystem.deployment.PicketLinkDependencyDeploymentProcessor;
 import org.picketlink.as.subsystem.deployment.ServiceProviderDeploymentProcessor;
 
 /**
- * <p>Handler responsible for adding the subsystem resource to the model and to install the {@link PicketlinkDeploymentProcessor}.</p>
+ * <p>
+ * Handler responsible for adding the subsystem resource to the model and to install the {@link PicketlinkDeploymentProcessor}.
+ * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
@@ -24,7 +26,9 @@ public class PicketLinkSubsystemAdd extends AbstractBoottimeAddStepHandler {
 
     public static final PicketLinkSubsystemAdd INSTANCE = new PicketLinkSubsystemAdd();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.jboss.as.controller.AbstractAddStepHandler#populateModel(org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode)
      */
     @Override
@@ -32,31 +36,28 @@ public class PicketLinkSubsystemAdd extends AbstractBoottimeAddStepHandler {
     }
 
     /**
-     *  Method overrided to allow the registration of a custom deployment unit processor.
-     *  This is a callback method called during JBoss AS boot time.
+     * Method overrided to allow the registration of a custom deployment unit processor. This is a callback method called during
+     * JBoss AS boot time.
      */
     @Override
     public void performBoottime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        
+
         PicketLinkLogger.ROOT_LOGGER.activatingSubsystem();
-        
+
         context.addStep(new AbstractDeploymentChainStep() {
             public void execute(DeploymentProcessorTarget processorTarget) {
+                processorTarget.addDeploymentProcessor(PicketLinkDependencyDeploymentProcessor.PHASE, PicketLinkDependencyDeploymentProcessor.PRIORITY,
+                        new PicketLinkDependencyDeploymentProcessor());
+
                 processorTarget.addDeploymentProcessor(IdentityProviderDeploymentProcessor.PHASE,
                         IdentityProviderDeploymentProcessor.PRIORITY, new IdentityProviderDeploymentProcessor());
-
-            }
-        }, OperationContext.Stage.RUNTIME);
-        
-        context.addStep(new AbstractDeploymentChainStep() {
-            public void execute(DeploymentProcessorTarget processorTarget) {
                 processorTarget.addDeploymentProcessor(ServiceProviderDeploymentProcessor.PHASE,
                         ServiceProviderDeploymentProcessor.PRIORITY, new ServiceProviderDeploymentProcessor());
-
             }
         }, OperationContext.Stage.RUNTIME);
+
     }
 
 }

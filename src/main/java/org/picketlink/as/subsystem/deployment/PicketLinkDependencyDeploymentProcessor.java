@@ -31,25 +31,26 @@ import org.jboss.as.server.deployment.module.ModuleDependency;
 import org.jboss.as.server.deployment.module.ModuleSpecification;
 import org.jboss.modules.ModuleIdentifier;
 import org.jboss.modules.ModuleLoader;
-import org.picketlink.as.subsystem.PicketLinkLogger;
-import org.picketlink.as.subsystem.service.PicketLinkService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
  * <p>
- * Abstract class for PicketLink deployment unit processors. Subclasses should handle application
- * deployments, usually WAR files, and configuring them based in the configuration defined for the PicketLink subsystem.
+ * Specific {@link DeploymentUnitProcessor} to automatically configure the PicketLink module dependency. The configurations only apply for those
+ * deployments configured in the subsystem as Identity Provider or Service Provider.
  * </p>
  * 
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * 
+ * @since Mar 9, 2012
  */
-public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLinkService<T>> implements DeploymentUnitProcessor {
+public class PicketLinkDependencyDeploymentProcessor implements DeploymentUnitProcessor {
+    
+    private static final ModuleIdentifier PICKETLINK_MODULE_IDENTIFIER = ModuleIdentifier.create("org.picketlink");
 
     /**
      * See {@link Phase} for a description of the different phases
      */
-    public static final Phase PHASE = Phase.INSTALL;
+    public static final Phase PHASE = Phase.DEPENDENCIES;
 
     /**
      * The relative order of this processor within the {@link #PHASE}. The current number is large enough for it to happen after
@@ -57,41 +58,77 @@ public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLink
      */
     public static final int PRIORITY = 1;
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.jboss.as.server.deployment.DeploymentUnitProcessor#deploy(org.jboss.as.server.deployment.DeploymentPhaseContext)
      */
     @Override
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         
-        final ModuleSpecification moduleSpec = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
-        final ModuleLoader moduleLoader = deploymentUnit.getAttachment(Attachments.SERVICE_MODULE_LOADER);
-        
-        moduleSpec.addSystemDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("org.picketlink"), false, false, false, false));
-        
-        String name = deploymentUnit.getName();
-        
-        T service = getService(phaseContext, name);
-
-        if (service != null) {
-            PicketLinkLogger.ROOT_LOGGER.configuringDeployment(service.getClass().getSimpleName(), name, service.getValue()
-                    .getFederationService().getAlias());
-            service.configure(deploymentUnit);
+        if (isPicketLinkDeployment(phaseContext)) {
+            configurePicketLinkModuleDependency(deploymentUnit);
         }
     }
 
-    protected abstract T getService(DeploymentPhaseContext phaseContext, String sufix);
-
-    /*
-     * (non-Javadoc)
+    /**
+     * <p>
+     * Add the PicketLink dependency to the {@link DeploymentUnit}.
+     * </p>
      * 
-     * @see org.jboss.as.server.deployment.DeploymentUnitProcessor#undeploy(org.jboss.as.server.deployment.DeploymentUnit)
+     * @param deploymentUnit
      */
+    private void configurePicketLinkModuleDependency(DeploymentUnit deploymentUnit) {
+        final ModuleSpecification moduleSpec = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
+        final ModuleLoader moduleLoader = deploymentUnit.getAttachment(Attachments.SERVICE_MODULE_LOADER);
+        
+        moduleSpec.addSystemDependency(new ModuleDependency(moduleLoader, PICKETLINK_MODULE_IDENTIFIER, false, false, false, false));
+    }
+
+    /**
+     * <p>
+     * Checks if the current deployment is a PicketLink deployment.
+     * </p>
+     * 
+     * @param phaseContext
+     * @return
+     */
+    private boolean isPicketLinkDeployment(DeploymentPhaseContext phaseContext) {
+        return isIdentityProviderDeployment(phaseContext) || isServiceProviderDeployment(phaseContext);
+    }
+
+    /**
+     * <p>
+     * Checks if the current deployment is an Identity Provider Deployment.
+     * This method returns true if there is a {@link IdentityProviderService} registered for this deployment.
+     * </p>
+     * 
+     * @param phaseContext
+     * @return
+     */
+    private boolean isIdentityProviderDeployment(DeploymentPhaseContext phaseContext) {
+        DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
+        
+        return phaseContext.getServiceRegistry().getService(IdentityProviderService.createServiceName(deploymentUnit.getName())) != null;
+    }
+
+    /**
+     * <p>
+     * Checks if the current deployment is an Service Provider Deployment.
+     * This method returns true if there is a {@link ServiceProviderService} registered for this deployment.
+     * </p>
+     * 
+     * @param phaseContext
+     * @return
+     */
+    private boolean isServiceProviderDeployment(DeploymentPhaseContext phaseContext) {
+        DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
+        
+        return phaseContext.getServiceRegistry().getService(ServiceProviderService.createServiceName(deploymentUnit.getName())) != null;
+    }
+
     @Override
     public void undeploy(DeploymentUnit context) {
-
+        
     }
 
 }

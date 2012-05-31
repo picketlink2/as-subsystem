@@ -26,10 +26,16 @@ import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.SPType;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider;
+import org.picketlink.identity.federation.web.util.SAMLConfigurationProvider;
 
 /**
+ * <p>
+ * This class is a custom {@link SAMLConfigurationProvider} to be used to configure identity providers and service providers
+ * with the configurations defined in the subsystem.
+ * </p>
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
+ * 
  * @param <C>
  */
 public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider {
@@ -44,38 +50,44 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
         return this.configuration;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider#getIDPConfiguration()
      */
     @Override
     public IDPType getIDPConfiguration() throws ProcessingException {
         if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof IDPType) {
-            return (IDPType) this.configuration.getIdpOrSP();            
+            return (IDPType) this.configuration.getIdpOrSP();
         }
-        
+
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider#getSPConfiguration()
      */
     @Override
     public SPType getSPConfiguration() throws ProcessingException {
         if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof SPType) {
-            return (SPType) this.configuration.getIdpOrSP();            
+            return (SPType) this.configuration.getIdpOrSP();
         }
-        
+
         return null;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider#getPicketLinkConfiguration()
      */
     @Override
     public PicketLinkType getPicketLinkConfiguration() throws ProcessingException {
         return this.configuration;
     }
-    
+
     /**
      * <p>
      * Indicates if this provider is a Service Provider Configuration Provider.
@@ -89,10 +101,10 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
         } catch (ProcessingException e) {
             e.printStackTrace();
         }
-        
+
         return false;
     }
-    
+
     /**
      * <p>
      * Indicates if this provider is an Identity Provider Configuration Provider.
@@ -106,8 +118,8 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
         } catch (ProcessingException e) {
             e.printStackTrace();
         }
-        
+
         return false;
     }
-    
+
 }

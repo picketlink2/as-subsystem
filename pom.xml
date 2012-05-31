@@ -63,39 +63,11 @@
 		<!-- Current version of PicketLink supported by this subsystem. -->
 		<version.picketlink>2.1.2-SNAPSHOT</version.picketlink>
 
-		<!-- Test dependencies version. -->
-		<version.arquillian>1.0.0.CR7</version.arquillian>
-		<version.arquillian_drone>1.0.0.CR4</version.arquillian_drone>
-		<version.junit>4.8.2</version.junit>
+		<version.arquillian_drone>1.0.0.Final</version.arquillian_drone>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-controller</artifactId>
-				<version>${version.jboss_as}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-web</artifactId>
-				<version>${version.jboss_as}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-webservices-server-integration</artifactId>
-				<version>7.1.1.Final</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.ws.cxf</groupId>
-				<artifactId>jbossws-cxf-server</artifactId>
-				<version>4.0.2.GA</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-server</artifactId>
-				<version>${version.jboss_as}</version>
-			</dependency>
 			<dependency>
 				<groupId>org.picketlink</groupId>
 				<artifactId>picketlink-core</artifactId>
@@ -109,22 +81,17 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.jboss.logging</groupId>
-				<artifactId>jboss-logging-processor</artifactId>
-				<version>1.0.0.Final</version>
-				<!-- This is a compile-time dependency of this project, but is not needed 
-					at compile or runtime by other projects that depend on this project. -->
-				<scope>provided</scope>
-				<optional>true</optional>
-			</dependency>
-
-			<!-- Test dependencies -->
-			<dependency>
-				<groupId>org.jboss.arquillian</groupId>
-				<artifactId>arquillian-bom</artifactId>
-				<version>${version.arquillian}</version>
+				<groupId>org.jboss.as</groupId>
+				<artifactId>jboss-as-parent</artifactId>
+				<version>${version.jboss_as}</version>
 				<type>pom</type>
 				<scope>import</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.as</groupId>
+						<artifactId>jboss-build-config</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.arquillian.extension</groupId>
@@ -133,53 +100,31 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.jboss.arquillian.extension</groupId>
-				<artifactId>arquillian-drone-webdriver</artifactId>
-				<version>1.0.0.Final</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-subsystem-test</artifactId>
-				<version>${version.jboss_as}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.as</groupId>
-				<artifactId>jboss-as-arquillian-container-managed</artifactId>
-				<version>${version.jboss_as}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${version.junit}</version>
-				<scope>test</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-controller</artifactId>
+			<artifactId>jboss-as-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-server</artifactId>
+			<artifactId>jboss-as-controller</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.as</groupId>
 			<artifactId>jboss-as-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.as</groupId>
-			<artifactId>jboss-as-webservices-server-integration</artifactId>
+			<groupId>org.jboss.logging</groupId>
+			<artifactId>jboss-logging-processor</artifactId>
+			<!-- This is a compile-time dependency of this project, but is not needed 
+				at compile or runtime by other projects that depend on this project. -->
+			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.jboss.ws.cxf</groupId>
-			<artifactId>jbossws-cxf-server</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-core</artifactId>
@@ -190,23 +135,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging-processor</artifactId>
-			<!-- This is a compile-time dependency of this project, but is not needed 
-				at compile or runtime by other projects that depend on this project. -->
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- TestDependencies -->
-		<dependency>
 			<groupId>org.jboss.as</groupId>
 			<artifactId>jboss-as-subsystem-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -217,11 +147,6 @@
 		<dependency>
 			<groupId>org.jboss.as</groupId>
 			<artifactId>jboss-as-arquillian-container-managed</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.arquillian.container</groupId>
-			<artifactId>arquillian-container-test-impl-base</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -247,6 +172,11 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-server</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -390,16 +320,6 @@
 											<type>jar</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${jboss.as.home}/modules/org/jboss/security/xacml/main</outputDirectory>
-										</artifactItem>
-										<!-- This should be removed when AS7 is updated with the patch 
-											in the ws subsystem -->
-										<artifactItem>
-											<groupId>org.jboss.as</groupId>
-											<artifactId>jboss-as-webservices-server-integration</artifactId>
-											<version>${version.jboss_as}</version>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>${jboss.as.home}/modules/org/jboss/as/webservices/main</outputDirectory>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
@@ -560,14 +480,37 @@
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
 			<layout>default</layout>
 			<releases>
+				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
 			</releases>
 			<snapshots>
+				<enabled>true</enabled>
 				<updatePolicy>never</updatePolicy>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>repository.jboss.org</id>
+			<name>JBoss Repository</name>
+			<layout>default</layout>
+			<url>http://repository.jboss.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>snapshots.jboss.org</id>
+			<name>JBoss Snapshots Repository</name>
+			<layout>default</layout>
+			<url>http://snapshots.jboss.org/maven2/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
