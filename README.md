@@ -22,7 +22,7 @@ Download and install [JBoss AS 7.1.1.Final](http://www.jboss.org/jbossas/downloa
 
 Use **mvn -Pinstall-as7 -Djboss.as.home={JBOSS_HOME} clean install** to build the project.
 
-The command above should reconfigure the PicketLink module with the latest configuration and libraries. Including the PicketLink libraries used by the subsystem.
+The above command should reconfigure the PicketLink module shipped with your JBoss AS7 installation with the latest configuration and libraries. Including the PicketLink libraries used by the subsystem.
 
 Change your standalone.xml to add an extension for the PicketLink module:
 
