@@ -20,9 +20,9 @@ Download and install [JBoss AS 7.1.1.Final](http://www.jboss.org/jbossas/downloa
 
 *Make sure you have your environment configured with Apache Maven 3.*
 
-Use **mvn -Pintegration-tests clean package** to build the project.
+Use **mvn -Pinstall-as7 -Djboss.as.home=<JBOSS_HOME> clean install** to build the project.
 
-Copy the contents of **target/module/org/picketlink/main** to **${jboss.home.dir}/modules/org/picketlink/main**.
+The command above should reconfigure the PicketLink module with the latest configuration and libraries. Including the PicketLink libraries used by the subsystem.
 
 Change your standalone.xml to add an extension for the PicketLink module:
 
@@ -69,4 +69,4 @@ Open both files (idp.war and sales.war) and remove the following configuration f
 
 These files must be removed since they will be generated at runtime by the subsystem.
 
-To make sure that everything is ok, please start the JBoss AS and try to access the sales-post application. You should be redirected to the idp application. If you want to log in the sales and idp applications, don't forget to configure the security domain for both. See [https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains](https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains).
+To make sure that everything is ok, please start the JBoss AS and try to access the sales-post application. You should be redirected to the idp application. If you want to login at the sales and idp applications, don't forget to configure the security domain for both. See [https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains](https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains).
