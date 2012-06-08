@@ -20,7 +20,7 @@ Download and install [JBoss AS 7.1.1.Final](http://www.jboss.org/jbossas/downloa
 
 *Make sure you have your environment configured with Apache Maven 3.*
 
-Use **mvn -Pinstall-as7 -Djboss.as.home=<JBOSS_HOME> clean install** to build the project.
+Use **mvn -Pinstall-as7 -Djboss.as.home={JBOSS_HOME} clean install** to build the project.
 
 The command above should reconfigure the PicketLink module with the latest configuration and libraries. Including the PicketLink libraries used by the subsystem.
 
