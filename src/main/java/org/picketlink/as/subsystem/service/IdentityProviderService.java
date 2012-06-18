@@ -84,11 +84,12 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      * @param name
      * @return
      */
-    public static AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getService(ServiceRegistry registry, String name) {
-        ServiceController<?> container = registry.getService(IdentityProviderService.createServiceName(name));
+    @SuppressWarnings("unchecked")
+    public static IdentityProviderService getService(ServiceRegistry registry, String name) {
+        ServiceController<IdentityProviderService> container = (ServiceController<IdentityProviderService>) registry.getService(IdentityProviderService.createServiceName(name));
         
         if (container != null) {
-            return (AbstractEntityProviderService<IdentityProviderService, IDPConfiguration>) container.getValue();
+            return container.getValue();
         }
         
         return null;

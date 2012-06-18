@@ -47,6 +47,8 @@ import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.XMLElement;
 import org.picketlink.as.subsystem.model.federation.FederationResourceDefinition;
 import org.picketlink.as.subsystem.model.federation.KeyProviderResourceDefinition;
+import org.picketlink.as.subsystem.model.handlers.HandlerParameterResourceDefinition;
+import org.picketlink.as.subsystem.model.handlers.HandlerResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.IdentityProviderResourceDefinition;
 import org.picketlink.as.subsystem.model.idp.TrustDomainResourceDefinition;
 import org.picketlink.as.subsystem.model.saml.SAMLResourceDefinition;
@@ -100,7 +102,8 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
         }
 
         ModelNode federationNode = null;
-        ModelNode identityProviderNode = null;
+        ModelNode lastProviderNode = null;
+        ModelNode lastHandlerNode = null;
 
         while (reader.hasNext() && reader.nextTag() != END_DOCUMENT) {
             if (!reader.isStartElement()) {
@@ -126,13 +129,19 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                     parseKeyStoreConfig(reader, list, federationNode);
                     break;
                 case IDENTITY_PROVIDER:
-                    identityProviderNode = parseIdentityProviderConfig(reader, list, federationNode);
+                    lastProviderNode = parseIdentityProviderConfig(reader, list, federationNode);
                     break;
                 case TRUST_DOMAIN:
-                    parseTrustDomainConfig(reader, list, identityProviderNode);
+                    parseTrustDomainConfig(reader, list, lastProviderNode);
+                    break;
+                case HANDLER:
+                    lastHandlerNode = parseHandlerConfig(reader, list, lastProviderNode);
+                    break;
+                case HANDLER_PARAMETER:
+                    parseHandlerParameterConfig(reader, list, lastHandlerNode);
                     break;
                 case SERVICE_PROVIDER:
-                    parseServiceProviderConfig(reader, list, federationNode);
+                    lastProviderNode = parseServiceProviderConfig(reader, list, federationNode);
                     break;
                 case SAML:
                     parseSAMLConfig(reader, list, federationNode);
@@ -153,11 +162,12 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      * @param reader
      * @param list
      * @param federationNode
+     * @return 
      * @throws XMLStreamException
      */
-    private void parseServiceProviderConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
+    private ModelNode parseServiceProviderConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode federationNode)
             throws XMLStreamException {
-        parseConfig(reader, SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list, federationNode,
+        return parseConfig(reader, SERVICE_PROVIDER, ServiceProviderResourceDefinition.ALIAS.getName(), list, federationNode,
                 ServiceProviderResourceDefinition.INSTANCE.getAttributes());
     }
 
@@ -176,6 +186,18 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
             throws XMLStreamException {
         parseConfig(reader, TRUST_DOMAIN, TrustDomainResourceDefinition.NAME.getName(), list, identityProviderNode,
                 TrustDomainResourceDefinition.INSTANCE.getAttributes());
+    }
+
+    private ModelNode parseHandlerConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
+            throws XMLStreamException {
+        return parseConfig(reader, ModelElement.HANDLER, HandlerResourceDefinition.CLASS.getName(), list, identityProviderNode,
+                HandlerResourceDefinition.INSTANCE.getAttributes());
+    }
+
+    private ModelNode parseHandlerParameterConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
+            throws XMLStreamException {
+        return parseConfig(reader, ModelElement.HANDLER_PARAMETER, HandlerParameterResourceDefinition.NAME.getName(), list, identityProviderNode,
+                HandlerParameterResourceDefinition.INSTANCE.getAttributes());
     }
 
     /**

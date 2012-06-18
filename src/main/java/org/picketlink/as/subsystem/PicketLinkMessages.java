@@ -19,49 +19,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model;
 
-import java.util.HashMap;
-import java.util.Map;
+package org.picketlink.as.subsystem;
+
+import static org.jboss.logging.Logger.Level.INFO;
+
+import org.jboss.logging.BasicLogger;
+import org.jboss.logging.LogMessage;
+import org.jboss.logging.Logger;
+import org.jboss.logging.Message;
+import org.jboss.logging.MessageBundle;
+import org.jboss.logging.Messages;
 
 /**
- * <p>
- * XML elements used in the schema. This elements are not related with the subsystem's model. Usually they are used to group
- * model elements.
- * </p>
- * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * @since Mar 8, 2012
+ *
  */
-public enum XMLElement {
-
-    TRUST("trust"), SERVICE_PROVIDERS("service-providers"), HANDLERS ("handlers");
-
-    private static final Map<String, XMLElement> xmlElements = new HashMap<String, XMLElement>();
-
-    static {
-        for (XMLElement element : values()) {
-            xmlElements.put(element.getName(), element);
-        }
-    }
-
-    private String name;
-
-    private XMLElement(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
+@MessageBundle(projectCode = "JBAS")
+public interface PicketLinkMessages {
 
     /**
-     * Converts the specified name to a {@link XMLElement}.
-     * 
-     * @param name a model element name
-     * @return the matching model element enum.
+     * A logger with the category of the package name.
      */
-    public static XMLElement forName(String name) {
-        return xmlElements.get(name);
-    }
+    PicketLinkMessages MESSAGES = Messages.getBundle(PicketLinkMessages.class);
+
+    @Message(id = 12502, value = "No writer provided for element %s. Check if a writer is registered in PicketLinkSubsystemWriter.")
+    IllegalStateException noModelElementWriterProvided(String modelEmement);
 }

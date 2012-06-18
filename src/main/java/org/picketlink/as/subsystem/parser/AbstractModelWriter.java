@@ -31,6 +31,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.PicketLinkMessages;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.model.SubsystemDescriber;
 import org.picketlink.as.subsystem.model.XMLElement;
@@ -64,7 +65,7 @@ public abstract class AbstractModelWriter implements ModelWriter {
         ModelWriter writer = this.register.get(writerKey);
         
         if (writer == null) {
-            throw new IllegalStateException("No writer found in the register for key: " + writerKey);
+            throw PicketLinkMessages.MESSAGES.noModelElementWriterProvided(writerKey);
         }
         
         return writer;
