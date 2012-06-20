@@ -58,7 +58,9 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
         
         if (keyProvider != null) {
             for (KeyValueType validatinAlias : new ArrayList<KeyValueType>(keyProvider.getValidatingAlias())) {
-                keyProvider.remove(validatinAlias);
+                if (validatinAlias.equals(domain)) {
+                    keyProvider.remove(validatinAlias);
+                }
             }
         }
         

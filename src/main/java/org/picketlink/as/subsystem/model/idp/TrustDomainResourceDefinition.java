@@ -39,9 +39,12 @@ public class TrustDomainResourceDefinition extends AbstractResourceDefinition {
 
     public static final SimpleAttributeDefinition NAME = new SimpleAttributeDefinitionBuilder(
             ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition CERT_ALIAS = new SimpleAttributeDefinitionBuilder(
+            ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName(), ModelType.STRING, true).setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(NAME);
+        INSTANCE.addAttribute(CERT_ALIAS);
     }
     
     private TrustDomainResourceDefinition() {

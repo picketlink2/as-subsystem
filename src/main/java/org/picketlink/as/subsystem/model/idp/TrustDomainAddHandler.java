@@ -58,7 +58,12 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
         String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
+        String certAlias = null;
 
+        if (operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).isDefined()) {
+            certAlias = operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).asString();
+        }
+        
         AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
         
         KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
@@ -67,12 +72,17 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
             KeyValueType keyValue = new KeyValueType();
             
             keyValue.setKey(domain);
-            keyValue.setValue(domain);
+            
+            if (certAlias != null) {
+                keyValue.setValue(certAlias);                
+            } else {
+                keyValue.setValue(domain);
+            }
             
             keyProvider.add(keyValue);
         }
         
-        service.getConfiguration().addTrustDomain(domain);
+        service.getConfiguration().addTrustDomain(domain, certAlias);
     }
     
 }

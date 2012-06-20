@@ -3,6 +3,7 @@ package org.picketlink.as.subsystem.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
 
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
@@ -85,6 +86,11 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         
         warMetaData.getMergedJBossWebMetaData().setSecurityDomain(this.getConfiguration().getSecurityDomain());
         
+        // initialize the handlers as they will be created again. 
+        getPicketLinkType().setHandlers(new Handlers());
+        
+        configureCommonHandlers();
+        
         doConfigureDeployment(deploymentUnit);
     }
 
@@ -162,7 +168,14 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
                         KeyValueType kv = new KeyValueType();
                         
                         kv.setKey(domains[i]);
-                        kv.setValue(domains[i]);
+                        
+                        String value = domains[i];
+                        
+                        if (this.configuration.getTrustDomainAlias() != null) {
+                            value = this.configuration.getTrustDomainAlias().get(domains[i]);
+                        }
+                        
+                        kv.setValue(value);
                         
                         getFederationService().getKeyProvider().remove(kv);
                         getFederationService().getKeyProvider().add(kv);
@@ -223,7 +236,6 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.picketLinkType.setStsType(createSTSType());
             this.picketLinkType.setHandlers(new Handlers());
             this.picketLinkType.setEnableAudit(true);
-            configureCommonHandlers();
         }
         
         if (getFederationService().getSamlConfig() != null) {
@@ -279,6 +291,23 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
         Handler handler = new Handler();
         
         handler.setClazz(handlerClassName.getName());
+        
+        getPicketLinkType().getHandlers().add(handler);
+    }
+    
+    protected void addHandler(Class<? extends SAML2Handler> handlerClassName, Map<String,String> options) {
+        Handler handler = new Handler();
+        
+        handler.setClazz(handlerClassName.getName());
+
+        for (Map.Entry<String, String> option: options.entrySet()) {
+            KeyValueType kv = new KeyValueType();
+            
+            kv.setKey(option.getKey());
+            kv.setValue(option.getValue());
+            
+            handler.add(kv);
+        }
         
         getPicketLinkType().getHandlers().add(handler);
     }

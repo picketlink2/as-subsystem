@@ -23,6 +23,8 @@
 package org.picketlink.as.subsystem.service;
 
 
+import java.util.HashMap;
+
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.dmr.ModelNode;
@@ -38,6 +40,7 @@ import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.config.TrustType;
+import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
@@ -113,7 +116,13 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
     
     protected void configureCommonHandlers() {
         addHandler(SAML2LogOutHandler.class);
-        addHandler(SAML2AuthenticationHandler.class);
+        
+        HashMap<String, String> options = new HashMap<String, String>();
+        
+        options.put(SAML2Handler.CLOCK_SKEW_MILIS, String.valueOf(getPicketLinkType().getStsType().getClockSkew()));
+        
+        addHandler(SAML2AuthenticationHandler.class, options);
+        
         addHandler(RolesGenerationHandler.class);
         addHandler(SAML2SignatureGenerationHandler.class);
         addHandler(SAML2SignatureValidationHandler.class);

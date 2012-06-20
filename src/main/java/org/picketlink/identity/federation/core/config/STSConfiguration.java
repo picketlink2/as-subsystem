@@ -21,6 +21,8 @@
  */
 package org.picketlink.identity.federation.core.config;
 
+import java.util.Map;
+
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -127,6 +129,12 @@ public class STSConfiguration extends STSType implements ProviderConfiguration {
     @Override
     public TrustType getTrust() {
         throw new IllegalStateException("Method getTrust not implemented. You should not call this method");
+    }
+
+    @Override
+    public Map<String, String> getTrustDomainAlias() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

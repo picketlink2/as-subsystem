@@ -53,8 +53,8 @@
 
 			<trust>
 
-				<trust-domain name="localhost" />
-				<trust-domain name="127.0.0.1" />
+				<trust-domain name="localhost" cert-alias="localhost" />
+				<trust-domain name="127.0.0.1" cert-alias="localhost" />
 
 			</trust>
 		</identity-provider>

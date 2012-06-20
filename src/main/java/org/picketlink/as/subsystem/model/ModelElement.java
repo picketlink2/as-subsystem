@@ -45,6 +45,7 @@ public enum ModelElement {
     IDENTITY_PROVIDER("identity-provider"),
     TRUST_DOMAIN("trust-domain"),
     TRUST_DOMAIN_NAME("name"),
+    TRUST_DOMAIN_CERT_ALIAS ("cert-alias"),
     SUPPORTS_SIGNATURES("supportsSignatures"),
     KEY_STORE ("key-store"),
     IDENTITY_PROVIDER_SAML_METADATA ("idp-metadata"),
