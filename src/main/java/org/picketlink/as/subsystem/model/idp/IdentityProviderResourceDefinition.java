@@ -70,14 +70,6 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         super(ModelElement.IDENTITY_PROVIDER, IdentityProviderAddHandler.INSTANCE, IdentityProviderRemoveHandler.INSTANCE);
     }
 
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.AbstractResourceDefinition#registerResourceOperation(org.jboss.as.controller.registry.ManagementResourceRegistration)
-     */
-    @Override
-    public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(IdentityProviderReloadOperationHandler.OPERATION_NAME, IdentityProviderReloadOperationHandler.INSTANCE, IdentityProviderReloadOperationHandler.INSTANCE);
-    }
-    
     /*
      * (non-Javadoc)
      * 

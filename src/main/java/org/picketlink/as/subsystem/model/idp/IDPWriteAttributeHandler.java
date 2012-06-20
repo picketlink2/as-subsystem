@@ -24,7 +24,13 @@ package org.picketlink.as.subsystem.model.idp;
 import org.jboss.as.controller.AbstractWriteAttributeHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -37,7 +43,7 @@ public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
     private IDPWriteAttributeHandler() {
         super(IdentityProviderResourceDefinition.ALIAS, IdentityProviderResourceDefinition.EXTERNAL,
                 IdentityProviderResourceDefinition.SUPPORTS_SIGNATURES, IdentityProviderResourceDefinition.SECURITY_DOMAIN,
-                IdentityProviderResourceDefinition.URL,IdentityProviderResourceDefinition.STRICT_POST_BINDING);
+                IdentityProviderResourceDefinition.URL, IdentityProviderResourceDefinition.STRICT_POST_BINDING);
     }
 
     @Override
@@ -45,6 +51,24 @@ public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
             ModelNode resolvedValue, ModelNode currentValue,
             org.jboss.as.controller.AbstractWriteAttributeHandler.HandbackHolder<Void> handbackHolder)
             throws OperationFailedException {
+        ModelNode node = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
+
+        String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
+
+        IdentityProviderService service = (IdentityProviderService) context.getServiceRegistry(true)
+                .getRequiredService(IdentityProviderService.createServiceName(alias)).getValue();
+
+        IDPConfiguration updatedIDPConfig = ModelUtils.toIDPConfig(node);
+
+        // the node has only the idp attributes, we need to get the child elements configuration and set them again
+        updatedIDPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation)
+                .getKeyProvider());
+        updatedIDPConfig.setTrust(service.getConfiguration().getTrust());
+
+        service.setConfiguration(updatedIDPConfig);
+
+        service.raiseUpdateEvent();
+        
         return false;
     }
 

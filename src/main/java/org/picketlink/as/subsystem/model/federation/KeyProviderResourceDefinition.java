@@ -25,7 +25,6 @@ package org.picketlink.as.subsystem.model.federation;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
-import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
@@ -56,11 +55,6 @@ public class KeyProviderResourceDefinition extends AbstractResourceDefinition {
     
     private KeyProviderResourceDefinition() {
         super(ModelElement.KEY_STORE, KeyProviderAddHandler.INSTANCE, KeyProviderRemoveHandler.INSTANCE);
-    }
-    
-    @Override
-    protected void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(KeyProviderReloadOperationHandler.OPERATION_NAME, KeyProviderReloadOperationHandler.INSTANCE, KeyProviderReloadOperationHandler.INSTANCE);
     }
     
     @Override

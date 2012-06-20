@@ -24,7 +24,13 @@ package org.picketlink.as.subsystem.model.sp;
 import org.jboss.as.controller.AbstractWriteAttributeHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
+import org.picketlink.identity.federation.core.config.SPConfiguration;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -46,6 +52,20 @@ public class SPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void>
             ModelNode resolvedValue, ModelNode currentValue,
             org.jboss.as.controller.AbstractWriteAttributeHandler.HandbackHolder<Void> handbackHolder)
             throws OperationFailedException {
+        ModelNode node = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
+        
+        String alias = node.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        
+        ServiceProviderService service = (ServiceProviderService) context.getServiceRegistry(true).getRequiredService(ServiceProviderService.createServiceName(alias)).getValue();
+        
+        SPConfiguration updatedSPConfig = ModelUtils.toSPConfig(node);
+        
+        updatedSPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation).getKeyProvider());
+        
+        service.setConfiguration(updatedSPConfig);
+        
+        context.completeStep();
+        
         return false;
     }
 

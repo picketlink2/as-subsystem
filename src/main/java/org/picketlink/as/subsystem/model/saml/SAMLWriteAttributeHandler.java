@@ -24,18 +24,21 @@ package org.picketlink.as.subsystem.model.saml;
 import org.jboss.as.controller.AbstractWriteAttributeHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.service.FederationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- *
+ * 
  */
 public class SAMLWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
 
     public static final SAMLWriteAttributeHandler INSTANCE = new SAMLWriteAttributeHandler();
-    
+
     private SAMLWriteAttributeHandler() {
-        super(SAMLResourceDefinition.TOKEN_TIMEOUT);
+        super(SAMLResourceDefinition.TOKEN_TIMEOUT, SAMLResourceDefinition.CLOCK_SKEW);
     }
 
     @Override
@@ -43,6 +46,12 @@ public class SAMLWriteAttributeHandler extends AbstractWriteAttributeHandler<Voi
             ModelNode resolvedValue, ModelNode currentValue,
             org.jboss.as.controller.AbstractWriteAttributeHandler.HandbackHolder<Void> handbackHolder)
             throws OperationFailedException {
+        ModelNode model = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
+
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
+
+        federationService.setSamlConfig(ModelUtils.toSAMLConfig(model));
+        
         return false;
     }
 

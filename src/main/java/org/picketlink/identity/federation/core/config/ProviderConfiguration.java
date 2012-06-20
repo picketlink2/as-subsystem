@@ -38,4 +38,6 @@ public interface ProviderConfiguration {
 
     String getIdentityURL();
     
+    TrustType getTrust();
+    
 }

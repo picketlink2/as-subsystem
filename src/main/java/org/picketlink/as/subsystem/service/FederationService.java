@@ -136,7 +136,7 @@ public class FederationService implements Service<FederationService> {
         this.identityProviderService = identityProviderService;
     }
 
-    public AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> getIdentityProviderService() {
+    public IdentityProviderService getIdentityProviderService() {
         return this.identityProviderService;
     }
     

@@ -63,7 +63,7 @@ public class HandlerParameterRemoveHandler extends AbstractRemoveStepHandler {
             if (handler.getClazz().equals(handlerClassName)) {
                 for (KeyValueType keyValueType : new ArrayList<KeyValueType>(handler.getOption())) {
                     if (keyValueType.getKey().equals(paramName)) {
-                        handler.getOption().remove(keyValueType);
+                        handler.remove(keyValueType);
                     }
                 }
             }

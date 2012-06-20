@@ -36,12 +36,10 @@ import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
-import org.picketlink.identity.federation.web.constants.GeneralConstants;
+import org.picketlink.identity.federation.core.config.TrustType;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
-import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValidationHandler;
@@ -86,7 +84,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
         configureBindingType();
-        configureStrictPostBinding();
+//        configureStrictPostBinding();
     }
  
     /**
@@ -168,13 +166,20 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
     }
     
     /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#onUpdateKeyProvider(org.picketlink.identity.federation.core.config.KeyProviderType)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#getTrust()
      */
     @Override
-    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        getConfiguration().setKeyProvider(keyProviderType);
+    protected TrustType getTrust() {
+        // service providers trust the same domains from the identity provider.
+        IdentityProviderService identityProviderService = getFederationService().getIdentityProviderService();
+        
+        if (identityProviderService != null) {
+            return identityProviderService.getConfiguration().getTrust();            
+        }
+        
+        return null;
     }
-
+    
     /* (non-Javadoc)
      * @see org.picketlink.as.subsystem.model.event.IdentityProviderObserver#onUpdateIdentityProvider(org.picketlink.identity.federation.core.config.IDPConfiguration)
      */

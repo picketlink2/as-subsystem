@@ -75,7 +75,7 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
             String[] domains = this.getTrust().getDomains().split(",");
 
             for (String currentDomain : domains) {
-                if (!domain.equals(currentDomain)) {
+                if (!domain.equals(currentDomain) && !"".equals(currentDomain.trim())) {
                     this.getTrust().setDomains(currentDomain + ",");
                 }
             }

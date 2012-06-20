@@ -17,10 +17,12 @@ import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.model.event.KeyProviderObserver;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.KeyValueType;
 import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.config.STSType;
+import org.picketlink.identity.federation.core.config.TrustType;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.handler.config.Handler;
 import org.picketlink.identity.federation.core.handler.config.Handlers;
@@ -147,9 +149,36 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.configuration.getKeyProvider().setClassName("org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
         }
         
+        if (getFederationService().getKeyProvider() != null) {
+            TrustType trustType = getTrust();
+            
+            if (trustType != null) {
+                String domainsStr = trustType.getDomains();
+                
+                if (domainsStr != null) {
+                    String[] domains = domainsStr.split(",");
+                    
+                    for (int i = 0; i < domains.length; i++) {
+                        KeyValueType kv = new KeyValueType();
+                        
+                        kv.setKey(domains[i]);
+                        kv.setValue(domains[i]);
+                        
+                        getFederationService().getKeyProvider().remove(kv);
+                        getFederationService().getKeyProvider().add(kv);
+                    }
+                }
+            }
+        }
+
+        
         return configuration;
     }
     
+    protected TrustType getTrust() {
+        return this.configuration.getTrust();
+    }
+
     public void setConfiguration(C configuration) {
         this.configuration = configuration;
     }
@@ -163,6 +192,28 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     @Override
     public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
+        if (keyProviderType != null) {
+            TrustType trustType = getFederationService().getIdentityProviderService().getConfiguration().getTrust();
+            
+            if (trustType != null) {
+                String domainsStr = trustType.getDomains();
+                
+                if (domainsStr != null) {
+                    String[] domains = domainsStr.split(",");
+                    
+                    for (int i = 0; i < domains.length; i++) {
+                        KeyValueType kv = new KeyValueType();
+                        
+                        kv.setKey(domains[i]);
+                        kv.setValue(domains[i]);
+                        
+                        keyProviderType.remove(kv);
+                        keyProviderType.add(kv);
+                    }
+                }
+            }
+        }
+        
         this.configuration.setKeyProvider(keyProviderType);
     }
     
