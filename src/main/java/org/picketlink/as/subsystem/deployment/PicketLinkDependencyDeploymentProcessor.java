@@ -65,9 +65,9 @@ public class PicketLinkDependencyDeploymentProcessor implements DeploymentUnitPr
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         
-        if (isPicketLinkDeployment(phaseContext)) {
+//        if (isPicketLinkDeployment(phaseContext)) {
             configurePicketLinkModuleDependency(deploymentUnit);
-        }
+//        }
     }
 
     /**

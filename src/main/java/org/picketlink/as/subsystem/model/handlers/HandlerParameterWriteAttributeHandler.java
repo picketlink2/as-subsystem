@@ -19,26 +19,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.saml;
+package org.picketlink.as.subsystem.model.handlers;
 
 import org.jboss.as.controller.AbstractWriteAttributeHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.ModelUtils;
-import org.picketlink.as.subsystem.service.FederationService;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
- * 
+ *
  */
-public class SAMLWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
+public class HandlerParameterWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
 
-    public static final SAMLWriteAttributeHandler INSTANCE = new SAMLWriteAttributeHandler();
-
-    private SAMLWriteAttributeHandler() {
-        super(SAMLResourceDefinition.TOKEN_TIMEOUT, SAMLResourceDefinition.CLOCK_SKEW);
+    public static final HandlerParameterWriteAttributeHandler INSTANCE = new HandlerParameterWriteAttributeHandler();
+    
+    private HandlerParameterWriteAttributeHandler() {
+        super(HandlerParameterResourceDefinition.NAME, HandlerParameterResourceDefinition.VALUE);
     }
 
     @Override
@@ -46,12 +43,6 @@ public class SAMLWriteAttributeHandler extends AbstractWriteAttributeHandler<Voi
             ModelNode resolvedValue, ModelNode currentValue,
             org.jboss.as.controller.AbstractWriteAttributeHandler.HandbackHolder<Void> handbackHolder)
             throws OperationFailedException {
-        ModelNode model = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
-
-        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
-
-        federationService.setSamlConfig(ModelUtils.toSAMLConfig(model));
-        
         return false;
     }
 

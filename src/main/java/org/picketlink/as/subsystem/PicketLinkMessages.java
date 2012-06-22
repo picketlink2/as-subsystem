@@ -28,25 +28,21 @@ import org.jboss.logging.BasicLogger;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
-import org.jboss.logging.MessageLogger;
+import org.jboss.logging.MessageBundle;
+import org.jboss.logging.Messages;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */
-@MessageLogger(projectCode = "JBAS")
-public interface PicketLinkLogger extends BasicLogger {
+@MessageBundle(projectCode = "JBAS")
+public interface PicketLinkMessages {
 
     /**
      * A logger with the category of the package name.
      */
-    PicketLinkLogger ROOT_LOGGER = Logger.getMessageLogger(PicketLinkLogger.class, PicketLinkLogger.class.getPackage().getName());
+    PicketLinkMessages MESSAGES = Messages.getBundle(PicketLinkMessages.class);
 
-    @LogMessage(level = INFO)
-    @Message(id = 12500, value = "Activating PicketLink Subsystem")
-    void activatingSubsystem();
-
-    @LogMessage(level = INFO)
-    @Message(id = 12501, value = "[%s] - Configuring deployment %s")
-    void configuringDeployment(String serviceName, String deploymentName);
+    @Message(id = 12502, value = "No writer provided for element %s. Check if a writer is registered in PicketLinkSubsystemWriter.")
+    IllegalStateException noModelElementWriterProvided(String modelEmement);
 }

@@ -22,6 +22,8 @@
 
 package org.picketlink.identity.federation.core.config;
 
+import java.util.Map;
+
 import org.picketlink.identity.federation.core.config.SPType;
 
 /**
@@ -67,6 +69,12 @@ public class SPConfiguration extends SPType implements ProviderConfiguration {
     
     public String getAlias() {
         return alias;
+    }
+
+    @Override
+    public Map<String, String> getTrustDomainAlias() {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }

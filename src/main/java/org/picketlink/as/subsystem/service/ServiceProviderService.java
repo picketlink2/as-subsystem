@@ -23,6 +23,8 @@
 package org.picketlink.as.subsystem.service;
 
 
+import java.util.HashMap;
+
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.dmr.ModelNode;
@@ -36,12 +38,10 @@ import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
-import org.picketlink.identity.federation.web.constants.GeneralConstants;
+import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
-import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValidationHandler;
@@ -86,7 +86,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
         configureBindingType();
-        configureStrictPostBinding();
+//        configureStrictPostBinding();
     }
  
     /**
@@ -115,7 +115,13 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
     
     protected void configureCommonHandlers() {
         addHandler(SAML2LogOutHandler.class);
-        addHandler(SAML2AuthenticationHandler.class);
+        
+        HashMap<String, String> options = new HashMap<String, String>();
+        
+        options.put(SAML2Handler.CLOCK_SKEW_MILIS, String.valueOf(getPicketLinkType().getStsType().getClockSkew()));
+        
+        addHandler(SAML2AuthenticationHandler.class, options);
+        
         addHandler(RolesGenerationHandler.class);
         addHandler(SAML2SignatureGenerationHandler.class);
         addHandler(SAML2SignatureValidationHandler.class);
@@ -167,14 +173,6 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#onUpdateKeyProvider(org.picketlink.identity.federation.core.config.KeyProviderType)
-     */
-    @Override
-    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        getConfiguration().setKeyProvider(keyProviderType);
-    }
-
     /* (non-Javadoc)
      * @see org.picketlink.as.subsystem.model.event.IdentityProviderObserver#onUpdateIdentityProvider(org.picketlink.identity.federation.core.config.IDPConfiguration)
      */

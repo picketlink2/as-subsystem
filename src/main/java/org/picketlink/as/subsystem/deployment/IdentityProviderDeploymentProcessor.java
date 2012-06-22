@@ -24,6 +24,7 @@ package org.picketlink.as.subsystem.deployment;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 
 /**
@@ -37,8 +38,8 @@ import org.picketlink.as.subsystem.service.IdentityProviderService;
 public class IdentityProviderDeploymentProcessor extends AbstractPicketLinkDeploymentProcessor<IdentityProviderService> {
     
     @Override
-    protected IdentityProviderService getService(DeploymentPhaseContext phaseContext, String sufix) {
-        ServiceController<?> container = phaseContext.getServiceRegistry().getService(IdentityProviderService.createServiceName(sufix));
+    protected IdentityProviderService getService(ServiceRegistry serviceRegistry, String sufix) {
+        ServiceController<?> container = serviceRegistry.getService(IdentityProviderService.createServiceName(sufix));
 
         if (container != null) {
             return (IdentityProviderService) container.getValue();

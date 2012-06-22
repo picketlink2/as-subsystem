@@ -39,6 +39,7 @@ import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 
 /**
@@ -49,8 +50,6 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
 
     protected static final String FAKE_AS7_INSTALLATION_DIR = "target/jboss-as7-fake";
     protected static final String FAKE_AS7_DEPLOYMENTS = FAKE_AS7_INSTALLATION_DIR + "/deployments";
-    
-    private String federationAliasToTest = "federation-with-signatures";
     
     private ModelNode resultingModelNode;
     private KernelServices kernelServices;
@@ -135,9 +134,18 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
      */
     protected ModelNode getFederationModel() {
         ModelNode federationNode = getResultingModelNode().get(ModelDescriptionConstants.SUBSYSTEM, PicketLinkExtension.SUBSYSTEM_NAME,
-                ModelElement.FEDERATION.getName(), this.federationAliasToTest);
+                ModelElement.FEDERATION.getName(), getFederationAliasToTest());
         
         return federationNode;
+    }
+
+    /**
+     * <p>Subclasses can override this method to specify the federation alias to test. Check the picketlink-subsystem.xml.</p>
+     * 
+     * @return
+     */
+    protected String getFederationAliasToTest() {
+        return "federation-with-signatures";
     }
 
     protected IdentityProviderService getIdentityProviderService() {
@@ -182,6 +190,17 @@ public class AbstractPicketLinkSubsystemTestCase extends AbstractSubsystemTest {
 
     protected KernelServices getKernelServices() {
         return kernelServices;
+    }
+
+    /**
+     * <p>
+     * Returns a {@link ServiceProviderService} instance for the given alias.
+     * </p>
+     * 
+     * @throws Exception
+     */
+    protected ServiceProviderService getServiceProviderService(String alias) throws Exception {
+        return (ServiceProviderService) getInstalledService(ServiceProviderService.createServiceName(alias)).getValue();
     }
 
 }

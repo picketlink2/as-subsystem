@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.picketlink.as.subsystem.model.idp;
+package org.picketlink.as.subsystem.model.handlers;
 
 
 import java.util.ArrayList;
@@ -30,43 +30,53 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.KeyValueType;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
+import org.picketlink.identity.federation.core.handler.config.Handler;
+import org.picketlink.identity.federation.core.handler.config.Handlers;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
+public class HandlerRemoveHandler extends AbstractRemoveStepHandler {
 
-    public static final TrustDomainRemoveHandler INSTANCE = new TrustDomainRemoveHandler();
+    public static final HandlerRemoveHandler INSTANCE = new HandlerRemoveHandler();
 
-    private TrustDomainRemoveHandler() {
+    private HandlerRemoveHandler() {
     }
     
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
-        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
-
-        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
+        String providerAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
+        String className = operation.get(ModelElement.HANDLER_CLASS.getName()).asString();
         
-        KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
+        AbstractEntityProviderService providerService = getParentProviderService(context, providerAlias);
         
-        if (keyProvider != null) {
-            for (KeyValueType validatinAlias : new ArrayList<KeyValueType>(keyProvider.getValidatingAlias())) {
-                if (validatinAlias.equals(domain)) {
-                    keyProvider.remove(validatinAlias);
-                }
+        Handlers handlerChain = providerService.getPicketLinkType().getHandlers();
+        
+        for (Handler handler : new ArrayList<Handler>(handlerChain.getHandler())) {
+            if (handler.getClazz().equals(className)) {
+                handlerChain.remove(handler);
             }
         }
+    }
+    
+    /**
+     * <p>Returns the {@link AbstractEntityProviderService} instance to be used during the handler configuration.</p>
+     * 
+     * @param context
+     * @param providerAlias
+     * @return
+     */
+    private AbstractEntityProviderService getParentProviderService(OperationContext context, String providerAlias) {
+        AbstractEntityProviderService providerService = IdentityProviderService.getService(context.getServiceRegistry(true), providerAlias);
         
-        service.getConfiguration().removeTrustDomain(domain);
-        new KeyProviderEvent(keyProvider, service.getFederationService().getEventManager()).raise();
+        if (providerService == null) {
+            providerService = ServiceProviderService.getService(context.getServiceRegistry(true), providerAlias);
+        }
+        return providerService;
     }
     
 }

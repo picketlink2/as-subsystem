@@ -29,7 +29,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.idp.IdentityProviderMetricsOperationHandler;
+import org.picketlink.as.subsystem.model.handlers.HandlerResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -72,11 +72,11 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     }
 
     /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.AbstractResourceDefinition#registerResourceOperation(org.jboss.as.controller.registry.ManagementResourceRegistration)
+     * @see org.jboss.as.controller.SimpleResourceDefinition#registerChildren(org.jboss.as.controller.registry.ManagementResourceRegistration)
      */
     @Override
-    public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(ServiceProviderReloadOperationHandler.OPERATION_NAME, ServiceProviderReloadOperationHandler.INSTANCE, ServiceProviderReloadOperationHandler.INSTANCE);
+    public void registerChildren(ManagementResourceRegistration resourceRegistration) {
+        addChildResourceDefinition(HandlerResourceDefinition.INSTANCE, resourceRegistration);
     }
     
     @Override

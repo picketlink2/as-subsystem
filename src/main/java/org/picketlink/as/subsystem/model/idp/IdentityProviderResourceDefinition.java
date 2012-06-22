@@ -30,6 +30,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.handlers.HandlerResourceDefinition;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -69,14 +70,6 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         super(ModelElement.IDENTITY_PROVIDER, IdentityProviderAddHandler.INSTANCE, IdentityProviderRemoveHandler.INSTANCE);
     }
 
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.AbstractResourceDefinition#registerResourceOperation(org.jboss.as.controller.registry.ManagementResourceRegistration)
-     */
-    @Override
-    public void registerResourceOperation(ManagementResourceRegistration resourceRegistration) {
-        resourceRegistration.registerOperationHandler(IdentityProviderReloadOperationHandler.OPERATION_NAME, IdentityProviderReloadOperationHandler.INSTANCE, IdentityProviderReloadOperationHandler.INSTANCE);
-    }
-    
     /*
      * (non-Javadoc)
      * 
@@ -86,6 +79,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     @Override
     public void registerChildren(ManagementResourceRegistration resourceRegistration) {
         addChildResourceDefinition(TrustDomainResourceDefinition.INSTANCE, resourceRegistration);
+        addChildResourceDefinition(HandlerResourceDefinition.INSTANCE, resourceRegistration);
     }
     
     @Override
