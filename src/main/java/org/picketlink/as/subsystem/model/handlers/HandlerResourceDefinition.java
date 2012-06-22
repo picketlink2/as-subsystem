@@ -20,11 +20,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.federation;
+package org.picketlink.as.subsystem.model.handlers;
 
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
+import org.jboss.as.controller.registry.ManagementResourceRegistration;
 import org.jboss.dmr.ModelType;
 import org.picketlink.as.subsystem.model.AbstractResourceDefinition;
 import org.picketlink.as.subsystem.model.ModelElement;
@@ -33,32 +34,34 @@ import org.picketlink.as.subsystem.model.ModelElement;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class KeyProviderResourceDefinition extends AbstractResourceDefinition {
+public class HandlerResourceDefinition extends AbstractResourceDefinition {
 
-    public static final KeyProviderResourceDefinition INSTANCE = new KeyProviderResourceDefinition();
+    public static final HandlerResourceDefinition INSTANCE = new HandlerResourceDefinition();
 
-    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(
-            ModelElement.COMMON_URL.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition PASSWD = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition SIGN_KEY_ALIAS = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition SIGN_KEY_PASSWD = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition CLASS = new SimpleAttributeDefinitionBuilder(
+            ModelElement.HANDLER_CLASS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     static {
-        INSTANCE.addAttribute(URL);
-        INSTANCE.addAttribute(PASSWD);
-        INSTANCE.addAttribute(SIGN_KEY_ALIAS);
-        INSTANCE.addAttribute(SIGN_KEY_PASSWD);
+        INSTANCE.addAttribute(CLASS);
     }
     
-    private KeyProviderResourceDefinition() {
-        super(ModelElement.KEY_STORE, KeyProviderAddHandler.INSTANCE, KeyProviderRemoveHandler.INSTANCE);
+    private HandlerResourceDefinition() {
+        super(ModelElement.HANDLER, HandlerAddHandler.INSTANCE, HandlerRemoveHandler.INSTANCE);
     }
     
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jboss.as.controller.SimpleResourceDefinition#registerChildren(org.jboss.as.controller.registry.
+     * ManagementResourceRegistration)
+     */
+    @Override
+    public void registerChildren(ManagementResourceRegistration resourceRegistration) {
+        addChildResourceDefinition(HandlerParameterResourceDefinition.INSTANCE, resourceRegistration);
+    }
+
     @Override
     protected OperationStepHandler doGetAttributeWriterHandler() {
-        return KeyProviderWriteAttributeHandler.INSTANCE;
+        return HandlerWriteAttributeHandler.INSTANCE;
     }
 }

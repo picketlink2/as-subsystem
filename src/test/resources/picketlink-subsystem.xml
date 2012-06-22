@@ -1,11 +1,12 @@
 <subsystem xmlns="urn:jboss:picketlink:1.0">
-	
+
 	<federation alias="federation-ws-trust-enabled">
-		<security-token-service alias="PicketLinkSTS" endpoint="http://localhost:8080/picketlink-sts2" security-domain="picketlink-sts" />
+		<security-token-service alias="PicketLinkSTS"
+			endpoint="http://localhost:8080/picketlink-sts2" security-domain="picketlink-sts" />
 	</federation>
-	
+
 	<federation alias="federation-without-signatures">
-		
+
 		<saml token-timeout="4000" clock-skew="0" />
 
 		<identity-provider alias="idp.war" security-domain="idp"
@@ -33,6 +34,9 @@
 				post-binding="true" security-domain="sp"
 				url="http://localhost:8080/sales-post/" supportsSignatures="false" />
 
+			<service-provider alias="fake.war" post-binding="true"
+				security-domain="sp" url="http://localhost:8080/fake/"
+				supportsSignatures="false" />
 		</service-providers>
 	</federation>
 
@@ -49,8 +53,8 @@
 
 			<trust>
 
-				<trust-domain name="localhost" />
-				<trust-domain name="127.0.0.1" />
+				<trust-domain name="localhost" cert-alias="localhost" />
+				<trust-domain name="127.0.0.1" cert-alias="localhost" />
 
 			</trust>
 		</identity-provider>
@@ -90,6 +94,31 @@
 				post-binding="true" security-domain="sp" error-page="/customErrorPage.jsp"
 				url="http://localhost:8080/sales-bad/" supportsSignatures="false" />
 
+		</service-providers>
+	</federation>
+
+	<federation alias="unit-test-federation-with-handlers">
+
+		<identity-provider alias="unit-test-fake-idp.war"
+			security-domain="idp" supportsSignatures="true"
+			url="http://localhost:8080/idp-sig/" strict-post-binding="false">
+			<handlers>
+				<handler class="org.picketlink.NonExistentHandler">
+					<handler-parameter name="param1" value="paramValue1"/>
+					<handler-parameter name="param2" value="paramValue2"/>
+					<handler-parameter name="param3" value="paramValue3"/>
+				</handler>
+			</handlers>
+		</identity-provider>
+
+		<service-providers>
+			<service-provider alias="unit-test-fake-sp.war"
+				post-binding="true" security-domain="sp"
+				url="http://localhost:8080/unit-test-fake/" supportsSignatures="true">
+				<handlers>
+					<handler class="org.picketlink.NonExistentHandler" />
+				</handlers>
+			</service-provider>
 		</service-providers>
 	</federation>
 

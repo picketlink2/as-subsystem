@@ -24,7 +24,12 @@ package org.picketlink.as.subsystem.model.federation;
 import org.jboss.as.controller.AbstractWriteAttributeHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.picketlink.as.subsystem.model.ModelUtils;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
+import org.picketlink.as.subsystem.service.FederationService;
+import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -46,6 +51,12 @@ public class KeyProviderWriteAttributeHandler extends AbstractWriteAttributeHand
             ModelNode resolvedValue, ModelNode currentValue,
             org.jboss.as.controller.AbstractWriteAttributeHandler.HandbackHolder<Void> handbackHolder)
             throws OperationFailedException {
+        ModelNode model = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
+        
+        KeyProviderType keyProviderType = ModelUtils.toKeyProviderType(model);
+        
+        raiseKeyProviderChangeEvent(context, operation, keyProviderType);
+        
         return false;
     }
 
@@ -55,7 +66,23 @@ public class KeyProviderWriteAttributeHandler extends AbstractWriteAttributeHand
     @Override
     protected void revertUpdateToRuntime(OperationContext context, ModelNode operation, String attributeName,
             ModelNode valueToRestore, ModelNode valueToRevert, Void handback) throws OperationFailedException {
+    }
+    
+    /**
+     * <p>
+     * Notify registered observers about the new configuration.
+     * </p>
+     * 
+     * @param context
+     * @param operation
+     * @param keyProviderType
+     */
+    private void raiseKeyProviderChangeEvent(OperationContext context, ModelNode operation, KeyProviderType keyProviderType) {
+        FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         
+        federationService.setKeyProvider(keyProviderType);
+        
+        new KeyProviderEvent(keyProviderType, federationService.getEventManager()).raise();
     }
 
 }

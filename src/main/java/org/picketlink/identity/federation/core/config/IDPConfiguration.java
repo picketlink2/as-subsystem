@@ -21,6 +21,9 @@
  */
 package org.picketlink.identity.federation.core.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * <p>
@@ -38,6 +41,8 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
     
     private boolean signOutgoingMessages;
     private boolean ignoreIncomingSignatures = true;
+    
+    private Map<String, String> trustDomainAlias = new HashMap<String, String>();
 
     public IDPConfiguration() {
         this.setTrust(new TrustType());
@@ -57,7 +62,7 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
      * 
      * @param domain
      */
-    public void addTrustDomain(String domain) {
+    public void addTrustDomain(String domain, String certAlias) {
         if (this.getTrust().getDomains() != null 
                 && this.getTrust().getDomains().indexOf(domain) == -1) {
             if (!this.getTrust().getDomains().isEmpty()) {
@@ -65,6 +70,12 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
             }
             
             this.getTrust().setDomains(this.getTrust().getDomains() + domain);
+        }
+        
+        if (certAlias != null && !certAlias.trim().isEmpty()) {
+            getTrustDomainAlias().put(domain, certAlias);
+        } else {
+            getTrustDomainAlias().put(domain, domain);
         }
     }
 
@@ -75,13 +86,15 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
             String[] domains = this.getTrust().getDomains().split(",");
 
             for (String currentDomain : domains) {
-                if (!domain.equals(currentDomain)) {
+                if (!domain.equals(currentDomain) && !"".equals(currentDomain.trim())) {
                     this.getTrust().setDomains(currentDomain + ",");
                 }
             }
         } else if (this.getTrust().getDomains() == null){
             this.getTrust().setDomains("");
         }
+        
+//        this.getTrustDomainAlias().remove(domain);
     }
 
     public String getSecurityDomain() {
@@ -91,5 +104,12 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
     public void setSecurityDomain(String securityDomain) {
         this.securityDomain = securityDomain;
     }
+ 
+    public Map<String, String> getTrustDomainAlias() {
+        return trustDomainAlias;
+    }
     
+    public void setTrustDomainAlias(Map<String, String> trustDomainAlias) {
+        this.trustDomainAlias = trustDomainAlias;
+    }
 }

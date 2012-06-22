@@ -21,6 +21,8 @@
  */
 package org.picketlink.identity.federation.core.config;
 
+import java.util.Map;
+
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -37,5 +39,9 @@ public interface ProviderConfiguration {
     void setKeyProvider(KeyProviderType keyProvider);
 
     String getIdentityURL();
+    
+    TrustType getTrust();
+    
+    Map<String, String> getTrustDomainAlias();
     
 }

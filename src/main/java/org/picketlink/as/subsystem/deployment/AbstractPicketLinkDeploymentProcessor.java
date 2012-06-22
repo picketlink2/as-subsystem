@@ -21,16 +21,12 @@
  */
 package org.picketlink.as.subsystem.deployment;
 
-import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.server.deployment.Phase;
-import org.jboss.as.server.deployment.module.ModuleDependency;
-import org.jboss.as.server.deployment.module.ModuleSpecification;
-import org.jboss.modules.ModuleIdentifier;
-import org.jboss.modules.ModuleLoader;
+import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.PicketLinkLogger;
 import org.picketlink.as.subsystem.service.PicketLinkService;
 
@@ -66,23 +62,17 @@ public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLink
     public void deploy(DeploymentPhaseContext phaseContext) throws DeploymentUnitProcessingException {
         DeploymentUnit deploymentUnit = phaseContext.getDeploymentUnit();
         
-        final ModuleSpecification moduleSpec = deploymentUnit.getAttachment(Attachments.MODULE_SPECIFICATION);
-        final ModuleLoader moduleLoader = deploymentUnit.getAttachment(Attachments.SERVICE_MODULE_LOADER);
+        String deploymentUnitName = deploymentUnit.getName();
         
-        moduleSpec.addSystemDependency(new ModuleDependency(moduleLoader, ModuleIdentifier.create("org.picketlink"), false, false, false, false));
-        
-        String name = deploymentUnit.getName();
-        
-        T service = getService(phaseContext, name);
+        T service = getService(phaseContext.getServiceRegistry(), deploymentUnitName);
 
         if (service != null) {
-            PicketLinkLogger.ROOT_LOGGER.configuringDeployment(service.getClass().getSimpleName(), name, service.getValue()
-                    .getFederationService().getAlias());
+            PicketLinkLogger.ROOT_LOGGER.configuringDeployment(service.getClass().getSimpleName(), deploymentUnitName);
             service.configure(deploymentUnit);
         }
     }
 
-    protected abstract T getService(DeploymentPhaseContext phaseContext, String sufix);
+    protected abstract T getService(ServiceRegistry serviceRegistry, String sufix);
 
     /*
      * (non-Javadoc)
@@ -91,7 +81,6 @@ public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLink
      */
     @Override
     public void undeploy(DeploymentUnit context) {
-
     }
 
 }

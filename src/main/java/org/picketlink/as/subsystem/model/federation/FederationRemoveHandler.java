@@ -59,6 +59,7 @@ public class FederationRemoveHandler extends AbstractRemoveStepHandler  {
         removeIdentityProviderService(context, model);
         removeServiceProviderService(context, model);
         removeFederationService(context, operation);
+        context.restartRequired();
     }
 
     /**

@@ -24,6 +24,7 @@ package org.picketlink.as.subsystem.deployment;
 import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
@@ -40,8 +41,8 @@ public class ServiceProviderDeploymentProcessor extends AbstractPicketLinkDeploy
      * @see org.picketlink.as.subsystem.deployment.AbstractPicketLinkDeploymentProcessor#getService(org.jboss.as.server.deployment.DeploymentPhaseContext, java.lang.String)
      */
     @Override
-    protected ServiceProviderService getService(DeploymentPhaseContext phaseContext, String sufix) {
-        ServiceController<?> container = phaseContext.getServiceRegistry().getService(ServiceProviderService.createServiceName(sufix));
+    protected ServiceProviderService getService(ServiceRegistry serviceRegistry, String sufix) {
+        ServiceController<?> container = serviceRegistry.getService(ServiceProviderService.createServiceName(sufix));
 
         if (container != null) {
             return (ServiceProviderService) container.getValue();

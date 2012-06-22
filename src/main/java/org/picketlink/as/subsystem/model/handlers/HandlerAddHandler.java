@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.idp;
+package org.picketlink.as.subsystem.model.handlers;
 
 import java.util.List;
 
@@ -32,22 +32,21 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.KeyValueType;
+import org.picketlink.as.subsystem.service.ServiceProviderService;
+import org.picketlink.identity.federation.core.handler.config.Handler;
+import org.picketlink.identity.federation.core.handler.config.Handlers;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
-public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
+public class HandlerAddHandler extends AbstractResourceAddStepHandler {
 
-    public static final TrustDomainAddHandler INSTANCE = new TrustDomainAddHandler();
+    public static final HandlerAddHandler INSTANCE = new HandlerAddHandler();
 
-    private TrustDomainAddHandler() {
-        super(ModelElement.TRUST_DOMAIN);
+    private HandlerAddHandler() {
+        super(ModelElement.HANDLER);
     }
 
     /* (non-Javadoc)
@@ -57,34 +56,34 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
-        String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
-        String certAlias = null;
+        String providerAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
+        String className = operation.get(ModelElement.HANDLER_CLASS.getName()).asString();
+        
+        AbstractEntityProviderService providerService = getParentProviderService(context, providerAlias);
+        
+        Handlers handlerChain = providerService.getPicketLinkType().getHandlers();
+        
+        Handler newHandler = new Handler();
+        
+        newHandler.setClazz(className);
+        
+        handlerChain.add(newHandler);
+    }
 
-        if (operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).isDefined()) {
-            certAlias = operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).asString();
+    /**
+     * <p>Returns the {@link AbstractEntityProviderService} instance to be used during the handler configuration.</p>
+     * 
+     * @param context
+     * @param providerAlias
+     * @return
+     */
+    private AbstractEntityProviderService getParentProviderService(OperationContext context, String providerAlias) {
+        AbstractEntityProviderService providerService = IdentityProviderService.getService(context.getServiceRegistry(true), providerAlias);
+        
+        if (providerService == null) {
+            providerService = ServiceProviderService.getService(context.getServiceRegistry(true), providerAlias);
         }
-        
-        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
-        
-        KeyProviderType keyProvider = service.getConfiguration().getKeyProvider();
-        
-        if (keyProvider != null) {
-            KeyValueType keyValue = new KeyValueType();
-            
-            keyValue.setKey(domain);
-            
-            if (certAlias != null) {
-                keyValue.setValue(certAlias);                
-            } else {
-                keyValue.setValue(domain);
-            }
-            
-            keyProvider.add(keyValue);
-        }
-        
-        service.getConfiguration().addTrustDomain(domain, certAlias);
-        new KeyProviderEvent(keyProvider, service.getFederationService().getEventManager()).raise();
+        return providerService;
     }
     
 }

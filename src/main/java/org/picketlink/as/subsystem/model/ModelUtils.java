@@ -37,6 +37,7 @@ import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
+import org.picketlink.identity.federation.web.constants.GeneralConstants;
 
 /**
  * <p>
@@ -117,6 +118,12 @@ public class ModelUtils {
         String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
         String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
         boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
+        
+        if (postBinding) {
+            spType.setBindingType("POST");
+        } else {
+            spType.setBindingType("REDIRECT");
+        }
         
         ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
         

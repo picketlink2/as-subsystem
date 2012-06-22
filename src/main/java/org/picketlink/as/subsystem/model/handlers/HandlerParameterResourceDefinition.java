@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.picketlink.as.subsystem.model.federation;
+package org.picketlink.as.subsystem.model.handlers;
 
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.SimpleAttributeDefinition;
@@ -33,32 +33,27 @@ import org.picketlink.as.subsystem.model.ModelElement;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 16, 2012
  */
-public class KeyProviderResourceDefinition extends AbstractResourceDefinition {
+public class HandlerParameterResourceDefinition extends AbstractResourceDefinition {
 
-    public static final KeyProviderResourceDefinition INSTANCE = new KeyProviderResourceDefinition();
+    public static final HandlerParameterResourceDefinition INSTANCE = new HandlerParameterResourceDefinition();
 
-    public static final SimpleAttributeDefinition URL = new SimpleAttributeDefinitionBuilder(
-            ModelElement.COMMON_URL.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition PASSWD = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition SIGN_KEY_ALIAS = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_SIGN_KEY_ALIAS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
-    public static final SimpleAttributeDefinition SIGN_KEY_PASSWD = new SimpleAttributeDefinitionBuilder(
-            ModelElement.KEY_STORE_SIGN_KEY_PASSWD.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition NAME = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+
+    public static final SimpleAttributeDefinition VALUE = new SimpleAttributeDefinitionBuilder(
+            ModelElement.COMMON_VALUE.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     static {
-        INSTANCE.addAttribute(URL);
-        INSTANCE.addAttribute(PASSWD);
-        INSTANCE.addAttribute(SIGN_KEY_ALIAS);
-        INSTANCE.addAttribute(SIGN_KEY_PASSWD);
+        INSTANCE.addAttribute(NAME);
+        INSTANCE.addAttribute(VALUE);
     }
     
-    private KeyProviderResourceDefinition() {
-        super(ModelElement.KEY_STORE, KeyProviderAddHandler.INSTANCE, KeyProviderRemoveHandler.INSTANCE);
+    private HandlerParameterResourceDefinition() {
+        super(ModelElement.HANDLER_PARAMETER, HandlerParameterAddHandler.INSTANCE, HandlerParameterRemoveHandler.INSTANCE);
     }
-    
+
     @Override
     protected OperationStepHandler doGetAttributeWriterHandler() {
-        return KeyProviderWriteAttributeHandler.INSTANCE;
+        return HandlerParameterWriteAttributeHandler.INSTANCE;
     }
 }

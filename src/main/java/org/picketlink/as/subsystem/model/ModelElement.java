@@ -38,12 +38,14 @@ public enum ModelElement {
     COMMON_URL ("url"),
     COMMON_NAME ("name"),
     COMMON_SECURITY_DOMAIN ("security-domain"),
+    COMMON_VALUE ("value"),
     
     FEDERATION("federation"),
     
     IDENTITY_PROVIDER("identity-provider"),
     TRUST_DOMAIN("trust-domain"),
     TRUST_DOMAIN_NAME("name"),
+    TRUST_DOMAIN_CERT_ALIAS ("cert-alias"),
     SUPPORTS_SIGNATURES("supportsSignatures"),
     KEY_STORE ("key-store"),
     IDENTITY_PROVIDER_SAML_METADATA ("idp-metadata"),
@@ -79,7 +81,10 @@ public enum ModelElement {
     METRICS_LOGIN_COMPLETE_COUNT ("login-complete-count"), 
     METRICS_REQUEST_FROM_IDP_COUNT ("request-from-idp-count"), 
     METRICS_RESPONSE_FROM_IDP_COUNT ("response-from-idp-count"), 
-    METRICS_REQUEST_TO_IDP_COUNT ("request-to-idp-count");
+    METRICS_REQUEST_TO_IDP_COUNT ("request-to-idp-count"), 
+    HANDLER_CLASS ("class"), 
+    HANDLER ("handler"), 
+    HANDLER_PARAMETER ("handler-parameter");
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     
