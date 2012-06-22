@@ -17,7 +17,7 @@
 				<append value="true" />
 			</periodic-rotating-file-handler>
 			<logger
-				category="org.picketlink.identity.federation.core.audit.PicketLinkAuditProvider">
+				category="org.picketlink.identity.federation.audit">
 				<level name="INFO" />
 				<handlers>
 					<handler name="PICKETLINK" />
