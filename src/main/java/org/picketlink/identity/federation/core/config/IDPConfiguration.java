@@ -70,12 +70,12 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
             }
             
             this.getTrust().setDomains(this.getTrust().getDomains() + domain);
-            
-            if (certAlias != null && !certAlias.trim().isEmpty()) {
-                getTrustDomainAlias().put(domain, certAlias);
-            } else {
-                getTrustDomainAlias().put(domain, domain);
-            }
+        }
+        
+        if (certAlias != null && !certAlias.trim().isEmpty()) {
+            getTrustDomainAlias().put(domain, certAlias);
+        } else {
+            getTrustDomainAlias().put(domain, domain);
         }
     }
 
@@ -94,7 +94,7 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
             this.getTrust().setDomains("");
         }
         
-        this.getTrustDomainAlias().remove(domain);
+//        this.getTrustDomainAlias().remove(domain);
     }
 
     public String getSecurityDomain() {
@@ -107,5 +107,9 @@ public class IDPConfiguration extends IDPType implements ProviderConfiguration {
  
     public Map<String, String> getTrustDomainAlias() {
         return trustDomainAlias;
+    }
+    
+    public void setTrustDomainAlias(Map<String, String> trustDomainAlias) {
+        this.trustDomainAlias = trustDomainAlias;
     }
 }

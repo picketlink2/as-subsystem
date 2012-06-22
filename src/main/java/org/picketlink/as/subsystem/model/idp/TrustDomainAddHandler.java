@@ -32,6 +32,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
@@ -83,6 +84,7 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
         }
         
         service.getConfiguration().addTrustDomain(domain, certAlias);
+        new KeyProviderEvent(keyProvider, service.getFederationService().getEventManager()).raise();
     }
     
 }

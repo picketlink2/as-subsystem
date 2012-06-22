@@ -32,9 +32,7 @@ import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.EventManager;
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
-import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
 
 /**
@@ -45,6 +43,8 @@ import org.picketlink.identity.federation.core.config.STSConfiguration;
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 public class FederationService implements Service<FederationService> {
+
+    private static final String SERVICE_NAME = "FederationService";
 
     private String alias;
     
@@ -125,7 +125,7 @@ public class FederationService implements Service<FederationService> {
      * @return
      */
     public static ServiceName createServiceName(String alias) {
-        return ServiceName.JBOSS.append("FederationService", alias);
+        return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
     
     public EventManager getEventManager() {
@@ -140,7 +140,4 @@ public class FederationService implements Service<FederationService> {
         return this.identityProviderService;
     }
     
-    public String getAlias() {
-        return this.alias;
-    }
 }

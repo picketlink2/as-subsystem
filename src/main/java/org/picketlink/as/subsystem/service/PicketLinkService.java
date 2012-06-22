@@ -15,4 +15,6 @@ public interface PicketLinkService<T> extends Service<T> {
 
     PicketLinkSubsystemMetrics getMetrics();
     
+    void reset();
+    
 }

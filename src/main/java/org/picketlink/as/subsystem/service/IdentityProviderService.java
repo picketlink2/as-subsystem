@@ -36,6 +36,8 @@ import org.picketlink.as.subsystem.model.ModelUtils;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
+import org.picketlink.identity.federation.core.config.KeyValueType;
+import org.picketlink.identity.federation.core.config.TrustType;
 
 /** ty Provider.
  * </p>
@@ -75,6 +77,34 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#doConfigureDeployment(org.jboss.as.server.deployment.DeploymentUnit)
      */
     protected void doConfigureDeployment(DeploymentUnit deploymentUnit) {
+        if (getFederationService().getKeyProvider() != null) {
+            TrustType trustType = this.getConfiguration().getTrust();
+            
+            if (trustType != null) {
+                String domainsStr = trustType.getDomains();
+                
+                if (domainsStr != null) {
+                    String[] domains = domainsStr.split(",");
+                    
+                    for (int i = 0; i < domains.length; i++) {
+                        KeyValueType kv = new KeyValueType();
+                        
+                        kv.setKey(domains[i]);
+                        
+                        String value = domains[i];
+                        
+                        if (this.getConfiguration().getTrustDomainAlias() != null) {
+                            value = this.getConfiguration().getTrustDomainAlias().get(domains[i]);
+                        }
+                        
+                        kv.setValue(value);
+                        
+                        getFederationService().getKeyProvider().remove(kv);
+                        getFederationService().getKeyProvider().add(kv);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -97,14 +127,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
 
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
-    }
-
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
-     */
-    @Override
-    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        super.onUpdateKeyProvider(keyProviderType);
     }
 
     public void raiseUpdateEvent() {

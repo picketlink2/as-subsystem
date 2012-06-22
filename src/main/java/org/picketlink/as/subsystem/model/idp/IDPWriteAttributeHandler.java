@@ -64,6 +64,7 @@ public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
         updatedIDPConfig.setKeyProvider(FederationService.getService(context.getServiceRegistry(true), operation)
                 .getKeyProvider());
         updatedIDPConfig.setTrust(service.getConfiguration().getTrust());
+        updatedIDPConfig.setTrustDomainAlias(service.getConfiguration().getTrustDomainAlias());
 
         service.setConfiguration(updatedIDPConfig);
 

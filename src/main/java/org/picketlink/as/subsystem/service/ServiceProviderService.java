@@ -39,7 +39,6 @@ import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
 import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
-import org.picketlink.identity.federation.core.config.TrustType;
 import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
@@ -172,21 +171,6 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         if (getFederationService().getIdentityProviderService() != null) {
             getConfiguration().setIdentityURL(getFederationService().getIdentityProviderService().getConfiguration().getIdentityURL());            
         }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#getTrust()
-     */
-    @Override
-    protected TrustType getTrust() {
-        // service providers trust the same domains from the identity provider.
-        IdentityProviderService identityProviderService = getFederationService().getIdentityProviderService();
-        
-        if (identityProviderService != null) {
-            return identityProviderService.getConfiguration().getTrust();            
-        }
-        
-        return null;
     }
     
     /* (non-Javadoc)

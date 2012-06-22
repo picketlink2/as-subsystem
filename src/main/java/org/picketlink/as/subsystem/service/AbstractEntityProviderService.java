@@ -3,6 +3,8 @@ package org.picketlink.as.subsystem.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.as.controller.OperationContext;
@@ -23,12 +25,16 @@ import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
 import org.picketlink.identity.federation.core.config.ProviderType;
 import org.picketlink.identity.federation.core.config.STSType;
+import org.picketlink.identity.federation.core.config.TokenProviderType;
 import org.picketlink.identity.federation.core.config.TrustType;
 import org.picketlink.identity.federation.core.exceptions.ConfigurationException;
 import org.picketlink.identity.federation.core.handler.config.Handler;
 import org.picketlink.identity.federation.core.handler.config.Handlers;
 import org.picketlink.identity.federation.core.parsers.sts.STSConfigParser;
+import org.picketlink.identity.federation.core.saml.v2.constants.JBossSAMLConstants;
+import org.picketlink.identity.federation.core.saml.v2.constants.JBossSAMLURIConstants;
 import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
+import org.picketlink.identity.federation.web.constants.GeneralConstants;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
@@ -42,11 +48,20 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
     private C configuration;
     private FederationService federationService;
     private PicketLinkSubsystemMetrics metrics;
+    private List<String> commonHandlersList;
 
     public AbstractEntityProviderService(OperationContext context, ModelNode operation) {
         this.federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         this.configuration = toProviderType(operation);
         this.configuration.setKeyProvider(this.federationService.getKeyProvider());
+        
+        this.commonHandlersList = new ArrayList<String>();
+        this.commonHandlersList.add(SAML2IssuerTrustHandler.class.getName());
+        this.commonHandlersList.add(SAML2LogOutHandler.class.getName());
+        this.commonHandlersList.add(SAML2AuthenticationHandler.class.getName());
+        this.commonHandlersList.add(RolesGenerationHandler.class.getName());
+        this.commonHandlersList.add(SAML2SignatureGenerationHandler.class.getName());
+        this.commonHandlersList.add(SAML2SignatureValidationHandler.class.getName());
     }
 
     /**
@@ -59,6 +74,14 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     protected abstract C toProviderType(ModelNode operation);
 
+    @Override
+    public void reset() {
+        this.federationService.getEventManager().removeObserver(this);
+        this.configuration = null;
+        this.picketLinkType = null;
+        this.metrics = null;
+    }
+    
     @Override
     public void start(StartContext context) throws StartException {
         this.federationService.getEventManager().addObserver(KeyProviderEvent.class, this);
@@ -80,18 +103,83 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      * @param deploymentUnit
      */
     public void configure(DeploymentUnit deploymentUnit) {
+        getPicketLinkType().setIdpOrSP((ProviderType) getConfiguration());
         installPicketLinkWebContextFactory(deploymentUnit);
+        installHandlers();
+        configureWarMetadata(deploymentUnit);
+        configureSecurityTokenService();
+//        configureKeyProvider();
         
+        doConfigureDeployment(deploymentUnit);
+    }
+
+    private void configureKeyProvider() {
+        if (getConfiguration().getKeyProvider() != null) {
+            KeyProviderType keyProviderType = this.getConfiguration().getKeyProvider();
+            TrustType trustType = getFederationService().getIdentityProviderService().getConfiguration().getTrust();
+            
+            if (trustType != null) {
+                String domainsStr = trustType.getDomains();
+                
+                if (domainsStr != null) {
+                    String[] domains = domainsStr.split(",");
+                    
+                    for (int i = 0; i < domains.length; i++) {
+                        KeyValueType kv = new KeyValueType();
+                        
+                        kv.setKey(domains[i]);
+                        kv.setValue(getFederationService().getIdentityProviderService().getConfiguration().getTrustDomainAlias().get(domains[i]));
+                        
+                        keyProviderType.remove(kv);
+                        keyProviderType.add(kv);
+                    }
+                }
+            }
+        }
+    }
+
+    private void configureSecurityTokenService() {
+        if (getFederationService().getSamlConfig() != null) {
+            this.picketLinkType.getStsType().setTokenTimeout(getFederationService().getSamlConfig().getTokenTimeout());
+            this.picketLinkType.getStsType().setClockSkew(getFederationService().getSamlConfig().getClockSkew());
+            List<TokenProviderType> tokenProviders = this.picketLinkType.getStsType().getTokenProviders().getTokenProvider();
+            
+            for (TokenProviderType tokenProviderType : tokenProviders) {
+                if (tokenProviderType.getTokenType().equals(JBossSAMLURIConstants.ASSERTION_NSURI.get())) {
+                    KeyValueType keyValueTypeTokenTimeout = new KeyValueType();
+                    
+                    keyValueTypeTokenTimeout.setKey(GeneralConstants.ASSERTIONS_VALIDITY);
+                    keyValueTypeTokenTimeout.setValue(String.valueOf(this.picketLinkType.getStsType().getTokenTimeout()));
+
+                    KeyValueType keyValueTypeClockSkew = new KeyValueType();
+                    
+                    keyValueTypeClockSkew.setKey(GeneralConstants.CLOCK_SKEW);
+                    keyValueTypeClockSkew.setValue(String.valueOf(this.picketLinkType.getStsType().getClockSkew()));
+
+                    tokenProviderType.add(keyValueTypeTokenTimeout);
+                    tokenProviderType.add(keyValueTypeClockSkew);
+                }
+            }
+        }
+    }
+
+    private void installHandlers() {
+        // initialize the handlers as they will be created again. 
+        List<Handler> handlers = picketLinkType.getHandlers().getHandler();
+        
+        for (Handler handler : new ArrayList<Handler>(handlers)) {
+            if (commonHandlersList.contains(handler.getClazz())) {
+                getPicketLinkType().getHandlers().remove(handler);                
+            }
+        }
+        
+        configureCommonHandlers();
+    }
+
+    private void configureWarMetadata(DeploymentUnit deploymentUnit) {
         WarMetaData warMetaData = deploymentUnit.getAttachment(WarMetaData.ATTACHMENT_KEY);
         
         warMetaData.getMergedJBossWebMetaData().setSecurityDomain(this.getConfiguration().getSecurityDomain());
-        
-        // initialize the handlers as they will be created again. 
-        getPicketLinkType().setHandlers(new Handlers());
-        
-        configureCommonHandlers();
-        
-        doConfigureDeployment(deploymentUnit);
     }
 
     /**
@@ -155,43 +243,9 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.configuration.getKeyProvider().setClassName("org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
         }
         
-        if (getFederationService().getKeyProvider() != null) {
-            TrustType trustType = getTrust();
-            
-            if (trustType != null) {
-                String domainsStr = trustType.getDomains();
-                
-                if (domainsStr != null) {
-                    String[] domains = domainsStr.split(",");
-                    
-                    for (int i = 0; i < domains.length; i++) {
-                        KeyValueType kv = new KeyValueType();
-                        
-                        kv.setKey(domains[i]);
-                        
-                        String value = domains[i];
-                        
-                        if (this.configuration.getTrustDomainAlias() != null) {
-                            value = this.configuration.getTrustDomainAlias().get(domains[i]);
-                        }
-                        
-                        kv.setValue(value);
-                        
-                        getFederationService().getKeyProvider().remove(kv);
-                        getFederationService().getKeyProvider().add(kv);
-                    }
-                }
-            }
-        }
-
-        
         return configuration;
     }
     
-    protected TrustType getTrust() {
-        return this.configuration.getTrust();
-    }
-
     public void setConfiguration(C configuration) {
         this.configuration = configuration;
     }
@@ -205,28 +259,6 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     @Override
     public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        if (keyProviderType != null) {
-            TrustType trustType = getFederationService().getIdentityProviderService().getConfiguration().getTrust();
-            
-            if (trustType != null) {
-                String domainsStr = trustType.getDomains();
-                
-                if (domainsStr != null) {
-                    String[] domains = domainsStr.split(",");
-                    
-                    for (int i = 0; i < domains.length; i++) {
-                        KeyValueType kv = new KeyValueType();
-                        
-                        kv.setKey(domains[i]);
-                        kv.setValue(domains[i]);
-                        
-                        keyProviderType.remove(kv);
-                        keyProviderType.add(kv);
-                    }
-                }
-            }
-        }
-        
         this.configuration.setKeyProvider(keyProviderType);
     }
     
@@ -237,13 +269,6 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
             this.picketLinkType.setHandlers(new Handlers());
             this.picketLinkType.setEnableAudit(true);
         }
-        
-        if (getFederationService().getSamlConfig() != null) {
-            this.picketLinkType.getStsType().setTokenTimeout(getFederationService().getSamlConfig().getTokenTimeout());
-            this.picketLinkType.getStsType().setClockSkew(getFederationService().getSamlConfig().getClockSkew());
-        }
-        
-        this.picketLinkType.setIdpOrSP((ProviderType) getConfiguration());
 
         return this.picketLinkType;
     }

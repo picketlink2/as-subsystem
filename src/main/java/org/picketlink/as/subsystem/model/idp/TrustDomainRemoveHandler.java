@@ -30,6 +30,7 @@ import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.picketlink.as.subsystem.model.ModelElement;
+import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.AbstractEntityProviderService;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
@@ -65,6 +66,7 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
         }
         
         service.getConfiguration().removeTrustDomain(domain);
+        new KeyProviderEvent(keyProvider, service.getFederationService().getEventManager()).raise();
     }
     
 }

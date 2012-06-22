@@ -47,6 +47,6 @@ public interface PicketLinkLogger extends BasicLogger {
     void activatingSubsystem();
 
     @LogMessage(level = INFO)
-    @Message(id = 12501, value = "[%s] - Configuring deployment %s for federation %s")
-    void configuringDeployment(String serviceName, String deploymentName, String federation);
+    @Message(id = 12501, value = "[%s] - Configuring deployment %s")
+    void configuringDeployment(String serviceName, String deploymentName);
 }
