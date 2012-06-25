@@ -21,31 +21,24 @@
  */
 package org.picketlink.as.subsystem.deployment;
 
-import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.msc.service.ServiceController;
-import org.jboss.msc.service.ServiceRegistry;
+import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
 
 /**
- * <p>
- * Specific {@link DeploymentUnitProcessor} for Identity Provider applications.
- * </p>
+ * <p> Specific {@link DeploymentUnitProcessor} for Identity Provider applications.</p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * @since Mar 9, 2012
  */
 public class IdentityProviderDeploymentProcessor extends AbstractPicketLinkDeploymentProcessor<IdentityProviderService> {
-    
+
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.deployment.AbstractPicketLinkDeploymentProcessor#createServiceName(java.lang.String)
+     */
     @Override
-    protected IdentityProviderService getService(ServiceRegistry serviceRegistry, String sufix) {
-        ServiceController<?> container = serviceRegistry.getService(IdentityProviderService.createServiceName(sufix));
-
-        if (container != null) {
-            return (IdentityProviderService) container.getValue();
-        }
-
-        return null;
+    protected ServiceName createServiceName(String deploymentUnitName) {
+        return IdentityProviderService.createServiceName(deploymentUnitName);
     }
-
+    
 }

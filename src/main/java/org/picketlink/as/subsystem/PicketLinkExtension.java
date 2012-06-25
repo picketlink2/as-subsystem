@@ -54,7 +54,7 @@ public class PicketLinkExtension implements Extension {
     private static final String RESOURCE_NAME = PicketLinkExtension.class.getPackage().getName() + ".LocalDescriptions";
 
     /**
-     * Returns a instance of <code>ResourceDescriptionResolver</code> to be used to load the model's description.
+     * Returns a instance of <code>ResourceDescriptionResolver</code> to be used to load the model description.
      * 
      * @param keyPrefix
      * @return

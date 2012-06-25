@@ -26,31 +26,22 @@ import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
 import org.jboss.as.server.deployment.Phase;
+import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceRegistry;
 import org.picketlink.as.subsystem.PicketLinkLogger;
 import org.picketlink.as.subsystem.service.PicketLinkService;
 
 /**
- * <p>
- * Abstract class for PicketLink deployment unit processors. Subclasses should handle application
- * deployments, usually WAR files, and configuring them based in the configuration defined for the PicketLink subsystem.
- * </p>
- * 
+ * <p>Abstract class for PicketLink deployment unit processors.</p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  * 
  */
 public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLinkService<T>> implements DeploymentUnitProcessor {
 
-    /**
-     * See {@link Phase} for a description of the different phases
-     */
     public static final Phase PHASE = Phase.INSTALL;
 
-    /**
-     * The relative order of this processor within the {@link #PHASE}. The current number is large enough for it to happen after
-     * all the standard deployment unit processors that come with JBoss AS.
-     */
     public static final int PRIORITY = 1;
 
     /*
@@ -66,13 +57,32 @@ public abstract class AbstractPicketLinkDeploymentProcessor<T extends PicketLink
         
         T service = getService(phaseContext.getServiceRegistry(), deploymentUnitName);
 
+        // if a service exists for this deployment, configure it with the PicketLink configurations defined by the model.
         if (service != null) {
             PicketLinkLogger.ROOT_LOGGER.configuringDeployment(service.getClass().getSimpleName(), deploymentUnitName);
             service.configure(deploymentUnit);
         }
     }
 
-    protected abstract T getService(ServiceRegistry serviceRegistry, String sufix);
+    @SuppressWarnings("unchecked")
+    private T getService(ServiceRegistry serviceRegistry, String deploymentUnitName) {
+        ServiceController<T> container = (ServiceController<T>) serviceRegistry.getService(createServiceName(deploymentUnitName));
+
+        if (container != null) {
+            return container.getValue();
+        }
+
+        return null;
+    }
+
+    
+    /**
+     * <p>This method should be overriden by subclasses to return the {@link ServiceName} for the service associated with the given deployment unit name.</p>
+     * 
+     * @param deploymentUnitName
+     * @return
+     */
+    protected abstract ServiceName createServiceName(String deploymentUnitName);
 
     /*
      * (non-Javadoc)

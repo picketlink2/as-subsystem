@@ -23,6 +23,8 @@
 package org.picketlink.as.subsystem.service;
 
 
+import static org.picketlink.identity.federation.core.config.PicketLinkConfigUtil.addHandler;
+
 import java.util.HashMap;
 
 import org.jboss.as.controller.OperationContext;
@@ -113,18 +115,21 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         }
     }
     
-    protected void configureCommonHandlers() {
-        addHandler(SAML2LogOutHandler.class);
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#configureCommonHandlers()
+     */
+    protected void doAddHandlers() {
+        addHandler(SAML2LogOutHandler.class, getPicketLinkType());
         
         HashMap<String, String> options = new HashMap<String, String>();
         
         options.put(SAML2Handler.CLOCK_SKEW_MILIS, String.valueOf(getPicketLinkType().getStsType().getClockSkew()));
         
-        addHandler(SAML2AuthenticationHandler.class, options);
+        addHandler(SAML2AuthenticationHandler.class, options, getPicketLinkType());
         
-        addHandler(RolesGenerationHandler.class);
-        addHandler(SAML2SignatureGenerationHandler.class);
-        addHandler(SAML2SignatureValidationHandler.class);
+        addHandler(RolesGenerationHandler.class, getPicketLinkType());
+        addHandler(SAML2SignatureGenerationHandler.class, getPicketLinkType());
+        addHandler(SAML2SignatureValidationHandler.class, getPicketLinkType());
     }
 
     
