@@ -21,16 +21,13 @@
  */
 package org.picketlink.as.subsystem.model.idp;
 
-import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.metrics.AbstractPicketLinkMetricsOperationHandler;
 import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.ModelElement;
 import org.picketlink.as.subsystem.service.IdentityProviderService;
-import org.picketlink.as.subsystem.service.PicketLinkService;
 
 /**
  * <p>

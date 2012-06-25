@@ -46,10 +46,6 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
         this.configuration = picketLinkType;
     }
 
-    public PicketLinkType getConfiguration() {
-        return this.configuration;
-    }
-
     /*
      * (non-Javadoc)
      * 

@@ -31,11 +31,8 @@ import org.jboss.msc.service.ServiceRegistry;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
 import org.picketlink.as.subsystem.model.ModelUtils;
-import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
 import org.picketlink.identity.federation.core.config.IDPConfiguration;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.KeyValueType;
 import org.picketlink.identity.federation.core.config.TrustType;
 
@@ -59,7 +56,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
     public void start(StartContext context) throws StartException {
         super.start(context);
         this.getFederationService().setIdentityProviderService(this);
-        this.raiseUpdateEvent();
     }
 
     /* (non-Javadoc)
@@ -70,7 +66,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
         super.stop(context);
         this.setConfiguration(new IDPConfiguration());
         this.getFederationService().setIdentityProviderService(null);
-        this.raiseUpdateEvent();
     }
 
     /* (non-Javadoc)
@@ -129,10 +124,6 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
     }
 
-    public void raiseUpdateEvent() {
-        new IdentityProviderUpdateEvent(this.getConfiguration(), this.getFederationService().getEventManager()).raise();
-    }
-    
     /* (non-Javadoc)
      * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#toProviderType(org.jboss.dmr.ModelNode)
      */

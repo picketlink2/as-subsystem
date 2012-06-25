@@ -32,6 +32,8 @@ import org.jboss.logging.MessageBundle;
 import org.jboss.logging.Messages;
 
 /**
+ * <p>JBoss Logging message bundle.</p>
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */

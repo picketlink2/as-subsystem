@@ -46,6 +46,7 @@ public class HandlerRemoveHandler extends AbstractRemoveStepHandler {
     private HandlerRemoveHandler() {
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
@@ -70,6 +71,7 @@ public class HandlerRemoveHandler extends AbstractRemoveStepHandler {
      * @param providerAlias
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private AbstractEntityProviderService getParentProviderService(OperationContext context, String providerAlias) {
         AbstractEntityProviderService providerService = IdentityProviderService.getService(context.getServiceRegistry(true), providerAlias);
         

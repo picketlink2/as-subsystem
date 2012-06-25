@@ -52,6 +52,7 @@ public class HandlerAddHandler extends AbstractResourceAddStepHandler {
     /* (non-Javadoc)
      * @see org.jboss.as.controller.AbstractAddStepHandler#performRuntime(org.jboss.as.controller.OperationContext, org.jboss.dmr.ModelNode, org.jboss.dmr.ModelNode, org.jboss.as.controller.ServiceVerificationHandler, java.util.List)
      */
+    @SuppressWarnings("rawtypes")
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model,
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
@@ -77,6 +78,7 @@ public class HandlerAddHandler extends AbstractResourceAddStepHandler {
      * @param providerAlias
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private AbstractEntityProviderService getParentProviderService(OperationContext context, String providerAlias) {
         AbstractEntityProviderService providerService = IdentityProviderService.getService(context.getServiceRegistry(true), providerAlias);
         

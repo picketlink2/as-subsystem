@@ -47,13 +47,13 @@ public class HandlerParameterRemoveHandler extends AbstractRemoveStepHandler {
     private HandlerParameterRemoveHandler() {
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
         String providerAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
         String handlerClassName = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(3).getValue().asString();
         String paramName = operation.get(ModelElement.COMMON_NAME.getName()).asString();
-        String paramValue = operation.get(ModelElement.COMMON_VALUE.getName()).asString();
 
         AbstractEntityProviderService providerService = getParentProviderService(context, providerAlias);
 
@@ -79,6 +79,7 @@ public class HandlerParameterRemoveHandler extends AbstractRemoveStepHandler {
      * @param providerAlias
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private AbstractEntityProviderService getParentProviderService(OperationContext context, String providerAlias) {
         AbstractEntityProviderService providerService = IdentityProviderService.getService(context.getServiceRegistry(true),
                 providerAlias);

@@ -31,6 +31,8 @@ import org.jboss.logging.Message;
 import org.jboss.logging.MessageLogger;
 
 /**
+ * <p>JBoss Logging {@link BasicLogger} implementation.</p>
+ * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  *
  */

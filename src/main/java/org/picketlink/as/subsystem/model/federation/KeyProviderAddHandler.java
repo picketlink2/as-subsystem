@@ -33,7 +33,6 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.picketlink.as.subsystem.model.AbstractResourceAddStepHandler;
 import org.picketlink.as.subsystem.model.ModelElement;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.FederationService;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 
@@ -57,24 +56,9 @@ public class KeyProviderAddHandler extends AbstractResourceAddStepHandler {
             throws OperationFailedException {
         KeyProviderType keyProviderType = toKeyProviderType(model);
         
-        raiseKeyProviderChangeEvent(context, operation, keyProviderType);
-    }
-
-    /**
-     * <p>
-     * Notify registered observers about the new configuration.
-     * </p>
-     * 
-     * @param context
-     * @param operation
-     * @param keyProviderType
-     */
-    private void raiseKeyProviderChangeEvent(OperationContext context, ModelNode operation, KeyProviderType keyProviderType) {
         FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         
         federationService.setKeyProvider(keyProviderType);
-        
-        new KeyProviderEvent(keyProviderType, federationService.getEventManager()).raise();
     }
     
 }

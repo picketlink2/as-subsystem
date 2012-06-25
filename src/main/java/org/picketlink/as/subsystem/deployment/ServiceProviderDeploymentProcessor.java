@@ -21,10 +21,8 @@
  */
 package org.picketlink.as.subsystem.deployment;
 
-import org.jboss.as.server.deployment.DeploymentPhaseContext;
 import org.jboss.as.server.deployment.DeploymentUnitProcessor;
-import org.jboss.msc.service.ServiceController;
-import org.jboss.msc.service.ServiceRegistry;
+import org.jboss.msc.service.ServiceName;
 import org.picketlink.as.subsystem.service.ServiceProviderService;
 
 /**
@@ -36,19 +34,13 @@ import org.picketlink.as.subsystem.service.ServiceProviderService;
  * @since Mar 9, 2012
  */
 public class ServiceProviderDeploymentProcessor extends AbstractPicketLinkDeploymentProcessor<ServiceProviderService> {
-    
+
     /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.deployment.AbstractPicketLinkDeploymentProcessor#getService(org.jboss.as.server.deployment.DeploymentPhaseContext, java.lang.String)
+     * @see org.picketlink.as.subsystem.deployment.AbstractPicketLinkDeploymentProcessor#createServiceName(java.lang.String)
      */
     @Override
-    protected ServiceProviderService getService(ServiceRegistry serviceRegistry, String sufix) {
-        ServiceController<?> container = serviceRegistry.getService(ServiceProviderService.createServiceName(sufix));
-
-        if (container != null) {
-            return (ServiceProviderService) container.getValue();
-        }
-
-        return null;
+    protected ServiceName createServiceName(String deploymentUnitName) {
+        return ServiceProviderService.createServiceName(deploymentUnitName);
     }
-
+    
 }
