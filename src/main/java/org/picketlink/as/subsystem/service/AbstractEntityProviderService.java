@@ -133,6 +133,9 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         doConfigureDeployment(deploymentUnit);
     }
 
+    /**
+     * <p>Configure the STS Token Providers.</p>
+     */
     private void configureTokenProviders() {
         STSConfiguration samlConfig = getFederationService().getSamlConfig();
         
@@ -164,6 +167,9 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         }
     }
 
+    /**
+     * <p>Configure the SAML Handlers.</p>
+     */
     private void configureHandlers() {
         List<Handler> handlers = getPicketLinkType().getHandlers().getHandler();
         
@@ -171,14 +177,28 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         for (Class commonHandlerClass : commonHandlersList) {
             for (Handler handler : new ArrayList<Handler>(handlers)) {
                 if (handler.getClazz().equals(commonHandlerClass.getName())) {
-                    handlers.remove(handler);
+                    getPicketLinkType().getHandlers().remove(handler);
                 }
             }
         }
         
         doAddHandlers();
     }
+    
+    /**
+     * <p>Adds the common handlers into the configuration.</p>
+     */
+    protected void doAddHandlers() {
+        for (Class commonHandlerClass : commonHandlersList) {
+            addHandler(commonHandlerClass, getPicketLinkType());
+        }
+    }
 
+    /**
+     * <p>Configures the {@link WarMetaData}.</p>
+     * 
+     * @param deploymentUnit
+     */
     private void configureWarMetadata(DeploymentUnit deploymentUnit) {
         WarMetaData warMetaData = deploymentUnit.getAttachment(WarMetaData.ATTACHMENT_KEY);
         
@@ -213,6 +233,9 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         return webContextFactory;
     }
 
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.PicketLinkService#getMetrics()
+     */
     public PicketLinkSubsystemMetrics getMetrics() {
         if (this.metrics == null) {
             try {
@@ -240,6 +263,14 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         return (T) this;
     }
     
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
+     */
+    @Override
+    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
+        this.configuration.setKeyProvider(keyProviderType);
+    }
+
     public C getConfiguration() {
         if (this.configuration.getKeyProvider() != null) {
             this.configuration.getKeyProvider().setClassName("org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
@@ -255,15 +286,7 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
     public FederationService getFederationService() {
         return this.federationService;
     }
-    
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
-     */
-    @Override
-    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        this.configuration.setKeyProvider(keyProviderType);
-    }
-    
+
     public PicketLinkType getPicketLinkType() {
         if (this.picketLinkType == null) {
             this.picketLinkType = new PicketLinkType();
@@ -279,13 +302,4 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         return this.picketLinkType;
     }
 
-    /**
-     * <p>Adds the common handlers into the configuration.</p>
-     */
-    protected void doAddHandlers() {
-        for (Class commonHandlerClass : commonHandlersList) {
-            addHandler(commonHandlerClass, getPicketLinkType());
-        }
-    }
-    
 }
