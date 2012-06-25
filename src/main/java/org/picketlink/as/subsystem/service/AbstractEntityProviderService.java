@@ -104,10 +104,10 @@ public abstract class AbstractEntityProviderService<T, C extends ProviderConfigu
      */
     public void configure(DeploymentUnit deploymentUnit) {
         getPicketLinkType().setIdpOrSP((ProviderType) getConfiguration());
-        installPicketLinkWebContextFactory(deploymentUnit);
+        configureSecurityTokenService();
         installHandlers();
         configureWarMetadata(deploymentUnit);
-        configureSecurityTokenService();
+        installPicketLinkWebContextFactory(deploymentUnit);
 //        configureKeyProvider();
         
         doConfigureDeployment(deploymentUnit);
