@@ -30,7 +30,6 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.ModelUtils;
-import org.picketlink.as.subsystem.model.event.EventManager;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
 
@@ -50,8 +49,6 @@ public class FederationService implements Service<FederationService> {
     private KeyProviderType keyProvider;
     private STSConfiguration samlConfig;
 
-    private EventManager eventManager = new EventManager();
-    
     private IdentityProviderService identityProviderService;
 
     public FederationService(String alias) {
@@ -125,10 +122,6 @@ public class FederationService implements Service<FederationService> {
      */
     public static ServiceName createServiceName(String alias) {
         return ServiceName.JBOSS.append(SERVICE_NAME, alias);
-    }
-    
-    public EventManager getEventManager() {
-        return this.eventManager ;
     }
     
     public void setIdentityProviderService(IdentityProviderService identityProviderService) {

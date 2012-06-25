@@ -37,9 +37,6 @@ import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.model.ModelUtils;
-import org.picketlink.as.subsystem.model.event.IdentityProviderObserver;
-import org.picketlink.as.subsystem.model.event.IdentityProviderUpdateEvent;
-import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.saml.v2.interfaces.SAML2Handler;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
@@ -56,13 +53,12 @@ import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValid
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
  */
 
-public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPConfiguration> implements IdentityProviderObserver {
+public class ServiceProviderService extends AbstractEntityProviderService<ServiceProviderService, SPConfiguration> {
 
     private static final String SERVICE_NAME = "SPConfigurationService";
 
     public ServiceProviderService(OperationContext context, ModelNode modelNode) {
         super(context, modelNode);
-        updateIdentityURL();
     }
     
     /* (non-Javadoc)
@@ -70,8 +66,7 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     @Override
     public void start(StartContext context) throws StartException {
-        super.start(context);
-        getFederationService().getEventManager().addObserver(IdentityProviderUpdateEvent.class, this);
+        super.start(context); 
     }
 
     /* (non-Javadoc)
@@ -88,25 +83,8 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
      */
     public void doConfigureDeployment(DeploymentUnit deploymentUnit) {
         configureBindingType();
-//        configureStrictPostBinding();
     }
  
-    /**
-     * <p> 
-     * Configures the Strict Post Binding behaviuor. If the IDP configured for the federation instance is configure with a different value
-     * than the SP, uses the IDP configuration.
-     * </p>
-     */
-    private void configureStrictPostBinding() {
-        AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> identityProviderService = getFederationService().getIdentityProviderService();
-        
-        if (identityProviderService != null) {
-            if ((identityProviderService.getConfiguration().isStrictPostBinding() != getConfiguration().isIdpUsesPostBinding()) && !getConfiguration().isPostBinding()) {
-                getConfiguration().setIdpUsesPostBinding(identityProviderService.getConfiguration().isStrictPostBinding());
-            }
-        }
-    }
-
     private void configureBindingType() {
         if (getConfiguration().isPostBinding()) {
             getConfiguration().setBindingType("POST");
@@ -154,6 +132,9 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.picketlink.as.subsystem.service.AbstractEntityProviderService#getConfiguration()
+     */
     @Override
     public SPConfiguration getConfiguration() {
         SPConfiguration configuration = super.getConfiguration();
@@ -163,27 +144,6 @@ public class ServiceProviderService extends AbstractEntityProviderService<Servic
         }
         
         return configuration;
-    }
-    
-    /**
-     * <p>
-     * Updates the Identity Provider URL for this Service Provider.
-     * 
-     * TODO: check if this method is really needed.
-     * </p>
-     */
-    private void updateIdentityURL() {
-        if (getFederationService().getIdentityProviderService() != null) {
-            getConfiguration().setIdentityURL(getFederationService().getIdentityProviderService().getConfiguration().getIdentityURL());            
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.event.IdentityProviderObserver#onUpdateIdentityProvider(org.picketlink.identity.federation.core.config.IDPConfiguration)
-     */
-    @Override
-    public void onUpdateIdentityProvider(IDPConfiguration idpType) {
-        getConfiguration().setIdentityURL(idpType.getIdentityURL());
     }
     
     /* (non-Javadoc)

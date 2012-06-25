@@ -37,9 +37,6 @@ import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
 import org.picketlink.as.subsystem.PicketLinkLogger;
 import org.picketlink.as.subsystem.metrics.PicketLinkSubsystemMetrics;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
-import org.picketlink.as.subsystem.model.event.KeyProviderObserver;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.KeyValueType;
 import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.ProviderConfiguration;
@@ -64,7 +61,7 @@ import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureValid
  * @param <T>
  * @param <C>
  */
-public abstract class AbstractEntityProviderService<T extends PicketLinkService<T>, C extends ProviderConfiguration> implements PicketLinkService<T>, KeyProviderObserver {
+public abstract class AbstractEntityProviderService<T extends PicketLinkService<T>, C extends ProviderConfiguration> implements PicketLinkService<T> {
     
     private PicketLinkType picketLinkType;
     private C configuration;
@@ -99,16 +96,7 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
     protected abstract C toProviderType(ModelNode operation);
 
     @Override
-    public void reset() {
-        this.federationService.getEventManager().removeObserver(this);
-        this.configuration = null;
-        this.picketLinkType = null;
-        this.metrics = null;
-    }
-    
-    @Override
     public void start(StartContext context) throws StartException {
-        this.federationService.getEventManager().addObserver(KeyProviderEvent.class, this);
     }
     
     /* (non-Javadoc)
@@ -116,7 +104,6 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
      */
     @Override
     public void stop(StopContext context) {
-        this.federationService.getEventManager().removeObserver(this);
     }
     
     /**
@@ -226,11 +213,7 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
      * @return
      */
     private PicketLinkWebContextFactory createPicketLinkWebContextFactory() {
-        PicketLinkWebContextFactory webContextFactory = new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()));
-        
-        webContextFactory.setAuditHelper(getMetrics());
-        
-        return webContextFactory;
+        return new PicketLinkWebContextFactory(new DomainModelConfigProvider(getPicketLinkType()), getMetrics());
     }
 
     /* (non-Javadoc)
@@ -263,15 +246,9 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         return (T) this;
     }
     
-    /* (non-Javadoc)
-     * @see org.picketlink.as.subsystem.model.events.KeyStoreObserver#onUpdateKeyStore(org.picketlink.identity.federation.core.config.KeyProviderType)
-     */
-    @Override
-    public void onUpdateKeyProvider(KeyProviderType keyProviderType) {
-        this.configuration.setKeyProvider(keyProviderType);
-    }
-
     public C getConfiguration() {
+        this.configuration.setKeyProvider(getFederationService().getKeyProvider());
+        
         if (this.configuration.getKeyProvider() != null) {
             this.configuration.getKeyProvider().setClassName("org.picketlink.identity.federation.core.impl.KeyStoreKeyManager");
         }
