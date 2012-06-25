@@ -26,9 +26,7 @@ import org.jboss.as.controller.AbstractRemoveStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.dmr.ModelNode;
-import org.picketlink.as.subsystem.model.event.KeyProviderEvent;
 import org.picketlink.as.subsystem.service.FederationService;
-import org.picketlink.identity.federation.core.config.KeyProviderType;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -46,23 +44,9 @@ public class KeyProviderRemoveHandler extends AbstractRemoveStepHandler {
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
-        raiseKeyProviderChangeEvent(context, operation, null);
-    }
-    
-    /**
-     * <p>
-     * Notify registered observers about the new configuration.
-     * </p>
-     * 
-     * @param context
-     * @param operation
-     * @param keyProviderType
-     */
-    private void raiseKeyProviderChangeEvent(OperationContext context, ModelNode operation, KeyProviderType keyProviderType) {
         FederationService federationService = FederationService.getService(context.getServiceRegistry(true), operation);
         
-        federationService.setKeyProvider(keyProviderType);
-        
-        new KeyProviderEvent(keyProviderType, federationService.getEventManager()).raise();
+        federationService.setKeyProvider(null);
     }
+    
 }

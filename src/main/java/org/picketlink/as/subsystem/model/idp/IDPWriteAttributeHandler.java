@@ -68,8 +68,6 @@ public class IDPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void
 
         service.setConfiguration(updatedIDPConfig);
 
-        service.raiseUpdateEvent();
-        
         return false;
     }
 
