@@ -21,9 +21,12 @@
  */
 package org.picketlink.as.subsystem.service;
 
+import java.io.InputStream;
+
 import org.picketlink.identity.federation.core.config.IDPType;
 import org.picketlink.identity.federation.core.config.PicketLinkType;
 import org.picketlink.identity.federation.core.config.SPType;
+import org.picketlink.identity.federation.core.exceptions.ParsingException;
 import org.picketlink.identity.federation.core.exceptions.ProcessingException;
 import org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider;
 import org.picketlink.identity.federation.web.util.SAMLConfigurationProvider;
@@ -54,10 +57,19 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
     @Override
     public IDPType getIDPConfiguration() throws ProcessingException {
         if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof IDPType) {
+            updateWithProvidedConfiguration();
             return (IDPType) this.configuration.getIdpOrSP();
         }
 
         return null;
+    }
+
+    private void updateWithProvidedConfiguration() {
+        if (super.configParsedPicketLinkType != null) {
+            if (super.configParsedPicketLinkType.getHandlers() != null) {
+                this.configuration = super.configParsedPicketLinkType;
+            }
+        }
     }
 
     /*
@@ -68,6 +80,7 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
     @Override
     public SPType getSPConfiguration() throws ProcessingException {
         if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof SPType) {
+            updateWithProvidedConfiguration();
             return (SPType) this.configuration.getIdpOrSP();
         }
 
@@ -118,4 +131,15 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.picketlink.identity.federation.web.config.AbstractSAMLConfigurationProvider#setConsolidatedConfigFile(java.io.InputStream)
+     */
+    @Override
+    public void setConsolidatedConfigFile(InputStream is) throws ParsingException {
+        try {
+            super.setConsolidatedConfigFile(is);
+        } catch (Exception e) {
+            logger.trace("Configurations defined in picketlink.xml will be ignored.");
+        }
+    }
 }
