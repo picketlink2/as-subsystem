@@ -31,23 +31,7 @@ Change your standalone.xml to add an extension for the PicketLink module:
                   <extension module="org.picketlink"/>
           </extensions>
 
-Open the standalone.xml and add the following configuration for the PicketLink subsystem: 
-
-	<federation alias="federation-without-signatures">
-		<saml token-timeout="4000" clock-skew="0" />
-		<identity-provider alias="idp.war" security-domain="idp" supportsSignatures="false" url="http://localhost:8080/idp/">
-			<trust>
-				<trust-domain name="localhost" />
-			</trust>
-		</identity-provider>
-		<service-providers>
-			<service-provider alias="sales-post.war"
-				post-binding="false" security-domain="sp"
-				url="http://localhost:8080/sales-post/" supportsSignatures="false" />
-		</service-providers>
-	</federation>
-
-The XML above is just a sample generated from the supported schema. You can access it from [here](https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd).
+Deploy your applications and use the subsystem [domain model] (https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd) to configure them as PicketLink deployments.
 
 ## How to use ##
  
