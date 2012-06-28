@@ -2,7 +2,7 @@
  
 This project is a AS7 Subsystem for the [PicketLink Project](http://www.jboss.org/picketlink "PicketLink Project").
 
-For more information about this project, see this [thread](https://community.jboss.org/thread/196424 "PicketLink Subsystem Discussion Thread"). 
+For more information about this project, see the [PicketLink AS7 Subsystem documentation](https://docs.jboss.org/author/display/PLINK/PicketLink+AS7+Subsystem "PicketLink AS7 Subsystem documentation"). 
 
 ## How to build ##
 
@@ -31,42 +31,8 @@ Change your standalone.xml to add an extension for the PicketLink module:
                   <extension module="org.picketlink"/>
           </extensions>
 
-Open the standalone.xml and add the following configuration for the PicketLink subsystem: 
-
-	<federation alias="federation-without-signatures">
-		<saml token-timeout="4000" clock-skew="0" />
-		<identity-provider alias="idp.war" security-domain="idp" supportsSignatures="false" url="http://localhost:8080/idp/">
-			<trust>
-				<trust-domain name="localhost" />
-			</trust>
-		</identity-provider>
-		<service-providers>
-			<service-provider alias="sales-post.war"
-				post-binding="false" security-domain="sp"
-				url="http://localhost:8080/sales-post/" supportsSignatures="false" />
-		</service-providers>
-	</federation>
-
-The XML above is just a sample generated from the supported schema. You can access it from [here](https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd).
+Deploy your applications and use the subsystem [domain model] (https://github.com/picketlink/as-subsystem/blob/master/src/main/resources/schema/picketlink-subsystem.xsd) to configure them as PicketLink deployments.
 
 ## How to use ##
  
-*The current version supports only a small set of the PicketLink configurations. Take a look at the schema for all available configurations.*
- 
-Take a look at our [Getting Started Guide] (https://docs.jboss.org/author/display/PLINK/Getting+Started).
-
-Download the example web applications.
-
-Extract the file and copy the idp.war and sales.war to ${jboss.home.dir}/standalone/deployments.
-
-Open both files (idp.war and sales.war) and remove the following configuration files:
-
-	- WEB-INF/context.xml
-	- WEB-INF/jboss-web.xml: Remove the valve definitions and the security domain. The subsystem will automatically configure this for you.
-	- WEB-INF/picketlink-handlers.xml
-	- WEB-INF/picketlink-idfed.xml
-	- WEB-INF/picketlink.xml
-
-These files must be removed since they will be generated at runtime by the subsystem.
-
-To make sure that everything is ok, please start the JBoss AS and try to access the sales-post application. You should be redirected to the idp application. If you want to login at the sales and idp applications, don't forget to configure the security domain for both. See [https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains](https://docs.jboss.org/author/display/PLINK/PicketLink+Quickstarts#PicketLinkQuickstarts-ConfiguringtheSecurityDomains).
+Please, follow the documentation at https://docs.jboss.org/author/display/PLINK/PicketLink+AS7+Subsystem.
