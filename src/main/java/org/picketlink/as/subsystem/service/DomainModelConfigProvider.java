@@ -56,20 +56,11 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
      */
     @Override
     public IDPType getIDPConfiguration() throws ProcessingException {
-        if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof IDPType) {
-            updateWithProvidedConfiguration();
-            return (IDPType) this.configuration.getIdpOrSP();
+        if (this.getPicketLinkConfiguration().getIdpOrSP() != null && this.getPicketLinkConfiguration().getIdpOrSP() instanceof IDPType) {
+            return (IDPType) this.getPicketLinkConfiguration().getIdpOrSP();
         }
 
         return null;
-    }
-
-    private void updateWithProvidedConfiguration() {
-        if (super.configParsedPicketLinkType != null) {
-            if (super.configParsedPicketLinkType.getHandlers() != null) {
-                this.configuration = super.configParsedPicketLinkType;
-            }
-        }
     }
 
     /*
@@ -79,9 +70,8 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
      */
     @Override
     public SPType getSPConfiguration() throws ProcessingException {
-        if (this.configuration.getIdpOrSP() != null && this.configuration.getIdpOrSP() instanceof SPType) {
-            updateWithProvidedConfiguration();
-            return (SPType) this.configuration.getIdpOrSP();
+        if (this.getPicketLinkConfiguration().getIdpOrSP() != null && this.getPicketLinkConfiguration().getIdpOrSP() instanceof SPType) {
+            return (SPType) this.getPicketLinkConfiguration().getIdpOrSP();
         }
 
         return null;
@@ -94,6 +84,15 @@ public class DomainModelConfigProvider extends AbstractSAMLConfigurationProvider
      */
     @Override
     public PicketLinkType getPicketLinkConfiguration() throws ProcessingException {
+        if (super.configParsedPicketLinkType != null) {
+            if (super.configParsedPicketLinkType.getHandlers() != null) {
+                this.configuration.setHandlers(super.configParsedPicketLinkType.getHandlers());
+            }
+            if (super.configParsedPicketLinkType.getStsType() != null) {
+                this.configuration.setStsType(super.configParsedPicketLinkType.getStsType());
+            }
+        }
+
         return this.configuration;
     }
 
