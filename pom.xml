@@ -81,6 +81,12 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.picketlink</groupId>
+				<artifactId>picketlink-tomcat7-single</artifactId>
+				<version>${version.picketlink}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.as</groupId>
 				<artifactId>jboss-as-parent</artifactId>
 				<version>${version.jboss_as}</version>
@@ -133,7 +139,10 @@
 			<groupId>org.picketlink.distribution</groupId>
 			<artifactId>picketlink-jbas7</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.picketlink</groupId>
+			<artifactId>picketlink-tomcat7-single</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.as</groupId>
 			<artifactId>jboss-as-subsystem-test</artifactId>
