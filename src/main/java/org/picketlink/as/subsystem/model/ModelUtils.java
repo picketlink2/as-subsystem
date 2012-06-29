@@ -37,7 +37,6 @@ import org.picketlink.identity.federation.core.config.IDPConfiguration;
 import org.picketlink.identity.federation.core.config.KeyProviderType;
 import org.picketlink.identity.federation.core.config.SPConfiguration;
 import org.picketlink.identity.federation.core.config.STSConfiguration;
-import org.picketlink.identity.federation.web.constants.GeneralConstants;
 
 /**
  * <p>
@@ -163,7 +162,12 @@ public class ModelUtils {
         IDPConfiguration idpType = new IDPConfiguration();
         
         String alias = fromModel.get(COMMON_ALIAS.getName()).asString();
+        
+        idpType.setAlias(alias);
+        
         String url = fromModel.get(COMMON_URL.getName()).asString();
+        
+        idpType.setIdentityURL(url);
         
         ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
         
@@ -179,11 +183,14 @@ public class ModelUtils {
 
         String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
         
-        idpType.setAlias(alias);
-        idpType.setIdentityURL(url);
-        
         idpType.setSecurityDomain(securityDomain);
+
+        ModelNode attributeManager = fromModel.get(ModelElement.IDENTITY_PROVIDER_ATTRIBUTE_MANAGER.getName());
         
+        if (attributeManager.isDefined()) {
+            idpType.setAttributeManager(attributeManager.asString());
+        }
+
         return idpType;
     }
     
