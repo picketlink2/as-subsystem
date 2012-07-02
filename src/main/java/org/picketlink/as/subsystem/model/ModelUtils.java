@@ -114,8 +114,17 @@ public class ModelUtils {
         SPConfiguration spType = new SPConfiguration();
         
         String alias = fromModel.get(ModelElement.COMMON_ALIAS.getName()).asString();
+        
+        spType.setAlias(alias);
+        
         String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
+        
+        spType.setServiceURL(url);
+        
         String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
+        
+        spType.setSecurityDomain(securityDomain);
+        
         boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         
         if (postBinding) {
@@ -123,6 +132,8 @@ public class ModelUtils {
         } else {
             spType.setBindingType("REDIRECT");
         }
+        
+        spType.setPostBinding(postBinding);
         
         ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
         
@@ -142,11 +153,12 @@ public class ModelUtils {
             spType.setErrorPage(errorPage.asString());
         }
 
-        spType.setAlias(alias);
-        spType.setPostBinding(postBinding);
-        spType.setSecurityDomain(securityDomain);
-        spType.setServiceURL(url);
+        ModelNode logoutPage = fromModel.get(ModelElement.SERVICE_PROVIDER_LOGOUT_PAGE.getName());
         
+        if (logoutPage.isDefined()) {
+            spType.setLogOutPage(logoutPage.asString());
+        }
+
         return spType;
     }
     

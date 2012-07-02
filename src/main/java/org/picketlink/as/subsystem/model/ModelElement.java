@@ -68,6 +68,7 @@ public enum ModelElement {
     SERVICE_PROVIDER("service-provider"), 
     SERVICE_PROVIDER_POST_BINDING ("post-binding"),
     ERROR_PAGE ("error-page"),
+    SERVICE_PROVIDER_LOGOUT_PAGE ("logout=page"),
     
     SECURITY_TOKEN_SERVICE ("security-token-service"),
     SAML_TOKEN_TIMEOUT ("token-timeout"),
