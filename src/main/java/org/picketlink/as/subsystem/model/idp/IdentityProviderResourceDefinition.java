@@ -58,6 +58,8 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition ATTRIBUTE_MANAGER = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_ATTRIBUTE_MANAGER.getName(), ModelType.STRING, true).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ROLE_GENERATOR = new SimpleAttributeDefinitionBuilder(
+            ModelElement.IDENTITY_PROVIDER_ROLE_GENERATOR.getName(), ModelType.STRING, true).setAllowExpression(false).build();
     
     static {
         INSTANCE.addAttribute(URL);
@@ -67,6 +69,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
         INSTANCE.addAttribute(STRICT_POST_BINDING);
         INSTANCE.addAttribute(ATTRIBUTE_MANAGER);
+        INSTANCE.addAttribute(ROLE_GENERATOR);
     }
     
     private IdentityProviderResourceDefinition() {
