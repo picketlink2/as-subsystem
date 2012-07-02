@@ -26,6 +26,8 @@ import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
 import static org.picketlink.as.subsystem.model.ModelElement.ERROR_PAGE;
+import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER_LOGOUT_PAGE;
+import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER_POST_BINDING;
 import static org.picketlink.as.subsystem.model.ModelElement.STRICT_POST_BINDING;
 import static org.picketlink.as.subsystem.model.ModelElement.SUPPORTS_SIGNATURES;
 
@@ -113,16 +115,27 @@ public class ModelUtils {
     public static SPConfiguration toSPConfig(ModelNode fromModel) {
         SPConfiguration spType = new SPConfiguration();
         
-        String alias = fromModel.get(ModelElement.COMMON_ALIAS.getName()).asString();
-        String url = fromModel.get(ModelElement.COMMON_URL.getName()).asString();
-        String securityDomain = fromModel.get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString();
-        boolean postBinding = fromModel.get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
+        String alias = fromModel.get(COMMON_ALIAS.getName()).asString();
+        
+        spType.setAlias(alias);
+        
+        String url = fromModel.get(COMMON_URL.getName()).asString();
+        
+        spType.setServiceURL(url);
+        
+        String securityDomain = fromModel.get(COMMON_SECURITY_DOMAIN.getName()).asString();
+        
+        spType.setSecurityDomain(securityDomain);
+        
+        boolean postBinding = fromModel.get(SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean();
         
         if (postBinding) {
             spType.setBindingType("POST");
         } else {
             spType.setBindingType("REDIRECT");
         }
+        
+        spType.setPostBinding(postBinding);
         
         ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
         
@@ -142,11 +155,12 @@ public class ModelUtils {
             spType.setErrorPage(errorPage.asString());
         }
 
-        spType.setAlias(alias);
-        spType.setPostBinding(postBinding);
-        spType.setSecurityDomain(securityDomain);
-        spType.setServiceURL(url);
+        ModelNode logoutPage = fromModel.get(SERVICE_PROVIDER_LOGOUT_PAGE.getName());
         
+        if (logoutPage.isDefined()) {
+            spType.setLogOutPage(logoutPage.asString());
+        }
+
         return spType;
     }
     
