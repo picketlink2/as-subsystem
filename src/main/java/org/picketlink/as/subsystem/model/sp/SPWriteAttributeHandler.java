@@ -64,8 +64,6 @@ public class SPWriteAttributeHandler extends AbstractWriteAttributeHandler<Void>
         
         service.setConfiguration(updatedSPConfig);
         
-        context.completeStep();
-        
         return false;
     }
 
