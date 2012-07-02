@@ -56,6 +56,8 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition ERROR_PAGE = new SimpleAttributeDefinitionBuilder(
             ModelElement.ERROR_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition LOGOUT_PAGE = new SimpleAttributeDefinitionBuilder(
+            ModelElement.SERVICE_PROVIDER_LOGOUT_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
  
     static {
         INSTANCE.addAttribute(ALIAS);
@@ -65,6 +67,7 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
         INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
         INSTANCE.addAttribute(STRICT_POST_BINDING);
         INSTANCE.addAttribute(ERROR_PAGE);
+        INSTANCE.addAttribute(LOGOUT_PAGE);
     }
 
     private ServiceProviderResourceDefinition() {
