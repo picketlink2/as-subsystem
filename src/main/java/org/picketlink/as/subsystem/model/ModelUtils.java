@@ -191,6 +191,12 @@ public class ModelUtils {
             idpType.setAttributeManager(attributeManager.asString());
         }
 
+        ModelNode roleGenerator = fromModel.get(ModelElement.IDENTITY_PROVIDER_ROLE_GENERATOR.getName());
+        
+        if (roleGenerator.isDefined()) {
+            idpType.setRoleGenerator(roleGenerator.asString());
+        }
+
         return idpType;
     }
     
