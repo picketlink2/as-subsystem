@@ -53,6 +53,7 @@ public enum ModelElement {
     IDENTITY_PROVIDER_SAML_METADATA_ORGANIZATION ("organization"),
     IDENTITY_PROVIDER_EXTERNAL ("external"),
     IDENTITY_PROVIDER_ATTRIBUTE_MANAGER ("attribute-manager"),
+    IDENTITY_PROVIDER_ROLE_GENERATOR ("role-generator"),
     STRICT_POST_BINDING ("strict-post-binding"),
     KEY_STORE_PASSWD ("passwd"), 
     KEY_STORE_SIGN_KEY_ALIAS ("sign-key-alias"), 
