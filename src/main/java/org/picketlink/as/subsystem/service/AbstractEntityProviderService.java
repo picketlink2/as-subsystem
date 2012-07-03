@@ -50,6 +50,7 @@ import org.picketlink.identity.federation.core.saml.v2.constants.JBossSAMLURICon
 import org.picketlink.identity.federation.web.constants.GeneralConstants;
 import org.picketlink.identity.federation.web.handlers.saml2.RolesGenerationHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2AuthenticationHandler;
+import org.picketlink.identity.federation.web.handlers.saml2.SAML2EncryptionHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2IssuerTrustHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2LogOutHandler;
 import org.picketlink.identity.federation.web.handlers.saml2.SAML2SignatureGenerationHandler;
@@ -75,7 +76,7 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
         commonHandlersList.add(SAML2LogOutHandler.class);
         commonHandlersList.add(SAML2AuthenticationHandler.class);
         commonHandlersList.add(RolesGenerationHandler.class);
-        commonHandlersList.add(SAML2SignatureGenerationHandler.class);
+        commonHandlersList.add(SAML2EncryptionHandler.class);
         commonHandlersList.add(SAML2SignatureValidationHandler.class);
     }
     
@@ -168,8 +169,14 @@ public abstract class AbstractEntityProviderService<T extends PicketLinkService<
                 }
             }
         }
+
+        getPicketLinkType().setHandlers(new Handlers());
         
         doAddHandlers();
+        
+        for (Handler handler : handlers) {
+            getPicketLinkType().getHandlers().add(handler);
+        }
     }
     
     /**
