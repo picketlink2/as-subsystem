@@ -51,7 +51,7 @@ public class HandlerRemoveHandler extends AbstractRemoveStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
         String providerAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String className = operation.get(ModelElement.HANDLER_CLASS.getName()).asString();
+        String className = operation.get(ModelElement.COMMON_HANDLER_CLASS.getName()).asString();
         
         AbstractEntityProviderService providerService = getParentProviderService(context, providerAlias);
         

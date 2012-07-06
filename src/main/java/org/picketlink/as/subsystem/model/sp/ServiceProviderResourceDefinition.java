@@ -49,13 +49,13 @@ public class ServiceProviderResourceDefinition extends AbstractResourceDefinitio
     public static final SimpleAttributeDefinition POST_BINDING = new SimpleAttributeDefinitionBuilder(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName(),
             ModelType.STRING, true).setAllowExpression(false).setDefaultValue(new ModelNode().set(true)).build();
     public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
+            ModelElement.COMMON_SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition STRICT_POST_BINDING = new SimpleAttributeDefinitionBuilder(
-            ModelElement.STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
+            ModelElement.COMMON_STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition ERROR_PAGE = new SimpleAttributeDefinitionBuilder(
-            ModelElement.ERROR_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
+            ModelElement.SERVICE_PROVIDER_ERROR_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition LOGOUT_PAGE = new SimpleAttributeDefinitionBuilder(
             ModelElement.SERVICE_PROVIDER_LOGOUT_PAGE.getName(), ModelType.STRING, true).setAllowExpression(false).build();
  

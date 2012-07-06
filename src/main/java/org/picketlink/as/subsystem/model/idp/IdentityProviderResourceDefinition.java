@@ -50,11 +50,14 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
     public static final SimpleAttributeDefinition EXTERNAL = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_EXTERNAL.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
+    public static final SimpleAttributeDefinition ENCRYPT = new SimpleAttributeDefinitionBuilder(
+            ModelElement.IDENTITY_PROVIDER_ENCRYPT.getName(), ModelType.BOOLEAN, true)
+            .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition SUPPORTS_SIGNATURES = new SimpleAttributeDefinitionBuilder(
-            ModelElement.SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
+            ModelElement.COMMON_SUPPORTS_SIGNATURES.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(false)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition STRICT_POST_BINDING = new SimpleAttributeDefinitionBuilder(
-            ModelElement.STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
+            ModelElement.COMMON_STRICT_POST_BINDING.getName(), ModelType.BOOLEAN, true)
             .setDefaultValue(new ModelNode().set(true)).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition ATTRIBUTE_MANAGER = new SimpleAttributeDefinitionBuilder(
             ModelElement.IDENTITY_PROVIDER_ATTRIBUTE_MANAGER.getName(), ModelType.STRING, true).setAllowExpression(false).build();
@@ -66,6 +69,7 @@ public class IdentityProviderResourceDefinition extends AbstractResourceDefiniti
         INSTANCE.addAttribute(ALIAS);
         INSTANCE.addAttribute(SECURITY_DOMAIN);
         INSTANCE.addAttribute(EXTERNAL);
+        INSTANCE.addAttribute(ENCRYPT);
         INSTANCE.addAttribute(SUPPORTS_SIGNATURES);
         INSTANCE.addAttribute(STRICT_POST_BINDING);
         INSTANCE.addAttribute(ATTRIBUTE_MANAGER);

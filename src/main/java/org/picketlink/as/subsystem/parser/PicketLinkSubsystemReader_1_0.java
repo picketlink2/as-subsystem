@@ -28,7 +28,7 @@ import static org.jboss.as.controller.parsing.ParseUtils.unexpectedElement;
 import static org.picketlink.as.subsystem.model.ModelElement.FEDERATION;
 import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER;
 import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER;
-import static org.picketlink.as.subsystem.model.ModelElement.TRUST_DOMAIN;
+import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN;
 
 import java.util.List;
 
@@ -131,13 +131,13 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
                 case IDENTITY_PROVIDER:
                     lastProviderNode = parseIdentityProviderConfig(reader, list, federationNode);
                     break;
-                case TRUST_DOMAIN:
+                case IDENTITY_PROVIDER_TRUST_DOMAIN:
                     parseTrustDomainConfig(reader, list, lastProviderNode);
                     break;
-                case HANDLER:
+                case COMMON_HANDLER:
                     lastHandlerNode = parseHandlerConfig(reader, list, lastProviderNode);
                     break;
-                case HANDLER_PARAMETER:
+                case COMMON_HANDLER_PARAMETER:
                     parseHandlerParameterConfig(reader, list, lastHandlerNode);
                     break;
                 case SERVICE_PROVIDER:
@@ -184,19 +184,19 @@ public class PicketLinkSubsystemReader_1_0 implements XMLStreamConstants, XMLEle
      */
     private void parseTrustDomainConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
             throws XMLStreamException {
-        parseConfig(reader, TRUST_DOMAIN, TrustDomainResourceDefinition.NAME.getName(), list, identityProviderNode,
+        parseConfig(reader, IDENTITY_PROVIDER_TRUST_DOMAIN, TrustDomainResourceDefinition.NAME.getName(), list, identityProviderNode,
                 TrustDomainResourceDefinition.INSTANCE.getAttributes());
     }
 
     private ModelNode parseHandlerConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
             throws XMLStreamException {
-        return parseConfig(reader, ModelElement.HANDLER, HandlerResourceDefinition.CLASS.getName(), list, identityProviderNode,
+        return parseConfig(reader, ModelElement.COMMON_HANDLER, HandlerResourceDefinition.CLASS.getName(), list, identityProviderNode,
                 HandlerResourceDefinition.INSTANCE.getAttributes());
     }
 
     private ModelNode parseHandlerParameterConfig(XMLExtendedStreamReader reader, List<ModelNode> list, ModelNode identityProviderNode)
             throws XMLStreamException {
-        return parseConfig(reader, ModelElement.HANDLER_PARAMETER, HandlerParameterResourceDefinition.NAME.getName(), list, identityProviderNode,
+        return parseConfig(reader, ModelElement.COMMON_HANDLER_PARAMETER, HandlerParameterResourceDefinition.NAME.getName(), list, identityProviderNode,
                 HandlerParameterResourceDefinition.INSTANCE.getAttributes());
     }
 

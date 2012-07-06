@@ -46,7 +46,7 @@ public class HandlerAddHandler extends AbstractResourceAddStepHandler {
     public static final HandlerAddHandler INSTANCE = new HandlerAddHandler();
 
     private HandlerAddHandler() {
-        super(ModelElement.HANDLER);
+        super(ModelElement.COMMON_HANDLER);
     }
 
     /* (non-Javadoc)
@@ -58,7 +58,7 @@ public class HandlerAddHandler extends AbstractResourceAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String providerAlias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String className = operation.get(ModelElement.HANDLER_CLASS.getName()).asString();
+        String className = operation.get(ModelElement.COMMON_HANDLER_CLASS.getName()).asString();
         
         AbstractEntityProviderService providerService = getParentProviderService(context, providerAlias);
         

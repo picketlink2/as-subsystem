@@ -49,7 +49,7 @@ public class HandlerParameterResourceDefinition extends AbstractResourceDefiniti
     }
     
     private HandlerParameterResourceDefinition() {
-        super(ModelElement.HANDLER_PARAMETER, HandlerParameterAddHandler.INSTANCE, HandlerParameterRemoveHandler.INSTANCE);
+        super(ModelElement.COMMON_HANDLER_PARAMETER, HandlerParameterAddHandler.INSTANCE, HandlerParameterRemoveHandler.INSTANCE);
     }
 
     @Override

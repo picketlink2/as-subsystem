@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * <p>
- * This class represents a subsystem's model element. A model element is an element that is know and handled by the subsystem.
+ * {@link Enum} class where all model elements name (attributes and elements) are defined. 
  * </p>
  * 
  * @author <a href="mailto:psilva@redhat.com">Pedro Silva</a>
@@ -34,46 +34,73 @@ import java.util.Map;
  */
 public enum ModelElement {
 
+    /*
+     * Common elements shared by all resources definitions
+     */
     COMMON_ALIAS ("alias"),
     COMMON_URL ("url"),
     COMMON_NAME ("name"),
     COMMON_SECURITY_DOMAIN ("security-domain"),
     COMMON_VALUE ("value"),
-    
+    COMMON_STRICT_POST_BINDING ("strict-post-binding"),
+    COMMON_SUPPORTS_SIGNATURES("supportsSignatures"),
+
+    COMMON_HANDLER ("handler"),
+    COMMON_HANDLER_CLASS ("class"), 
+    COMMON_HANDLER_PARAMETER ("handler-parameter"),
+
+    /*
+     * Federation model elements
+     */
     FEDERATION("federation"),
     
+    /*
+     * Identity Provider model elements
+     */
     IDENTITY_PROVIDER("identity-provider"),
-    TRUST_DOMAIN("trust-domain"),
-    TRUST_DOMAIN_NAME("name"),
-    TRUST_DOMAIN_CERT_ALIAS ("cert-alias"),
-    SUPPORTS_SIGNATURES("supportsSignatures"),
-    KEY_STORE ("key-store"),
+    IDENTITY_PROVIDER_TRUST_DOMAIN("trust-domain"),
+    IDENTITY_PROVIDER_TRUST_DOMAIN_NAME("name"),
+    IDENTITY_PROVIDER_TRUST_DOMAIN_CERT_ALIAS ("cert-alias"),
+    
     IDENTITY_PROVIDER_SAML_METADATA ("idp-metadata"),
     IDENTITY_PROVIDER_SAML_METADATA_WANT_AUTHN_REQUESTS_SIGNED ("wantAuthnRequestsSigned"),
     IDENTITY_PROVIDER_SAML_METADATA_ORGANIZATION ("organization"),
     IDENTITY_PROVIDER_EXTERNAL ("external"),
     IDENTITY_PROVIDER_ATTRIBUTE_MANAGER ("attribute-manager"),
     IDENTITY_PROVIDER_ROLE_GENERATOR ("role-generator"),
-    STRICT_POST_BINDING ("strict-post-binding"),
+    IDENTITY_PROVIDER_ENCRYPT("encrypt"),
+    
+    /*
+     * KeyStore model elements
+     */
+    KEY_STORE ("key-store"),
     KEY_STORE_PASSWD ("passwd"), 
     KEY_STORE_SIGN_KEY_ALIAS ("sign-key-alias"), 
     KEY_STORE_SIGN_KEY_PASSWD ("sign-key-passwd"),
-    CONTACT ("contact"),
-    CONTACT_SUR_NAME ("surName"), 
-    CONTACT_PHONE ("phone"), 
-    CONTACT_EMAIL ("email"), 
-    CONTACT_TYPE ("type"), 
-    CONTACT_COMPANY ("company"),
     
+    /*
+     * Service Provider model elements
+     */
     SERVICE_PROVIDER("service-provider"), 
     SERVICE_PROVIDER_POST_BINDING ("post-binding"),
-    ERROR_PAGE ("error-page"),
+    SERVICE_PROVIDER_ERROR_PAGE ("error-page"),
     SERVICE_PROVIDER_LOGOUT_PAGE ("logout-page"),
     
+    /*
+     * Security Token Service model elements
+     */
     SECURITY_TOKEN_SERVICE ("security-token-service"),
+    
+    /*
+     * SAML model elements
+     */
+    SAML ("saml"),
     SAML_TOKEN_TIMEOUT ("token-timeout"),
     SAML_CLOCK_SKEW ("clock-skew"),
-    SAML ("saml"), 
+    
+    /*
+     * Metric model elements
+     */
     METRICS_CREATED_ASSERTIONS_COUNT ("created-assertions-count"),
     METRICS_RESPONSE_TO_SP_COUNT ("response-to-sp-count"), 
     METRICS_ERROR_RESPONSE_TO_SP_COUNT ("error-response-to-sp-count"), 
@@ -84,10 +111,7 @@ public enum ModelElement {
     METRICS_LOGIN_COMPLETE_COUNT ("login-complete-count"), 
     METRICS_REQUEST_FROM_IDP_COUNT ("request-from-idp-count"), 
     METRICS_RESPONSE_FROM_IDP_COUNT ("response-from-idp-count"), 
-    METRICS_REQUEST_TO_IDP_COUNT ("request-to-idp-count"), 
-    HANDLER_CLASS ("class"), 
-    HANDLER ("handler"), 
-    HANDLER_PARAMETER ("handler-parameter");
+    METRICS_REQUEST_TO_IDP_COUNT ("request-to-idp-count"); 
     
     private static final Map<String, ModelElement> modelElements = new HashMap<String, ModelElement>();
     
