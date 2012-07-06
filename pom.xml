@@ -32,9 +32,9 @@
     </url>
 
 	<scm>
-		<connection>scm:git:${jboss.as.scm.connection}</connection>
-		<developerConnection>scm:git:${jboss.as.scm.connection}</developerConnection>
-		<url>${jboss.as.scm.url}</url>
+		<connection>scm:git:${picketlink.extension.scm.connection}</connection>
+		<developerConnection>scm:git:${picketlink.extension.scm.connection}</developerConnection>
+		<url>${picketlink.extrension.scm.url}</url>
 	</scm>
 
 	<organization>
@@ -60,8 +60,8 @@
 	</licenses>
 
 	<properties>
-		<jboss.as.scm.url>https://github.com/picketlink/as-subsystem</jboss.as.scm.url>
-		<jboss.as.scm.connection>git@github.com:picketlink/as-subsystem.git</jboss.as.scm.connection>
+		<picketlink.extrension.scm.url>https://github.com/picketlink/as-subsystem</picketlink.extrension.scm.url>
+		<picketlink.extrension.scm.connection>git@github.com:picketlink/as-subsystem.git</picketlink.extrension.scm.connection>
 
 		<!-- Build configuration -->
 		<module.name>org.picketlink</module.name>
