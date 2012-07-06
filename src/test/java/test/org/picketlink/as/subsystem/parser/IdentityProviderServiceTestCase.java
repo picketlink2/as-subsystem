@@ -65,8 +65,8 @@ public class IdentityProviderServiceTestCase extends AbstractPicketLinkSubsystem
         assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_ALIAS.getName()).asString(), idpSubsystemConfig.getAlias());
         assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_URL.getName()).asString(), idpSubsystemConfig.getIdentityURL());
         assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString(), idpSubsystemConfig.getSecurityDomain());
-        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.SUPPORTS_SIGNATURES.getName()).asBoolean(), idpSubsystemConfig.isSupportsSignature());
-        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.STRICT_POST_BINDING.getName()).asBoolean(), idpSubsystemConfig.isStrictPostBinding());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_SUPPORTS_SIGNATURES.getName()).asBoolean(), idpSubsystemConfig.isSupportsSignature());
+        assertEquals(getIdentityProvider().asProperty().getValue().get(ModelElement.COMMON_STRICT_POST_BINDING.getName()).asBoolean(), idpSubsystemConfig.isStrictPostBinding());
         
         TrustType trustType = idpSubsystemConfig.getTrust();
         

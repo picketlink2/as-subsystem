@@ -80,7 +80,7 @@ public class ServiceProviderServiceTestCase extends AbstractPicketLinkSubsystemT
             assertEquals(property.getValue().get(ModelElement.COMMON_ALIAS.getName()).asString(), spSubsystemConfig.getAlias());
             assertEquals(property.getValue().get(ModelElement.COMMON_URL.getName()).asString(), spSubsystemConfig.getServiceURL());
             assertEquals(property.getValue().get(ModelElement.COMMON_SECURITY_DOMAIN.getName()).asString(), spSubsystemConfig.getSecurityDomain());
-            assertEquals(property.getValue().get(ModelElement.SUPPORTS_SIGNATURES.getName()).asBoolean(), spSubsystemConfig.isSupportsSignature());
+            assertEquals(property.getValue().get(ModelElement.COMMON_SUPPORTS_SIGNATURES.getName()).asBoolean(), spSubsystemConfig.isSupportsSignature());
             assertEquals(property.getValue().get(ModelElement.SERVICE_PROVIDER_POST_BINDING.getName()).asBoolean(), spSubsystemConfig.isPostBinding());
         }
     }

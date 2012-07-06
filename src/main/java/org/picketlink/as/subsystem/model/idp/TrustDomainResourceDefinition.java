@@ -38,9 +38,9 @@ public class TrustDomainResourceDefinition extends AbstractResourceDefinition {
     public static final TrustDomainResourceDefinition INSTANCE = new TrustDomainResourceDefinition();
 
     public static final SimpleAttributeDefinition NAME = new SimpleAttributeDefinitionBuilder(
-            ModelElement.TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+            ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_NAME.getName(), ModelType.STRING, false).setAllowExpression(false).build();
     public static final SimpleAttributeDefinition CERT_ALIAS = new SimpleAttributeDefinitionBuilder(
-            ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName(), ModelType.STRING, true).setAllowExpression(false).build();
+            ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_CERT_ALIAS.getName(), ModelType.STRING, true).setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(NAME);
@@ -48,7 +48,7 @@ public class TrustDomainResourceDefinition extends AbstractResourceDefinition {
     }
     
     private TrustDomainResourceDefinition() {
-        super(ModelElement.TRUST_DOMAIN, TrustDomainAddHandler.INSTANCE, TrustDomainRemoveHandler.INSTANCE);
+        super(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN, TrustDomainAddHandler.INSTANCE, TrustDomainRemoveHandler.INSTANCE);
     }
 
     @Override

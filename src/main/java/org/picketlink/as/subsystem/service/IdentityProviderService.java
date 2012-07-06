@@ -101,7 +101,7 @@ public class IdentityProviderService extends AbstractEntityProviderService<Ident
             }
         }
     }
-
+    
     /**
      * Returns a instance of the service associated with the given name.
      * 

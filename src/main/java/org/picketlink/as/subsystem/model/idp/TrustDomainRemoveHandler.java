@@ -50,7 +50,7 @@ public class TrustDomainRemoveHandler extends AbstractRemoveStepHandler {
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
             throws OperationFailedException {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
+        String domain = operation.get(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_NAME.getName()).asString();
 
         AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);
         

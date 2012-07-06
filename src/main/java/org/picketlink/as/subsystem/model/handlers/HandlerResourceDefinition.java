@@ -39,14 +39,14 @@ public class HandlerResourceDefinition extends AbstractResourceDefinition {
     public static final HandlerResourceDefinition INSTANCE = new HandlerResourceDefinition();
 
     public static final SimpleAttributeDefinition CLASS = new SimpleAttributeDefinitionBuilder(
-            ModelElement.HANDLER_CLASS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
+            ModelElement.COMMON_HANDLER_CLASS.getName(), ModelType.STRING, false).setAllowExpression(false).build();
 
     static {
         INSTANCE.addAttribute(CLASS);
     }
     
     private HandlerResourceDefinition() {
-        super(ModelElement.HANDLER, HandlerAddHandler.INSTANCE, HandlerRemoveHandler.INSTANCE);
+        super(ModelElement.COMMON_HANDLER, HandlerAddHandler.INSTANCE, HandlerRemoveHandler.INSTANCE);
     }
     
     /*
