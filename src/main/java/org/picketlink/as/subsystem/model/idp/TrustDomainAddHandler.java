@@ -46,7 +46,7 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
     public static final TrustDomainAddHandler INSTANCE = new TrustDomainAddHandler();
 
     private TrustDomainAddHandler() {
-        super(ModelElement.TRUST_DOMAIN);
+        super(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN);
     }
 
     /* (non-Javadoc)
@@ -57,11 +57,11 @@ public class TrustDomainAddHandler extends AbstractResourceAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
         String alias = operation.get(ModelDescriptionConstants.ADDRESS).asPropertyList().get(2).getValue().asString();
-        String domain = operation.get(ModelElement.TRUST_DOMAIN_NAME.getName()).asString();
+        String domain = operation.get(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_NAME.getName()).asString();
         String certAlias = null;
 
-        if (operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).isDefined()) {
-            certAlias = operation.get(ModelElement.TRUST_DOMAIN_CERT_ALIAS.getName()).asString();
+        if (operation.get(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_CERT_ALIAS.getName()).isDefined()) {
+            certAlias = operation.get(ModelElement.IDENTITY_PROVIDER_TRUST_DOMAIN_CERT_ALIAS.getName()).asString();
         }
         
         AbstractEntityProviderService<IdentityProviderService, IDPConfiguration> service = IdentityProviderService.getService(context.getServiceRegistry(true), alias);

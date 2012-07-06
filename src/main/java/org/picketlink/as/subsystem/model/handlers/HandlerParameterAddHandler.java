@@ -48,7 +48,7 @@ public class HandlerParameterAddHandler extends AbstractResourceAddStepHandler {
     public static final HandlerParameterAddHandler INSTANCE = new HandlerParameterAddHandler();
 
     private HandlerParameterAddHandler() {
-        super(ModelElement.HANDLER_PARAMETER);
+        super(ModelElement.COMMON_HANDLER_PARAMETER);
     }
 
     /*

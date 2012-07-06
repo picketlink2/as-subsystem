@@ -25,11 +25,12 @@ package org.picketlink.as.subsystem.model;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_ALIAS;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SECURITY_DOMAIN;
 import static org.picketlink.as.subsystem.model.ModelElement.COMMON_URL;
-import static org.picketlink.as.subsystem.model.ModelElement.ERROR_PAGE;
+import static org.picketlink.as.subsystem.model.ModelElement.IDENTITY_PROVIDER_ENCRYPT;
+import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER_ERROR_PAGE;
 import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER_LOGOUT_PAGE;
 import static org.picketlink.as.subsystem.model.ModelElement.SERVICE_PROVIDER_POST_BINDING;
-import static org.picketlink.as.subsystem.model.ModelElement.STRICT_POST_BINDING;
-import static org.picketlink.as.subsystem.model.ModelElement.SUPPORTS_SIGNATURES;
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_STRICT_POST_BINDING;
+import static org.picketlink.as.subsystem.model.ModelElement.COMMON_SUPPORTS_SIGNATURES;
 
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
@@ -137,19 +138,19 @@ public class ModelUtils {
         
         spType.setPostBinding(postBinding);
         
-        ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
+        ModelNode supportsSignatures = fromModel.get(COMMON_SUPPORTS_SIGNATURES.getName());
         
         if (supportsSignatures.isDefined()) {
             spType.setSupportsSignature(supportsSignatures.asBoolean());
         }
         
-        ModelNode strictPostBinding = fromModel.get(STRICT_POST_BINDING.getName());
+        ModelNode strictPostBinding = fromModel.get(COMMON_STRICT_POST_BINDING.getName());
         
         if (strictPostBinding.isDefined()) {
             spType.setIdpUsesPostBinding(strictPostBinding.asBoolean());
         }
 
-        ModelNode errorPage = fromModel.get(ERROR_PAGE.getName());
+        ModelNode errorPage = fromModel.get(SERVICE_PROVIDER_ERROR_PAGE.getName());
         
         if (errorPage.isDefined()) {
             spType.setErrorPage(errorPage.asString());
@@ -183,13 +184,19 @@ public class ModelUtils {
         
         idpType.setIdentityURL(url);
         
-        ModelNode supportsSignatures = fromModel.get(SUPPORTS_SIGNATURES.getName());
+        ModelNode supportsSignatures = fromModel.get(COMMON_SUPPORTS_SIGNATURES.getName());
         
         if (supportsSignatures.isDefined()) {
             idpType.setSupportsSignature(supportsSignatures.asBoolean());
         }
 
-        ModelNode strictPostBinding = fromModel.get(STRICT_POST_BINDING.getName());
+        ModelNode encrypt = fromModel.get(IDENTITY_PROVIDER_ENCRYPT.getName());
+        
+        if (encrypt.isDefined()) {
+            idpType.setEncrypt(encrypt.asBoolean());
+        }
+
+        ModelNode strictPostBinding = fromModel.get(COMMON_STRICT_POST_BINDING.getName());
         
         if (strictPostBinding.isDefined()) {
             idpType.setStrictPostBinding(strictPostBinding.asBoolean());
