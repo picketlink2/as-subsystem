@@ -19,7 +19,7 @@
 
 	<groupId>org.picketlink</groupId>
 	<artifactId>picketlink-as7-extension</artifactId>
-	<version>1.0.0.Final</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>JBoss Application Server: PicketLink Subsystem</name>
 	
