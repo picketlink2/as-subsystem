@@ -19,7 +19,7 @@
 
 	<groupId>org.picketlink</groupId>
 	<artifactId>picketlink-as7-extension</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1.Final</version>
 
 	<name>JBoss Application Server: PicketLink Subsystem</name>
 	
@@ -72,7 +72,7 @@
 		<version.jboss_as>7.1.1.Final</version.jboss_as>
 
 		<!-- Current version of PicketLink supported by this subsystem. -->
-		<version.picketlink>2.1.4-SNAPSHOT</version.picketlink>
+		<version.picketlink>2.1.4.Final</version.picketlink>
 
 		<version.arquillian_drone>1.0.0.Final</version.arquillian_drone>
 	</properties>
